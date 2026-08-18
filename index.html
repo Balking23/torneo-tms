@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🏆 Torneo TMS - Inscripciones y Llave</title>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (necesario para la conexión) -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <style>
-        /* ===== ESTILOS BASE ===== */
+        /* ===== RESET Y ESTILOS BASE ===== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -70,7 +70,7 @@
             background: #870f0b;
         }
 
-        /* ===== INFO DE CUPOS ===== */
+        /* ===== INFO CUPOS ===== */
         .info-cupos {
             display: flex;
             flex-wrap: wrap;
@@ -98,52 +98,12 @@
             font-size: 0.8rem;
             font-weight: 600;
             color: #fff;
-            background: #aaa;
             border: 1px solid #ccc;
         }
-        .color-chip.disponible {
-            opacity: 1;
-        }
-        .color-chip.agotado {
-            opacity: 0.4;
-            text-decoration: line-through;
-        }
+        .color-chip.disponible { opacity: 1; }
+        .color-chip.agotado { opacity: 0.4; text-decoration: line-through; }
 
-        /* ===== BOTONES Y FORM ===== */
-        .btn {
-            border: none;
-            padding: 10px 24px;
-            border-radius: 30px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-primary {
-            background: #302d7c;
-            color: #f4f3f1;
-        }
-        .btn-primary:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(48, 45, 124, 0.4);
-        }
-        .btn-danger {
-            background: #870f0b;
-            color: #f4f3f1;
-        }
-        .btn-danger:hover {
-            background: #6a0b08;
-            transform: scale(1.05);
-        }
-        .btn-success {
-            background: #2d6a4f;
-            color: #f4f3f1;
-        }
-        .btn-success:hover {
-            background: #1b4332;
-            transform: scale(1.05);
-        }
-
-        /* ===== FORMULARIO ===== */
+        /* ===== FORMULARIOS ===== */
         .form-inscripcion {
             background: #fff;
             border-radius: 16px;
@@ -152,9 +112,7 @@
             margin-bottom: 30px;
             display: none;
         }
-        .form-inscripcion.abierto {
-            display: block;
-        }
+        .form-inscripcion.abierto { display: block; }
         .form-inscripcion h2 {
             color: #302d7c;
             margin-bottom: 20px;
@@ -164,9 +122,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        .form-grid .full-width {
-            grid-column: 1 / -1;
-        }
+        .form-grid .full-width { grid-column: 1 / -1; }
         .form-group {
             display: flex;
             flex-direction: column;
@@ -191,9 +147,20 @@
             border-color: #302d7c;
             box-shadow: 0 0 0 4px rgba(48, 45, 124, 0.15);
         }
-        .form-group input.error {
-            border-color: #870f0b;
+        .form-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-top: 6px;
         }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checkbox-row label {
+            margin: 0;
+        }
+
         .participantes-container {
             grid-column: 1 / -1;
             margin-top: 10px;
@@ -213,9 +180,7 @@
             background: #f8f7f5;
             border-radius: 10px;
         }
-        .participante-row .form-group {
-            margin-bottom: 0;
-        }
+        .participante-row .form-group { margin-bottom: 0; }
         .btn-remove-participante {
             background: #ddd;
             border: none;
@@ -252,6 +217,81 @@
             justify-content: flex-end;
         }
 
+        .btn {
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary { background: #302d7c; color: #f4f3f1; }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(48,45,124,0.4); }
+        .btn-danger { background: #870f0b; color: #f4f3f1; }
+        .btn-danger:hover { background: #6a0b08; transform: scale(1.05); }
+        .btn-success { background: #2d6a4f; color: #f4f3f1; }
+        .btn-success:hover { background: #1b4332; transform: scale(1.05); }
+        .btn-warning { background: #f4a261; color: #302d7c; }
+        .btn-warning:hover { background: #e76f51; transform: scale(1.05); }
+
+        /* ===== SECCIÓN JUGADORES LIBRES Y EQUIPOS CON PLAZAS ===== */
+        .jugadores-section {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border: 2px solid #d6d3cc;
+        }
+        .jugadores-section h2 {
+            color: #302d7c;
+            margin-bottom: 15px;
+        }
+        .jugadores-section .sub-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .jugadores-section .col {
+            background: #f8f7f5;
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .jugadores-section .col h3 {
+            color: #302d7c;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .jugadores-section .col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .jugadores-section .col ul li {
+            padding: 6px 0;
+            border-bottom: 1px solid #e0dcd5;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+        .jugadores-section .col ul li .contacto {
+            color: #302d7c;
+            font-weight: 600;
+        }
+        .jugadores-section .col .btn-contactar {
+            background: #25d366;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 2px 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .jugadores-section .col .btn-contactar:hover {
+            transform: scale(1.05);
+            background: #128C7E;
+        }
+
         /* ===== BRACKET ===== */
         .bracket-wrapper {
             position: relative;
@@ -285,7 +325,7 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 8px;
-            box-shadow: 0 2px 8px rgba(48, 45, 124, 0.3);
+            box-shadow: 0 2px 8px rgba(48,45,124,0.3);
         }
         .match {
             background: #fff;
@@ -301,7 +341,7 @@
         .match:hover {
             border-color: #870f0b;
             transform: scale(1.03);
-            box-shadow: 0 12px 30px rgba(135, 15, 11, 0.15);
+            box-shadow: 0 12px 30px rgba(135,15,11,0.15);
             z-index: 10;
         }
         .match.has-winner {
@@ -310,9 +350,9 @@
             animation: pulseWinner 2s infinite ease-in-out;
         }
         @keyframes pulseWinner {
-            0% { box-shadow: 0 0 0 0 rgba(135, 15, 11, 0.2); }
-            50% { box-shadow: 0 0 0 10px rgba(135, 15, 11, 0.05); }
-            100% { box-shadow: 0 0 0 0 rgba(135, 15, 11, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(135,15,11,0.2); }
+            50% { box-shadow: 0 0 0 10px rgba(135,15,11,0.05); }
+            100% { box-shadow: 0 0 0 0 rgba(135,15,11,0); }
         }
         .team-row {
             display: flex;
@@ -331,6 +371,17 @@
             border-bottom: 2px solid transparent;
             transition: 0.15s;
             font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .team-name .color-dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            flex-shrink: 0;
         }
         .team-name-readonly {
             border-bottom: 2px solid #d6d3cc;
@@ -353,15 +404,11 @@
         .score-input:focus {
             outline: none;
             border-color: #870f0b;
-            box-shadow: 0 0 0 5px rgba(135, 15, 11, 0.15);
+            box-shadow: 0 0 0 5px rgba(135,15,11,0.15);
             transform: scale(1.05);
         }
-        .score-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-        }
-        .score-input {
-            -moz-appearance: textfield;
-        }
+        .score-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+        .score-input { -moz-appearance: textfield; }
 
         /* ===== CAMPEÓN ===== */
         .champion-box {
@@ -372,12 +419,10 @@
             text-align: center;
             border: 2px solid #302d7c;
             display: none;
-            animation: championReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-            box-shadow: 0 8px 30px rgba(135, 15, 11, 0.4);
+            animation: championReveal 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards;
+            box-shadow: 0 8px 30px rgba(135,15,11,0.4);
         }
-        .champion-box.show {
-            display: block;
-        }
+        .champion-box.show { display: block; }
         @keyframes championReveal {
             0% { transform: scale(0.5) rotate(-3deg); opacity: 0; }
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
@@ -396,25 +441,32 @@
             padding: 6px 30px;
             border-radius: 60px;
             color: #f4f3f1;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             font-weight: 800;
             animation: glowText 1.8s infinite alternate;
         }
         @keyframes glowText {
-            0% { box-shadow: 0 4px 20px rgba(48, 45, 124, 0.3); transform: scale(1); }
-            100% { box-shadow: 0 4px 40px rgba(135, 15, 11, 0.7), 0 0 60px rgba(48, 45, 124, 0.3); transform: scale(1.02); }
+            0% { box-shadow: 0 4px 20px rgba(48,45,124,0.3); transform: scale(1); }
+            100% { box-shadow: 0 4px 40px rgba(135,15,11,0.7), 0 0 60px rgba(48,45,124,0.3); transform: scale(1.02); }
         }
 
         /* ===== ADMIN PANEL ===== */
+        .admin-toggle {
+            margin-top: 20px;
+            text-align: center;
+        }
         .admin-panel {
-            margin-top: 30px;
+            margin-top: 20px;
             background: #e9e5f0;
             border-radius: 16px;
             padding: 20px;
             display: none;
+            animation: fadeIn 0.4s ease;
         }
-        .admin-panel.visible {
-            display: block;
+        .admin-panel.visible { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .admin-panel h2 {
             color: #302d7c;
@@ -426,9 +478,9 @@
             background: #fff;
             border-radius: 12px;
             overflow: hidden;
+            margin-bottom: 20px;
         }
-        .admin-panel th,
-        .admin-panel td {
+        .admin-panel th, .admin-panel td {
             padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #d6d3cc;
@@ -438,8 +490,25 @@
             color: #f4f3f1;
             font-weight: 600;
         }
+        .admin-panel .btn-eliminar {
+            background: #870f0b;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+        .admin-panel .btn-eliminar:hover {
+            background: #6a0b08;
+            transform: scale(1.05);
+        }
         .admin-panel .btn-cerrar-inscripciones {
             margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .admin-panel .contactos-whatsapp {
             background: #fff;
@@ -456,54 +525,30 @@
             font-family: inherit;
             resize: vertical;
         }
-        .admin-toggle {
-            margin-top: 15px;
-            text-align: center;
-        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .participante-row {
-                grid-template-columns: 1fr 1fr;
-            }
-            .bracket {
-                gap: 20px;
-            }
-            .round {
-                min-width: 140px;
-            }
+            .form-grid { grid-template-columns: 1fr; }
+            .participante-row { grid-template-columns: 1fr 1fr; }
+            .jugadores-section .sub-grid { grid-template-columns: 1fr; }
+            .bracket { gap: 20px; }
+            .round { min-width: 140px; }
         }
         @media (max-width: 600px) {
-            .header h1 {
-                font-size: 1.6rem;
-            }
-            .info-cupos {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .participante-row {
-                grid-template-columns: 1fr;
-            }
-            .round {
-                min-width: 120px;
-            }
-            .team-name {
-                font-size: 0.7rem;
-            }
-            .score-input {
-                width: 28px;
-                font-size: 0.75rem;
-            }
+            .header h1 { font-size: 1.6rem; }
+            .info-cupos { flex-direction: column; align-items: stretch; }
+            .participante-row { grid-template-columns: 1fr; }
+            .round { min-width: 120px; }
+            .team-name { font-size: 0.7rem; }
+            .score-input { width: 28px; font-size: 0.75rem; }
+            .admin-panel th, .admin-panel td { font-size: 0.75rem; padding: 6px; }
         }
     </style>
 </head>
 <body>
-
     <div class="app" id="app">
-        <!-- HEADER -->
+
+        <!-- ===== HEADER ===== -->
         <div class="header">
             <h1>⚽ Torneo <span>TMS</span></h1>
             <div>
@@ -511,26 +556,25 @@
             </div>
         </div>
 
-        <!-- INFO CUPOS -->
+        <!-- ===== INFO CUPOS ===== -->
         <div class="info-cupos" id="infoCupos">
-            <div class="cupos">
-                🏟️ <span id="cuposTexto">Cargando cupos...</span>
-            </div>
+            <div class="cupos">🏟️ <span id="cuposTexto">Cargando cupos...</span></div>
             <div class="colores-disponibles" id="coloresDisponibles">
                 <span style="font-weight:600;color:#302d7c;">🎨 Colores disponibles:</span>
-                <!-- Se llena con JS -->
             </div>
         </div>
 
-        <!-- FORMULARIO DE INSCRIPCIÓN -->
+        <!-- ===== FORMULARIO INSCRIPCIÓN EQUIPO ===== -->
         <div class="form-inscripcion" id="formInscripcion">
             <h2>📝 Inscribir equipo</h2>
             <form id="formEquipo" autocomplete="off">
                 <div class="form-grid">
+                    <!-- Nombre equipo -->
                     <div class="form-group full-width">
                         <label for="nombreEquipo">Nombre del equipo *</label>
                         <input type="text" id="nombreEquipo" placeholder="Ej: Los Titanes" required>
                     </div>
+                    <!-- Capitán y teléfono -->
                     <div class="form-group">
                         <label for="capitan">Capitán *</label>
                         <input type="text" id="capitan" placeholder="Nombre completo" required>
@@ -539,6 +583,7 @@
                         <label for="telefono">Teléfono del capitán *</label>
                         <input type="tel" id="telefono" placeholder="+569 1234 5678" required>
                     </div>
+                    <!-- Nº competidores y color -->
                     <div class="form-group">
                         <label for="cantidadCompetidores">Nº de competidores (5-7) *</label>
                         <input type="number" id="cantidadCompetidores" min="5" max="7" placeholder="6" required>
@@ -548,6 +593,15 @@
                         <select id="colorEquipo" required>
                             <option value="">-- Selecciona --</option>
                         </select>
+                    </div>
+                    <!-- Plazas disponibles y aceptar jugadores -->
+                    <div class="form-group">
+                        <label for="plazasDisponibles">Plazas libres en el equipo (0-3)</label>
+                        <input type="number" id="plazasDisponibles" min="0" max="3" value="0">
+                    </div>
+                    <div class="form-group checkbox-row">
+                        <input type="checkbox" id="aceptaJugadores">
+                        <label for="aceptaJugadores">¿Aceptas jugadores sueltos?</label>
                     </div>
 
                     <!-- Participantes -->
@@ -565,18 +619,44 @@
             </form>
         </div>
 
-        <!-- BRACKET -->
+        <!-- ===== SECCIÓN JUGADORES LIBRES Y EQUIPOS CON PLAZAS ===== -->
+        <div class="jugadores-section" id="jugadoresSection">
+            <h2>👤 Jugadores y Equipos con plazas</h2>
+            <div class="sub-grid">
+                <!-- Columna izquierda: Jugadores libres -->
+                <div class="col">
+                    <h3>📢 Jugadores sin equipo</h3>
+                    <form id="formJugadorLibre" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+                        <input type="text" id="nombreJugador" placeholder="Nombre completo" required style="flex:1; min-width:150px; padding:8px; border:2px solid #d6d3cc; border-radius:8px;">
+                        <input type="tel" id="telefonoJugador" placeholder="Teléfono" required style="flex:1; min-width:150px; padding:8px; border:2px solid #d6d3cc; border-radius:8px;">
+                        <button type="submit" class="btn btn-primary" style="padding:8px 16px;">Registrarme</button>
+                    </form>
+                    <ul id="listaJugadoresLibres">
+                        <li>Cargando...</li>
+                    </ul>
+                </div>
+                <!-- Columna derecha: Equipos con plazas -->
+                <div class="col">
+                    <h3>🏟️ Equipos que buscan jugadores</h3>
+                    <ul id="listaEquiposConPlazas">
+                        <li>Cargando...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== BRACKET ===== -->
         <div class="bracket-wrapper">
             <svg id="lineSvg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></svg>
             <div class="bracket" id="bracketContainer"></div>
         </div>
 
-        <!-- CAMPEÓN -->
+        <!-- ===== CAMPEÓN ===== -->
         <div class="champion-box" id="championBox">
             <h2>🏆 Campeón: <span id="championName">---</span></h2>
         </div>
 
-        <!-- ADMIN PANEL (toggle con contraseña) -->
+        <!-- ===== ADMIN PANEL ===== -->
         <div class="admin-toggle">
             <button class="btn btn-primary" id="btnToggleAdmin">🔐 Panel de administración</button>
         </div>
@@ -586,8 +666,8 @@
                 <button class="btn btn-danger" id="btnCerrarInscripciones">🔒 Cerrar inscripciones</button>
                 <button class="btn btn-success" id="btnAbrirInscripciones" style="display:none;">🔓 Abrir inscripciones</button>
             </div>
-            <div id="adminEquipos">
-                <h3>Equipos inscritos</h3>
+            <div>
+                <h3>📋 Equipos inscritos</h3>
                 <div style="overflow-x:auto;">
                     <table id="tablaEquipos">
                         <thead>
@@ -597,12 +677,20 @@
                                 <th>Capitán</th>
                                 <th>Teléfono</th>
                                 <th>Color</th>
-                                <th>Competidores</th>
+                                <th>Comp.</th>
+                                <th>Plazas</th>
+                                <th>Acción</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyEquipos"></tbody>
                     </table>
                 </div>
+            </div>
+            <div style="margin-top:20px;">
+                <h3>👤 Jugadores libres (admin)</h3>
+                <ul id="adminJugadoresLibres" style="background:#fff; padding:10px; border-radius:8px; list-style:none;">
+                    <li>Cargando...</li>
+                </ul>
             </div>
             <div class="contactos-whatsapp">
                 <h3>📱 Lista de contactos para WhatsApp</h3>
@@ -614,7 +702,9 @@
     </div>
 
     <script>
-        // ===== CONFIGURACIÓN DE FIREBASE =====
+        // ================================================================
+        //  CONFIGURACIÓN DE FIREBASE (REEMPLAZA CON TUS DATOS)
+        // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyA5kod9L1yL5F9vB5YLqI9HRHF-OLUnrS0",
             authDomain: "torneo-tms.firebaseapp.com",
@@ -628,25 +718,23 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // ===== VARIABLES GLOBALES =====
+        // ================================================================
+        //  VARIABLES GLOBALES
+        // ================================================================
         const MAX_EQUIPOS = 16;
         const COLORES_CUPO = {
-            'Rojo': 3,
-            'Azul': 3,
-            'Verde': 2,
-            'Amarillo': 2,
-            'Blanco': 2,
-            'Negro': 2,
-            'Naranja': 2,
-            'Morado': 2,
-            'Rosa': 1,
-            'Gris': 1
+            'Rojo': 3, 'Azul': 3, 'Verde': 2, 'Amarillo': 2,
+            'Blanco': 2, 'Negro': 2, 'Naranja': 2, 'Morado': 2,
+            'Rosa': 1, 'Gris': 1
         };
         const COLORES = Object.keys(COLORES_CUPO);
         let equipos = [];
         let inscripcionesAbiertas = true;
+        let participantes = [];
 
-        // ===== REFERENCIAS DOM =====
+        // ================================================================
+        //  REFERENCIAS DOM
+        // ================================================================
         const $ = id => document.getElementById(id);
         const estadoInscripciones = $('estadoInscripciones');
         const cuposTexto = $('cuposTexto');
@@ -658,6 +746,8 @@
         const telefono = $('telefono');
         const cantidadCompetidores = $('cantidadCompetidores');
         const colorEquipo = $('colorEquipo');
+        const plazasDisponibles = $('plazasDisponibles');
+        const aceptaJugadores = $('aceptaJugadores');
         const participantesList = $('participantesList');
         const btnAddParticipante = $('btnAddParticipante');
         const bracketContainer = $('bracketContainer');
@@ -671,10 +761,16 @@
         const tbodyEquipos = $('tbodyEquipos');
         const whatsappList = $('whatsappList');
         const btnCopiarWhatsapp = $('btnCopiarWhatsapp');
+        const listaJugadoresLibres = $('listaJugadoresLibres');
+        const listaEquiposConPlazas = $('listaEquiposConPlazas');
+        const adminJugadoresLibres = $('adminJugadoresLibres');
+        const formJugadorLibre = $('formJugadorLibre');
+        const nombreJugador = $('nombreJugador');
+        const telefonoJugador = $('telefonoJugador');
 
-        // ===== PARTICIPANTES DINÁMICOS =====
-        let participantes = [];
-
+        // ================================================================
+        //  PARTICIPANTES DINÁMICOS
+        // ================================================================
         function renderParticipantes() {
             participantesList.innerHTML = '';
             participantes.forEach((p, i) => {
@@ -743,7 +839,9 @@
             }
         });
 
-        // ===== COLORES DISPONIBLES =====
+        // ================================================================
+        //  COLORES DISPONIBLES
+        // ================================================================
         function actualizarColoresDisponibles(equiposActuales) {
             const usados = {};
             equiposActuales.forEach(eq => {
@@ -777,7 +875,9 @@
             });
         }
 
-        // ===== CUPOS =====
+        // ================================================================
+        //  CUPOS
+        // ================================================================
         function actualizarCupos(equiposActuales) {
             const inscritos = equiposActuales.length;
             const disponibles = MAX_EQUIPOS - inscritos;
@@ -785,7 +885,9 @@
             cuposTexto.style.color = disponibles <= 0 ? '#870f0b' : '#302d7c';
         }
 
-        // ===== LEER EQUIPOS DESDE FIREBASE =====
+        // ================================================================
+        //  LEER DATOS DE FIREBASE
+        // ================================================================
         function cargarEquipos() {
             db.ref('equipos').on('value', snapshot => {
                 const data = snapshot.val();
@@ -804,10 +906,82 @@
                 actualizarBracket(equipos);
                 actualizarAdminPanel(equipos);
                 actualizarWhatsAppList(equipos);
+                actualizarEquiposConPlazas(equipos);
             });
         }
 
-        // ===== GUARDAR EQUIPO =====
+        function cargarJugadoresLibres() {
+            db.ref('jugadores_libres').on('value', snapshot => {
+                const data = snapshot.val();
+                const jugadores = data ? Object.values(data) : [];
+                // Mostrar en la sección pública
+                listaJugadoresLibres.innerHTML = '';
+                if (jugadores.length === 0) {
+                    listaJugadoresLibres.innerHTML = '<li>No hay jugadores libres aún.</li>';
+                } else {
+                    jugadores.forEach(j => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<span>${j.nombre}</span> <span class="contacto">📱 ${j.telefono}</span>`;
+                        listaJugadoresLibres.appendChild(li);
+                    });
+                }
+                // Mostrar en el panel de admin
+                adminJugadoresLibres.innerHTML = '';
+                if (jugadores.length === 0) {
+                    adminJugadoresLibres.innerHTML = '<li>No hay jugadores libres.</li>';
+                } else {
+                    jugadores.forEach(j => {
+                        const li = document.createElement('li');
+                        li.textContent = `${j.nombre} - ${j.telefono}`;
+                        adminJugadoresLibres.appendChild(li);
+                    });
+                }
+            });
+        }
+
+        // ================================================================
+        //  EQUIPOS CON PLAZAS (para la sección pública)
+        // ================================================================
+        function actualizarEquiposConPlazas(equiposActuales) {
+            const conPlazas = equiposActuales.filter(eq => {
+                const plazas = parseInt(eq.plazasDisponibles) || 0;
+                return plazas > 0 && eq.aceptaJugadores === true;
+            });
+            listaEquiposConPlazas.innerHTML = '';
+            if (conPlazas.length === 0) {
+                listaEquiposConPlazas.innerHTML = '<li>No hay equipos buscando jugadores.</li>';
+            } else {
+                conPlazas.forEach(eq => {
+                    const li = document.createElement('li');
+                    const plazas = parseInt(eq.plazasDisponibles) || 0;
+                    li.innerHTML = `
+                        <span><strong>${eq.nombre}</strong> (${plazas} plazas)</span>
+                        <span class="contacto">
+                            📞 ${eq.telefono}
+                            <button class="btn-contactar" onclick="window.location.href='https://wa.me/${eq.telefono.replace(/[^0-9]/g,'')}'">WhatsApp</button>
+                        </span>
+                    `;
+                    listaEquiposConPlazas.appendChild(li);
+                });
+            }
+        }
+
+        // ================================================================
+        //  REGISTRAR JUGADOR LIBRE
+        // ================================================================
+        formJugadorLibre.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nombre = nombreJugador.value.trim();
+            const telefono = telefonoJugador.value.trim();
+            if (!nombre || !telefono) return alert('Completa todos los campos.');
+            db.ref('jugadores_libres').push({ nombre, telefono, fecha: Date.now() });
+            alert('✅ Registrado como jugador libre.');
+            formJugadorLibre.reset();
+        });
+
+        // ================================================================
+        //  GUARDAR EQUIPO (INSCRIPCIÓN)
+        // ================================================================
         formEquipo.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!inscripcionesAbiertas) {
@@ -815,7 +989,7 @@
                 return;
             }
             if (equipos.length >= MAX_EQUIPOS) {
-                alert('⚠️ Ya no hay cupos disponibles.');
+                alert('⚠️ No hay cupos disponibles.');
                 return;
             }
 
@@ -824,6 +998,8 @@
             const telefonoVal = telefono.value.trim();
             const cantidad = parseInt(cantidadCompetidores.value);
             const color = colorEquipo.value;
+            const plazas = parseInt(plazasDisponibles.value) || 0;
+            const acepta = aceptaJugadores.checked;
 
             if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
                 alert('⚠️ Completa todos los campos obligatorios.');
@@ -833,13 +1009,16 @@
                 alert('⚠️ El número de competidores debe ser entre 5 y 7.');
                 return;
             }
+            if (plazas < 0 || plazas > 3) {
+                alert('⚠️ Las plazas libres deben ser entre 0 y 3.');
+                return;
+            }
 
             const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
             if (participantesValidos.length !== cantidad) {
                 alert(`⚠️ Debes completar los datos de exactamente ${cantidad} participantes (incluyendo al capitán).`);
                 return;
             }
-
             const capitanParticipante = participantesValidos[0];
             if (capitanParticipante.nombre !== capitanVal) {
                 alert('⚠️ El nombre del capitán debe coincidir con el primer participante.');
@@ -859,6 +1038,8 @@
                 telefono: telefonoVal,
                 color,
                 cantidadCompetidores: cantidad,
+                plazasDisponibles: plazas,
+                aceptaJugadores: acepta,
                 participantes: participantesValidos,
                 fecha: firebase.database.ServerValue.TIMESTAMP
             };
@@ -870,13 +1051,17 @@
                 participantes = [{ nombre: '', carnet: '', correo: '' }];
                 renderParticipantes();
                 capitan.value = '';
+                aceptaJugadores.checked = false;
+                plazasDisponibles.value = '0';
             } catch (err) {
                 alert('❌ Error al inscribir: ' + err.message);
                 console.error(err);
             }
         });
 
-        // ===== ACTUALIZAR ESTADO DE INSCRIPCIONES =====
+        // ================================================================
+        //  ESTADO DE INSCRIPCIONES
+        // ================================================================
         function actualizarEstadoInscripciones() {
             if (inscripcionesAbiertas) {
                 estadoInscripciones.textContent = '📢 Inscripciones abiertas';
@@ -893,7 +1078,6 @@
             }
         }
 
-        // ===== ADMIN: CERRAR/ABRIR INSCRIPCIONES =====
         btnCerrarInscripciones.addEventListener('click', async () => {
             if (confirm('¿Seguro que quieres cerrar las inscripciones?')) {
                 await db.ref('config/estadoInscripciones').set('cerradas');
@@ -907,7 +1091,9 @@
             actualizarEstadoInscripciones();
         });
 
-        // ===== ADMIN PANEL TOGGLE =====
+        // ================================================================
+        //  ADMIN PANEL TOGGLE
+        // ================================================================
         btnToggleAdmin.addEventListener('click', () => {
             if (adminPanel.classList.contains('visible')) {
                 adminPanel.classList.remove('visible');
@@ -923,7 +1109,9 @@
             }
         });
 
-        // ===== ADMIN: TABLA DE EQUIPOS =====
+        // ================================================================
+        //  ADMIN: TABLA DE EQUIPOS (con botón eliminar)
+        // ================================================================
         function actualizarAdminPanel(equipos) {
             tbodyEquipos.innerHTML = '';
             equipos.forEach((eq, i) => {
@@ -935,28 +1123,50 @@
                     <td>${eq.telefono}</td>
                     <td><span style="background:${eq.color.toLowerCase()};color:#fff;padding:2px 10px;border-radius:12px;">${eq.color}</span></td>
                     <td>${eq.cantidadCompetidores}</td>
+                    <td>${eq.plazasDisponibles || 0}</td>
+                    <td><button class="btn-eliminar" data-id="${eq.id}">Eliminar</button></td>
                 `;
                 tbodyEquipos.appendChild(tr);
             });
+
+            // Asignar evento a los botones eliminar
+            document.querySelectorAll('.btn-eliminar').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.dataset.id;
+                    const equipo = equipos.find(eq => eq.id === id);
+                    if (!equipo) return;
+                    if (confirm(`¿Seguro que quieres eliminar el equipo "${equipo.nombre}"?`)) {
+                        try {
+                            await db.ref('equipos/' + id).remove();
+                            alert('✅ Equipo eliminado.');
+                        } catch (err) {
+                            alert('❌ Error al eliminar: ' + err.message);
+                        }
+                    }
+                });
+            });
         }
 
-        // ===== WHATSAPP LIST =====
+        // ================================================================
+        //  WHATSAPP LIST
+        // ================================================================
         function actualizarWhatsAppList(equipos) {
             const numeros = equipos.map(eq => eq.telefono).filter(t => t);
             whatsappList.value = numeros.join('\n');
         }
-
         btnCopiarWhatsapp.addEventListener('click', () => {
             whatsappList.select();
             navigator.clipboard.writeText(whatsappList.value).then(() => {
-                alert('📋 Lista de contactos copiada al portapapeles.');
+                alert('📋 Lista de contactos copiada.');
             }).catch(() => {
                 document.execCommand('copy');
                 alert('📋 Lista de contactos copiada.');
             });
         });
 
-        // ===== BRACKET =====
+        // ================================================================
+        //  BRACKET (con colores visuales)
+        // ================================================================
         function actualizarBracket(equipos) {
             const teamCount = equipos.length;
             if (teamCount === 0) {
@@ -969,20 +1179,14 @@
             let bracketSize = 2;
             while (bracketSize < teamCount) bracketSize *= 2;
             const byes = bracketSize - teamCount;
-
-            const shuffledEquipos = [...equipos];
-            for (let i = shuffledEquipos.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledEquipos[i], shuffledEquipos[j]] = [shuffledEquipos[j], shuffledEquipos[i]];
-            }
-
             const firstRoundTeams = [];
             for (let i = 0; i < bracketSize; i++) {
                 if (i < byes) {
-                    firstRoundTeams.push('---');
+                    firstRoundTeams.push({ nombre: '---', color: null });
                 } else {
                     const idx = i - byes;
-                    firstRoundTeams.push(shuffledEquipos[idx] ? shuffledEquipos[idx].nombre : '---');
+                    const eq = equipos[idx];
+                    firstRoundTeams.push({ nombre: eq ? eq.nombre : '---', color: eq ? eq.color : null });
                 }
             }
 
@@ -1003,9 +1207,13 @@
                 const matches = [];
                 const teams = r === 0 ? firstRoundTeams : currentRoundTeams;
                 for (let i = 0; i < teams.length; i += 2) {
+                    const t1 = teams[i] || { nombre: '---', color: null };
+                    const t2 = teams[i+1] || { nombre: '---', color: null };
                     matches.push({
-                        team1: teams[i] || '---',
-                        team2: teams[i + 1] || '---',
+                        team1: t1.nombre,
+                        color1: t1.color,
+                        team2: t2.nombre,
+                        color2: t2.color,
                         score1: '',
                         score2: ''
                     });
@@ -1013,7 +1221,7 @@
                 rounds.push({ name: roundNames[r], matches });
                 const nextTeams = [];
                 for (let i = 0; i < matches.length; i++) {
-                    nextTeams.push('---');
+                    nextTeams.push({ nombre: '---', color: null });
                 }
                 currentRoundTeams = nextTeams;
             }
@@ -1037,11 +1245,15 @@
                     matchDiv.dataset.round = rIdx;
                     matchDiv.dataset.match = mIdx;
 
+                    // Equipo 1
                     const row1 = document.createElement('div');
                     row1.className = 'team-row';
                     const name1 = document.createElement('span');
                     name1.className = 'team-name team-name-readonly';
-                    name1.textContent = match.team1;
+                    name1.innerHTML = `
+                        ${match.color1 ? `<span class="color-dot" style="background:${match.color1.toLowerCase()};"></span>` : ''}
+                        ${match.team1}
+                    `;
                     const score1 = document.createElement('input');
                     score1.type = 'number';
                     score1.className = 'score-input';
@@ -1054,11 +1266,15 @@
                     row1.appendChild(score1);
                     matchDiv.appendChild(row1);
 
+                    // Equipo 2
                     const row2 = document.createElement('div');
                     row2.className = 'team-row';
                     const name2 = document.createElement('span');
                     name2.className = 'team-name team-name-readonly';
-                    name2.textContent = match.team2;
+                    name2.innerHTML = `
+                        ${match.color2 ? `<span class="color-dot" style="background:${match.color2.toLowerCase()};"></span>` : ''}
+                        ${match.team2}
+                    `;
                     const score2 = document.createElement('input');
                     score2.type = 'number';
                     score2.className = 'score-input';
@@ -1079,7 +1295,9 @@
             requestAnimationFrame(drawLines);
         }
 
-        // ===== LÍNEAS DE CONEXIÓN (SVG) =====
+        // ================================================================
+        //  LÍNEAS DE CONEXIÓN (SVG)
+        // ================================================================
         function drawLines() {
             const wrapper = document.querySelector('.bracket-wrapper');
             const svgRect = lineSvg.getBoundingClientRect();
@@ -1118,7 +1336,9 @@
             window._resizeTimeout = setTimeout(drawLines, 150);
         });
 
-        // ===== INICIALIZAR =====
+        // ================================================================
+        //  ACTUALIZAR FORMULARIO (visibilidad)
+        // ================================================================
         function actualizarFormulario() {
             if (equipos.length >= MAX_EQUIPOS) {
                 formInscripcion.classList.remove('abierto');
@@ -1127,15 +1347,20 @@
             }
         }
 
-        cargarEquipos();
-
+        // ================================================================
+        //  INICIALIZAR
+        // ================================================================
+        // Escuchar estado de inscripciones
         db.ref('config/estadoInscripciones').on('value', snap => {
             const estado = snap.val();
             inscripcionesAbiertas = (estado !== 'cerradas');
             actualizarEstadoInscripciones();
         });
 
-        console.log('🏆 Torneo TMS - Inscripciones y llave en tiempo real con Firebase');
+        cargarEquipos();
+        cargarJugadoresLibres();
+
+        console.log('🏆 Torneo TMS - Sistema completo de inscripción y bracket');
     </script>
 </body>
 </html>
