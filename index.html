@@ -3,9 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏆 Torneo TMS - Generador de Llaves</title>
+    <title>🏆 Torneo TMS - Inscripciones y Llave</title>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <style>
-        /* ----- RESET Y ESTILOS GENERALES ----- */
+        /* ===== ESTILOS BASE ===== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -17,7 +22,6 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
             padding: 20px;
             margin: 0;
         }
@@ -25,27 +29,25 @@
             max-width: 1400px;
             width: 100%;
             background: #f4f3f1;
-            border-radius: 32px 32px 24px 24px;
-            padding: 30px 25px 40px 25px;
+            border-radius: 32px;
+            padding: 30px 25px 40px;
             box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* ----- HEADER Y CONTROLES ----- */
+        /* ===== HEADER ===== */
         .header {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             border-bottom: 3px solid #d6d3cc;
             padding-bottom: 15px;
+            margin-bottom: 25px;
         }
         .header h1 {
             font-size: 2.1rem;
             font-weight: 800;
             color: #302d7c;
-            letter-spacing: -0.5px;
         }
         .header h1 span {
             background: #870f0b;
@@ -56,108 +58,216 @@
             margin-left: 6px;
             box-shadow: 0 4px 15px rgba(135, 15, 11, 0.4);
         }
-        .controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .controls label {
-            font-weight: 600;
-            color: #302d7c;
-            font-size: 1rem;
-        }
-        .controls select {
-            padding: 10px 20px;
-            border-radius: 30px;
-            border: 2px solid #302d7c;
-            background: #ffffff;
-            font-weight: 600;
-            font-size: 1rem;
-            color: #302d7c;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .controls select:hover {
-            background: #ececf8;
-            transform: scale(1.02);
-        }
-        .btn-reset {
-            background: #870f0b;
+        .header .estado-inscripciones {
+            background: #2d6a4f;
             color: #f4f3f1;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .header .estado-inscripciones.cerradas {
+            background: #870f0b;
+        }
+
+        /* ===== INFO DE CUPOS ===== */
+        .info-cupos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background: #e9e5f0;
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .info-cupos .cupos {
+            font-weight: 700;
+            color: #302d7c;
+        }
+        .info-cupos .colores-disponibles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .color-chip {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fff;
+            background: #aaa;
+            border: 1px solid #ccc;
+        }
+        .color-chip.disponible {
+            opacity: 1;
+        }
+        .color-chip.agotado {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+
+        /* ===== BOTONES Y FORM ===== */
+        .btn {
             border: none;
             padding: 10px 24px;
             border-radius: 30px;
             font-weight: 700;
-            font-size: 0.95rem;
             cursor: pointer;
             transition: 0.2s;
-            box-shadow: 0 2px 10px rgba(135, 15, 11, 0.3);
         }
-        .btn-reset:hover {
+        .btn-primary {
+            background: #302d7c;
+            color: #f4f3f1;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(48, 45, 124, 0.4);
+        }
+        .btn-danger {
+            background: #870f0b;
+            color: #f4f3f1;
+        }
+        .btn-danger:hover {
             background: #6a0b08;
             transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(135, 15, 11, 0.5);
+        }
+        .btn-success {
+            background: #2d6a4f;
+            color: #f4f3f1;
+        }
+        .btn-success:hover {
+            background: #1b4332;
+            transform: scale(1.05);
         }
 
-        /* Mensaje informativo */
-        .info-note {
-            background: #ececf8;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 0.85rem;
+        /* ===== FORMULARIO ===== */
+        .form-inscripcion {
+            background: #fff;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+            display: none;
+        }
+        .form-inscripcion.abierto {
+            display: block;
+        }
+        .form-inscripcion h2 {
             color: #302d7c;
             margin-bottom: 20px;
-            display: inline-block;
-            border: 1px solid #d6d3cc;
         }
-        .info-note strong {
-            color: #870f0b;
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #302d7c;
+        }
+        .form-group input,
+        .form-group select {
+            padding: 10px 12px;
+            border: 2px solid #d6d3cc;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #302d7c;
+            box-shadow: 0 0 0 4px rgba(48, 45, 124, 0.15);
+        }
+        .form-group input.error {
+            border-color: #870f0b;
+        }
+        .participantes-container {
+            grid-column: 1 / -1;
+            margin-top: 10px;
+        }
+        .participantes-container h3 {
+            color: #302d7c;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .participante-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 8px;
+            padding: 10px;
+            background: #f8f7f5;
+            border-radius: 10px;
+        }
+        .participante-row .form-group {
+            margin-bottom: 0;
+        }
+        .btn-remove-participante {
+            background: #ddd;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #333;
+            margin-top: 4px;
+        }
+        .btn-remove-participante:hover {
+            background: #870f0b;
+            color: #fff;
+        }
+        .btn-add-participante {
+            background: #e9e5f0;
+            border: 2px dashed #302d7c;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #302d7c;
+            transition: 0.2s;
+        }
+        .btn-add-participante:hover {
+            background: #d6d0e6;
         }
 
-        /* ----- BRACKET (CONTENEDOR PRINCIPAL) ----- */
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        /* ===== BRACKET ===== */
         .bracket-wrapper {
             position: relative;
             overflow-x: auto;
-            padding: 20px 10px 20px 10px;
+            padding: 20px 10px;
         }
         .bracket {
             display: flex;
-            flex-direction: row;
             gap: 40px;
             justify-content: center;
             min-width: fit-content;
             position: relative;
         }
-
-        /* ----- SVG DE CONEXIONES (LÍNEAS) ----- */
-        #lineSvg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-        #lineSvg path {
-            stroke: #302d7c;
-            stroke-width: 2.5;
-            fill: none;
-            stroke-linejoin: round;
-            opacity: 0.5;
-            transition: opacity 0.3s ease, stroke-width 0.3s ease;
-        }
-        .bracket-wrapper:hover #lineSvg path {
-            opacity: 1;
-            stroke-width: 3.5;
-        }
-
-        /* ----- CADA RONDA ----- */
         .round {
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
             gap: 12px;
             min-width: 170px;
             flex: 1 1 0;
@@ -165,42 +275,32 @@
             position: relative;
         }
         .round-title {
-            font-weight: 700;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
             background: #302d7c;
             color: #f4f3f1;
             padding: 8px 12px;
             border-radius: 30px;
             text-align: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             margin-bottom: 8px;
-            border: none;
-            transition: 0.2s;
             box-shadow: 0 2px 8px rgba(48, 45, 124, 0.3);
         }
-        .round:hover .round-title {
-            transform: scale(1.03);
-            box-shadow: 0 4px 15px rgba(48, 45, 124, 0.5);
-        }
-
-        /* ----- PARTIDO ----- */
         .match {
-            background: #ffffff;
+            background: #fff;
             border: 2px solid #d6d3cc;
             border-radius: 14px;
             padding: 12px 14px;
-            box-shadow: 0 2px 6px rgba(48, 45, 124, 0.08);
-            transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: 0.25s;
             display: flex;
             flex-direction: column;
             gap: 4px;
             position: relative;
-            z-index: 2;
         }
         .match:hover {
             border-color: #870f0b;
-            transform: scale(1.03) translateY(-2px);
+            transform: scale(1.03);
             box-shadow: 0 12px 30px rgba(135, 15, 11, 0.15);
             z-index: 10;
         }
@@ -210,17 +310,10 @@
             animation: pulseWinner 2s infinite ease-in-out;
         }
         @keyframes pulseWinner {
-            0% {
-                box-shadow: 0 0 0 0 rgba(135, 15, 11, 0.2);
-            }
-            50% {
-                box-shadow: 0 0 0 10px rgba(135, 15, 11, 0.05);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(135, 15, 11, 0);
-            }
+            0% { box-shadow: 0 0 0 0 rgba(135, 15, 11, 0.2); }
+            50% { box-shadow: 0 0 0 10px rgba(135, 15, 11, 0.05); }
+            100% { box-shadow: 0 0 0 0 rgba(135, 15, 11, 0); }
         }
-
         .team-row {
             display: flex;
             justify-content: space-between;
@@ -239,30 +332,12 @@
             transition: 0.15s;
             font-family: inherit;
         }
-        /* Estilo para nombres no editables (rondas > 0) */
         .team-name-readonly {
-            background: transparent;
             border-bottom: 2px solid #d6d3cc;
             color: #1a1a3a;
             cursor: default;
             font-weight: 600;
         }
-        .team-name-readonly:hover {
-            background: transparent;
-            border-radius: 0;
-        }
-        /* Nombres editables (ronda 0) */
-        .team-name-editable:hover {
-            background: #ececf8;
-            border-radius: 6px;
-        }
-        .team-name-editable:focus {
-            outline: none;
-            border-bottom-color: #870f0b;
-            background: #ececf8;
-            border-radius: 6px;
-        }
-
         .score-input {
             width: 44px;
             text-align: center;
@@ -271,31 +346,24 @@
             border: 2px solid #d6d3cc;
             border-radius: 8px;
             padding: 4px 0;
-            background: #ffffff;
+            background: #fff;
             color: #302d7c;
-            transition: all 0.2s;
-            font-family: inherit;
+            transition: 0.2s;
         }
         .score-input:focus {
             outline: none;
             border-color: #870f0b;
             box-shadow: 0 0 0 5px rgba(135, 15, 11, 0.15);
             transform: scale(1.05);
-            background: #fefefe;
         }
-        .score-input:hover {
-            border-color: #302d7c;
-        }
-        .score-input::-webkit-inner-spin-button,
-        .score-input::-webkit-outer-spin-button {
+        .score-input::-webkit-inner-spin-button {
             -webkit-appearance: none;
-            margin: 0;
         }
         .score-input {
             -moz-appearance: textfield;
         }
 
-        /* ----- CAMPEÓN ----- */
+        /* ===== CAMPEÓN ===== */
         .champion-box {
             margin-top: 30px;
             padding: 20px 25px;
@@ -304,24 +372,15 @@
             text-align: center;
             border: 2px solid #302d7c;
             display: none;
-            transform: scale(0.8);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: championReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
             box-shadow: 0 8px 30px rgba(135, 15, 11, 0.4);
         }
         .champion-box.show {
             display: block;
-            animation: championReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
         @keyframes championReveal {
-            0% {
-                transform: scale(0.5) rotate(-3deg);
-                opacity: 0;
-            }
-            100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 1;
-            }
+            0% { transform: scale(0.5) rotate(-3deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
         .champion-box h2 {
             font-size: 2.2rem;
@@ -339,32 +398,76 @@
             color: #f4f3f1;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             font-weight: 800;
-            display: inline-block;
             animation: glowText 1.8s infinite alternate;
         }
         @keyframes glowText {
-            0% {
-                box-shadow: 0 4px 20px rgba(48, 45, 124, 0.3);
-                transform: scale(1);
-            }
-            100% {
-                box-shadow: 0 4px 40px rgba(135, 15, 11, 0.7), 0 0 60px rgba(48, 45, 124, 0.3);
-                transform: scale(1.02);
-            }
+            0% { box-shadow: 0 4px 20px rgba(48, 45, 124, 0.3); transform: scale(1); }
+            100% { box-shadow: 0 4px 40px rgba(135, 15, 11, 0.7), 0 0 60px rgba(48, 45, 124, 0.3); transform: scale(1.02); }
         }
 
-        /* ----- RESPONSIVE ----- */
+        /* ===== ADMIN PANEL ===== */
+        .admin-panel {
+            margin-top: 30px;
+            background: #e9e5f0;
+            border-radius: 16px;
+            padding: 20px;
+            display: none;
+        }
+        .admin-panel.visible {
+            display: block;
+        }
+        .admin-panel h2 {
+            color: #302d7c;
+            margin-bottom: 15px;
+        }
+        .admin-panel table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .admin-panel th,
+        .admin-panel td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #d6d3cc;
+        }
+        .admin-panel th {
+            background: #302d7c;
+            color: #f4f3f1;
+            font-weight: 600;
+        }
+        .admin-panel .btn-cerrar-inscripciones {
+            margin-bottom: 15px;
+        }
+        .admin-panel .contactos-whatsapp {
+            background: #fff;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+        }
+        .admin-panel .contactos-whatsapp textarea {
+            width: 100%;
+            height: 120px;
+            border: 2px solid #d6d3cc;
+            border-radius: 8px;
+            padding: 10px;
+            font-family: inherit;
+            resize: vertical;
+        }
+        .admin-toggle {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
-            .app {
-                padding: 16px;
+            .form-grid {
+                grid-template-columns: 1fr;
             }
-            .header {
-                flex-direction: column;
-                align-items: start;
-                gap: 12px;
-            }
-            .header h1 {
-                font-size: 1.6rem;
+            .participante-row {
+                grid-template-columns: 1fr 1fr;
             }
             .bracket {
                 gap: 20px;
@@ -372,24 +475,20 @@
             .round {
                 min-width: 140px;
             }
-            .match {
-                padding: 10px;
-            }
-            .team-name {
-                font-size: 0.8rem;
-                width: 55%;
-            }
-            .score-input {
-                width: 34px;
-                font-size: 0.85rem;
-            }
         }
         @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.6rem;
+            }
+            .info-cupos {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .participante-row {
+                grid-template-columns: 1fr;
+            }
             .round {
                 min-width: 120px;
-            }
-            .match {
-                padding: 8px;
             }
             .team-name {
                 font-size: 0.7rem;
@@ -397,50 +496,78 @@
             .score-input {
                 width: 28px;
                 font-size: 0.75rem;
-                padding: 2px 0;
-            }
-            .controls select {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-            }
-            .champion-box h2 {
-                font-size: 1.4rem;
-            }
-            .champion-box h2 span {
-                padding: 4px 16px;
-            }
-            .info-note {
-                font-size: 0.75rem;
-                padding: 4px 12px;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="app">
-        <!-- CABECERA -->
+    <div class="app" id="app">
+        <!-- HEADER -->
         <div class="header">
             <h1>⚽ Torneo <span>TMS</span></h1>
-            <div class="controls">
-                <label for="teamSelect">Equipos:</label>
-                <select id="teamSelect">
-                    <option value="8">8 (Cuartos)</option>
-                    <option value="16" selected>16 (Octavos)</option>
-                    <option value="32">32 (Dieciseisavos)</option>
-                </select>
-                <button class="btn-reset" id="resetBtn">🔄 Reiniciar</button>
+            <div>
+                <span class="estado-inscripciones" id="estadoInscripciones">⏳ Cargando...</span>
             </div>
         </div>
 
-        <!-- Mensaje informativo -->
-        <div class="info-note">
-            ✏️ <strong>Edita solo los nombres de los equipos en la primera ronda</strong> — los ganadores pasan automáticamente a las siguientes fases.
+        <!-- INFO CUPOS -->
+        <div class="info-cupos" id="infoCupos">
+            <div class="cupos">
+                🏟️ <span id="cuposTexto">Cargando cupos...</span>
+            </div>
+            <div class="colores-disponibles" id="coloresDisponibles">
+                <span style="font-weight:600;color:#302d7c;">🎨 Colores disponibles:</span>
+                <!-- Se llena con JS -->
+            </div>
+        </div>
+
+        <!-- FORMULARIO DE INSCRIPCIÓN -->
+        <div class="form-inscripcion" id="formInscripcion">
+            <h2>📝 Inscribir equipo</h2>
+            <form id="formEquipo" autocomplete="off">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="nombreEquipo">Nombre del equipo *</label>
+                        <input type="text" id="nombreEquipo" placeholder="Ej: Los Titanes" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="capitan">Capitán *</label>
+                        <input type="text" id="capitan" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono del capitán *</label>
+                        <input type="tel" id="telefono" placeholder="+569 1234 5678" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cantidadCompetidores">Nº de competidores (5-7) *</label>
+                        <input type="number" id="cantidadCompetidores" min="5" max="7" placeholder="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="colorEquipo">Color de uniforme *</label>
+                        <select id="colorEquipo" required>
+                            <option value="">-- Selecciona --</option>
+                        </select>
+                    </div>
+
+                    <!-- Participantes -->
+                    <div class="participantes-container">
+                        <h3>👥 Participantes (incluye al capitán)</h3>
+                        <div id="participantesList"></div>
+                        <button type="button" class="btn-add-participante" id="btnAddParticipante">+ Agregar participante</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-danger">Limpiar</button>
+                        <button type="submit" class="btn btn-success">✅ Inscribir equipo</button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <!-- BRACKET -->
         <div class="bracket-wrapper">
-            <svg id="lineSvg"></svg>
+            <svg id="lineSvg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></svg>
             <div class="bracket" id="bracketContainer"></div>
         </div>
 
@@ -448,378 +575,561 @@
         <div class="champion-box" id="championBox">
             <h2>🏆 Campeón: <span id="championName">---</span></h2>
         </div>
+
+        <!-- ADMIN PANEL (toggle con contraseña) -->
+        <div class="admin-toggle">
+            <button class="btn btn-primary" id="btnToggleAdmin">🔐 Panel de administración</button>
+        </div>
+        <div class="admin-panel" id="adminPanel">
+            <h2>🛠️ Administración</h2>
+            <div class="btn-cerrar-inscripciones">
+                <button class="btn btn-danger" id="btnCerrarInscripciones">🔒 Cerrar inscripciones</button>
+                <button class="btn btn-success" id="btnAbrirInscripciones" style="display:none;">🔓 Abrir inscripciones</button>
+            </div>
+            <div id="adminEquipos">
+                <h3>Equipos inscritos</h3>
+                <div style="overflow-x:auto;">
+                    <table id="tablaEquipos">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Equipo</th>
+                                <th>Capitán</th>
+                                <th>Teléfono</th>
+                                <th>Color</th>
+                                <th>Competidores</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyEquipos"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="contactos-whatsapp">
+                <h3>📱 Lista de contactos para WhatsApp</h3>
+                <p style="font-size:0.9rem;color:#302d7c;">Copia estos números para crear el grupo:</p>
+                <textarea id="whatsappList" readonly></textarea>
+                <button class="btn btn-primary" style="margin-top:8px;" id="btnCopiarWhatsapp">📋 Copiar lista</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        (function() {
-            // ----- ESTADO GLOBAL -----
-            let tournament = {
-                teamCount: 16,
-                rounds: []
-            };
+        // ===== CONFIGURACIÓN DE FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5kod9L1yL5F9vB5YLqI9HRHF-OLUnrS0",
+            authDomain: "torneo-tms.firebaseapp.com",
+            databaseURL: "https://torneo-tms-default-rtdb.firebaseio.com",
+            projectId: "torneo-tms",
+            storageBucket: "torneo-tms.firebasestorage.app",
+            messagingSenderId: "134294614667",
+            appId: "1:134294614667:web:6d26a9a273a226c4cc5a8e"
+        };
 
-            const bracketContainer = document.getElementById('bracketContainer');
-            const teamSelect = document.getElementById('teamSelect');
-            const resetBtn = document.getElementById('resetBtn');
-            const championBox = document.getElementById('championBox');
-            const championName = document.getElementById('championName');
-            const lineSvg = document.getElementById('lineSvg');
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-            // ----- NOMBRES DE RONDAS -----
-            const ROUND_NAMES = {
-                8: ['Cuartos de Final', 'Semifinal', 'Final'],
-                16: ['Octavos de Final', 'Cuartos de Final', 'Semifinal', 'Final'],
-                32: ['Dieciseisavos', 'Octavos de Final', 'Cuartos de Final', 'Semifinal', 'Final']
-            };
+        // ===== VARIABLES GLOBALES =====
+        const MAX_EQUIPOS = 16;
+        const COLORES_CUPO = {
+            'Rojo': 3,
+            'Azul': 3,
+            'Verde': 2,
+            'Amarillo': 2,
+            'Blanco': 2,
+            'Negro': 2,
+            'Naranja': 2,
+            'Morado': 2,
+            'Rosa': 1,
+            'Gris': 1
+        };
+        const COLORES = Object.keys(COLORES_CUPO);
+        let equipos = [];
+        let inscripcionesAbiertas = true;
 
-            // ----- FUNCIÓN PARA INICIALIZAR TORNEO -----
-            function initTournament(teamCount) {
-                const roundsCount = Math.log2(teamCount);
-                const rounds = [];
-                let matchesPerRound = teamCount / 2;
+        // ===== REFERENCIAS DOM =====
+        const $ = id => document.getElementById(id);
+        const estadoInscripciones = $('estadoInscripciones');
+        const cuposTexto = $('cuposTexto');
+        const coloresDisponibles = $('coloresDisponibles');
+        const formInscripcion = $('formInscripcion');
+        const formEquipo = $('formEquipo');
+        const nombreEquipo = $('nombreEquipo');
+        const capitan = $('capitan');
+        const telefono = $('telefono');
+        const cantidadCompetidores = $('cantidadCompetidores');
+        const colorEquipo = $('colorEquipo');
+        const participantesList = $('participantesList');
+        const btnAddParticipante = $('btnAddParticipante');
+        const bracketContainer = $('bracketContainer');
+        const lineSvg = $('lineSvg');
+        const championBox = $('championBox');
+        const championName = $('championName');
+        const adminPanel = $('adminPanel');
+        const btnToggleAdmin = $('btnToggleAdmin');
+        const btnCerrarInscripciones = $('btnCerrarInscripciones');
+        const btnAbrirInscripciones = $('btnAbrirInscripciones');
+        const tbodyEquipos = $('tbodyEquipos');
+        const whatsappList = $('whatsappList');
+        const btnCopiarWhatsapp = $('btnCopiarWhatsapp');
 
-                for (let r = 0; r < roundsCount; r++) {
-                    const roundName = ROUND_NAMES[teamCount]?.[r] || `Ronda ${r+1}`;
-                    const matches = [];
-                    for (let m = 0; m < matchesPerRound; m++) {
-                        const team1 = `Equipo ${m * 2 + 1}`;
-                        const team2 = `Equipo ${m * 2 + 2}`;
-                        matches.push({
-                            team1: team1,
-                            team2: team2,
-                            score1: '',
-                            score2: ''
-                        });
-                    }
-                    rounds.push({ name: roundName, matches: matches });
-                    matchesPerRound = matchesPerRound / 2;
+        // ===== PARTICIPANTES DINÁMICOS =====
+        let participantes = [];
+
+        function renderParticipantes() {
+            participantesList.innerHTML = '';
+            participantes.forEach((p, i) => {
+                const row = document.createElement('div');
+                row.className = 'participante-row';
+                row.innerHTML = `
+                    <div class="form-group">
+                        <label>Nombre completo</label>
+                        <input type="text" class="p-nombre" value="${p.nombre || ''}" placeholder="Nombre" data-index="${i}">
+                    </div>
+                    <div class="form-group">
+                        <label>Carnet</label>
+                        <input type="text" class="p-carnet" value="${p.carnet || ''}" placeholder="12345678-9" data-index="${i}">
+                    </div>
+                    <div class="form-group">
+                        <label>Correo estudiantil</label>
+                        <input type="email" class="p-correo" value="${p.correo || ''}" placeholder="correo@estudiante.cl" data-index="${i}">
+                    </div>
+                    <button type="button" class="btn-remove-participante" data-index="${i}">✕</button>
+                `;
+                participantesList.appendChild(row);
+            });
+
+            document.querySelectorAll('.p-nombre').forEach(inp => {
+                inp.addEventListener('input', e => {
+                    const idx = parseInt(e.target.dataset.index);
+                    participantes[idx].nombre = e.target.value;
+                });
+            });
+            document.querySelectorAll('.p-carnet').forEach(inp => {
+                inp.addEventListener('input', e => {
+                    const idx = parseInt(e.target.dataset.index);
+                    participantes[idx].carnet = e.target.value;
+                });
+            });
+            document.querySelectorAll('.p-correo').forEach(inp => {
+                inp.addEventListener('input', e => {
+                    const idx = parseInt(e.target.dataset.index);
+                    participantes[idx].correo = e.target.value;
+                });
+            });
+            document.querySelectorAll('.btn-remove-participante').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const idx = parseInt(e.target.dataset.index);
+                    participantes.splice(idx, 1);
+                    renderParticipantes();
+                });
+            });
+        }
+
+        btnAddParticipante.addEventListener('click', () => {
+            participantes.push({ nombre: '', carnet: '', correo: '' });
+            renderParticipantes();
+        });
+
+        function inicializarParticipantes() {
+            participantes = [{ nombre: '', carnet: '', correo: '' }];
+            renderParticipantes();
+        }
+        inicializarParticipantes();
+
+        capitan.addEventListener('input', () => {
+            if (participantes.length > 0 && !participantes[0].nombre) {
+                participantes[0].nombre = capitan.value;
+                renderParticipantes();
+            }
+        });
+
+        // ===== COLORES DISPONIBLES =====
+        function actualizarColoresDisponibles(equiposActuales) {
+            const usados = {};
+            equiposActuales.forEach(eq => {
+                usados[eq.color] = (usados[eq.color] || 0) + 1;
+            });
+            const disponibilidad = {};
+            COLORES.forEach(c => {
+                const disponibles = (COLORES_CUPO[c] || 0) - (usados[c] || 0);
+                disponibilidad[c] = Math.max(0, disponibles);
+            });
+
+            coloresDisponibles.innerHTML = '<span style="font-weight:600;color:#302d7c;">🎨 Colores disponibles:</span>';
+            COLORES.forEach(c => {
+                const chip = document.createElement('span');
+                chip.className = `color-chip ${disponibilidad[c] > 0 ? 'disponible' : 'agotado'}`;
+                chip.textContent = `${c} (${disponibilidad[c]})`;
+                chip.style.background = c.toLowerCase();
+                chip.style.color = '#fff';
+                if (c === 'Blanco' || c === 'Amarillo') chip.style.color = '#333';
+                coloresDisponibles.appendChild(chip);
+            });
+
+            colorEquipo.innerHTML = '<option value="">-- Selecciona --</option>';
+            COLORES.forEach(c => {
+                if (disponibilidad[c] > 0) {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = `${c} (${disponibilidad[c]} disponibles)`;
+                    colorEquipo.appendChild(opt);
                 }
+            });
+        }
 
-                tournament.teamCount = teamCount;
-                tournament.rounds = rounds;
-                championBox.classList.remove('show');
-                championName.textContent = '---';
+        // ===== CUPOS =====
+        function actualizarCupos(equiposActuales) {
+            const inscritos = equiposActuales.length;
+            const disponibles = MAX_EQUIPOS - inscritos;
+            cuposTexto.textContent = `${disponibles} cupos disponibles de ${MAX_EQUIPOS} (${inscritos} inscritos)`;
+            cuposTexto.style.color = disponibles <= 0 ? '#870f0b' : '#302d7c';
+        }
+
+        // ===== LEER EQUIPOS DESDE FIREBASE =====
+        function cargarEquipos() {
+            db.ref('equipos').on('value', snapshot => {
+                const data = snapshot.val();
+                equipos = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const eq = data[key];
+                        eq.id = key;
+                        equipos.push(eq);
+                    });
+                    equipos.sort((a, b) => (a.fecha || 0) - (b.fecha || 0));
+                }
+                actualizarCupos(equipos);
+                actualizarColoresDisponibles(equipos);
+                actualizarFormulario();
+                actualizarBracket(equipos);
+                actualizarAdminPanel(equipos);
+                actualizarWhatsAppList(equipos);
+            });
+        }
+
+        // ===== GUARDAR EQUIPO =====
+        formEquipo.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!inscripcionesAbiertas) {
+                alert('⚠️ Las inscripciones están cerradas.');
+                return;
+            }
+            if (equipos.length >= MAX_EQUIPOS) {
+                alert('⚠️ Ya no hay cupos disponibles.');
+                return;
             }
 
-            // ----- ACTUALIZAR GANADORES (PROPAGACIÓN) -----
-            function updateWinners() {
-                const rounds = tournament.rounds;
-                for (let r = 0; r < rounds.length - 1; r++) {
-                    const currentMatches = rounds[r].matches;
-                    const nextMatches = rounds[r + 1].matches;
+            const nombre = nombreEquipo.value.trim();
+            const capitanVal = capitan.value.trim();
+            const telefonoVal = telefono.value.trim();
+            const cantidad = parseInt(cantidadCompetidores.value);
+            const color = colorEquipo.value;
 
-                    for (let m = 0; m < currentMatches.length; m++) {
-                        const match = currentMatches[m];
-                        const s1 = parseInt(match.score1) || 0;
-                        const s2 = parseInt(match.score2) || 0;
-                        let winner = null;
-
-                        if (s1 > s2) winner = match.team1;
-                        else if (s2 > s1) winner = match.team2;
-
-                        const nextMatchIndex = Math.floor(m / 2);
-                        if (nextMatchIndex < nextMatches.length) {
-                            const target = nextMatches[nextMatchIndex];
-                            const isEven = m % 2 === 0;
-                            if (isEven) {
-                                target.team1 = winner !== null ? winner : '---';
-                            } else {
-                                target.team2 = winner !== null ? winner : '---';
-                            }
-                        }
-                    }
-                }
-
-                // Detectar campeón (última ronda)
-                const lastRound = rounds[rounds.length - 1];
-                if (lastRound && lastRound.matches.length === 1) {
-                    const final = lastRound.matches[0];
-                    const s1 = parseInt(final.score1) || 0;
-                    const s2 = parseInt(final.score2) || 0;
-                    if (s1 > s2) {
-                        championName.textContent = final.team1;
-                        championBox.classList.add('show');
-                    } else if (s2 > s1) {
-                        championName.textContent = final.team2;
-                        championBox.classList.add('show');
-                    } else {
-                        if (final.score1 !== '' || final.score2 !== '') {
-                            championName.textContent = 'Empate en la final';
-                            championBox.classList.add('show');
-                        } else {
-                            championBox.classList.remove('show');
-                        }
-                    }
-                } else {
-                    championBox.classList.remove('show');
-                }
+            if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
+                alert('⚠️ Completa todos los campos obligatorios.');
+                return;
+            }
+            if (cantidad < 5 || cantidad > 7) {
+                alert('⚠️ El número de competidores debe ser entre 5 y 7.');
+                return;
             }
 
-            // ----- DIBUJAR LÍNEAS DE CONEXIÓN (SVG) -----
-            function drawLines() {
-                const wrapper = document.querySelector('.bracket-wrapper');
-                const svgRect = lineSvg.getBoundingClientRect();
+            const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
+            if (participantesValidos.length !== cantidad) {
+                alert(`⚠️ Debes completar los datos de exactamente ${cantidad} participantes (incluyendo al capitán).`);
+                return;
+            }
+
+            const capitanParticipante = participantesValidos[0];
+            if (capitanParticipante.nombre !== capitanVal) {
+                alert('⚠️ El nombre del capitán debe coincidir con el primer participante.');
+                return;
+            }
+
+            const usados = {};
+            equipos.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
+            if ((usados[color] || 0) >= COLORES_CUPO[color]) {
+                alert(`⚠️ El color ${color} ya no tiene cupos disponibles.`);
+                return;
+            }
+
+            const nuevoEquipo = {
+                nombre,
+                capitan: capitanVal,
+                telefono: telefonoVal,
+                color,
+                cantidadCompetidores: cantidad,
+                participantes: participantesValidos,
+                fecha: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            try {
+                await db.ref('equipos').push(nuevoEquipo);
+                alert('✅ Equipo inscrito correctamente.');
+                formEquipo.reset();
+                participantes = [{ nombre: '', carnet: '', correo: '' }];
+                renderParticipantes();
+                capitan.value = '';
+            } catch (err) {
+                alert('❌ Error al inscribir: ' + err.message);
+                console.error(err);
+            }
+        });
+
+        // ===== ACTUALIZAR ESTADO DE INSCRIPCIONES =====
+        function actualizarEstadoInscripciones() {
+            if (inscripcionesAbiertas) {
+                estadoInscripciones.textContent = '📢 Inscripciones abiertas';
+                estadoInscripciones.className = 'estado-inscripciones';
+                formInscripcion.classList.add('abierto');
+                btnAbrirInscripciones.style.display = 'none';
+                btnCerrarInscripciones.style.display = 'inline-block';
+            } else {
+                estadoInscripciones.textContent = '🔒 Inscripciones cerradas';
+                estadoInscripciones.className = 'estado-inscripciones cerradas';
+                formInscripcion.classList.remove('abierto');
+                btnAbrirInscripciones.style.display = 'inline-block';
+                btnCerrarInscripciones.style.display = 'none';
+            }
+        }
+
+        // ===== ADMIN: CERRAR/ABRIR INSCRIPCIONES =====
+        btnCerrarInscripciones.addEventListener('click', async () => {
+            if (confirm('¿Seguro que quieres cerrar las inscripciones?')) {
+                await db.ref('config/estadoInscripciones').set('cerradas');
+                inscripcionesAbiertas = false;
+                actualizarEstadoInscripciones();
+            }
+        });
+        btnAbrirInscripciones.addEventListener('click', async () => {
+            await db.ref('config/estadoInscripciones').set('abiertas');
+            inscripcionesAbiertas = true;
+            actualizarEstadoInscripciones();
+        });
+
+        // ===== ADMIN PANEL TOGGLE =====
+        btnToggleAdmin.addEventListener('click', () => {
+            if (adminPanel.classList.contains('visible')) {
+                adminPanel.classList.remove('visible');
+                btnToggleAdmin.textContent = '🔐 Panel de administración';
+            } else {
+                const pass = prompt('Ingresa la contraseña de administrador:');
+                if (pass === 'admin123') {
+                    adminPanel.classList.add('visible');
+                    btnToggleAdmin.textContent = '🔒 Ocultar panel';
+                } else if (pass !== null) {
+                    alert('Contraseña incorrecta.');
+                }
+            }
+        });
+
+        // ===== ADMIN: TABLA DE EQUIPOS =====
+        function actualizarAdminPanel(equipos) {
+            tbodyEquipos.innerHTML = '';
+            equipos.forEach((eq, i) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${i+1}</td>
+                    <td>${eq.nombre}</td>
+                    <td>${eq.capitan}</td>
+                    <td>${eq.telefono}</td>
+                    <td><span style="background:${eq.color.toLowerCase()};color:#fff;padding:2px 10px;border-radius:12px;">${eq.color}</span></td>
+                    <td>${eq.cantidadCompetidores}</td>
+                `;
+                tbodyEquipos.appendChild(tr);
+            });
+        }
+
+        // ===== WHATSAPP LIST =====
+        function actualizarWhatsAppList(equipos) {
+            const numeros = equipos.map(eq => eq.telefono).filter(t => t);
+            whatsappList.value = numeros.join('\n');
+        }
+
+        btnCopiarWhatsapp.addEventListener('click', () => {
+            whatsappList.select();
+            navigator.clipboard.writeText(whatsappList.value).then(() => {
+                alert('📋 Lista de contactos copiada al portapapeles.');
+            }).catch(() => {
+                document.execCommand('copy');
+                alert('📋 Lista de contactos copiada.');
+            });
+        });
+
+        // ===== BRACKET =====
+        function actualizarBracket(equipos) {
+            const teamCount = equipos.length;
+            if (teamCount === 0) {
+                bracketContainer.innerHTML = '<p style="text-align:center;color:#302d7c;font-weight:600;padding:40px;">Esperando inscripciones...</p>';
                 lineSvg.innerHTML = '';
-
-                const rounds = document.querySelectorAll('.round');
-                if (rounds.length < 2) return;
-
-                for (let i = 0; i < rounds.length - 1; i++) {
-                    const currentMatches = rounds[i].querySelectorAll('.match');
-                    const nextMatches = rounds[i + 1].querySelectorAll('.match');
-
-                    currentMatches.forEach((match, idx) => {
-                        const nextIdx = Math.floor(idx / 2);
-                        if (nextIdx >= nextMatches.length) return;
-                        const nextMatch = nextMatches[nextIdx];
-
-                        const rect1 = match.getBoundingClientRect();
-                        const rect2 = nextMatch.getBoundingClientRect();
-
-                        const x1 = rect1.right - svgRect.left;
-                        const y1 = rect1.top + rect1.height / 2 - svgRect.top;
-                        const x2 = rect2.left - svgRect.left;
-                        const y2 = rect2.top + rect2.height / 2 - svgRect.top;
-
-                        const midX = (x1 + x2) / 2;
-
-                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        const d = `M ${x1} ${y1} L ${midX} ${y1} V ${y2} L ${x2} ${y2}`;
-                        path.setAttribute('d', d);
-                        path.setAttribute('stroke', '#302d7c');
-                        path.setAttribute('stroke-width', '2.5');
-                        path.setAttribute('fill', 'none');
-                        path.setAttribute('stroke-linejoin', 'round');
-                        lineSvg.appendChild(path);
-                    });
-                }
+                championBox.classList.remove('show');
+                return;
             }
 
-            // ----- RENDERIZAR EL BRACKET EN EL DOM (con readonly en rondas > 0) -----
-            function renderBracket() {
-                const rounds = tournament.rounds;
-                bracketContainer.innerHTML = '';
+            let bracketSize = 2;
+            while (bracketSize < teamCount) bracketSize *= 2;
+            const byes = bracketSize - teamCount;
 
-                rounds.forEach((round, rIdx) => {
-                    const roundDiv = document.createElement('div');
-                    roundDiv.className = 'round';
-
-                    const title = document.createElement('div');
-                    title.className = 'round-title';
-                    title.textContent = round.name;
-                    roundDiv.appendChild(title);
-
-                    round.matches.forEach((match, mIdx) => {
-                        const matchDiv = document.createElement('div');
-                        matchDiv.className = 'match';
-                        matchDiv.dataset.round = rIdx;
-                        matchDiv.dataset.match = mIdx;
-
-                        const s1 = parseInt(match.score1) || 0;
-                        const s2 = parseInt(match.score2) || 0;
-                        if (s1 > s2 || s2 > s1) {
-                            matchDiv.classList.add('has-winner');
-                        }
-
-                        // --- Fila 1 (Equipo 1) ---
-                        const row1 = document.createElement('div');
-                        row1.className = 'team-row';
-
-                        const name1 = document.createElement('input');
-                        name1.type = 'text';
-                        name1.className = 'team-name';
-                        // Si es la primera ronda (rIdx === 0) es editable, sino readonly
-                        if (rIdx === 0) {
-                            name1.classList.add('team-name-editable');
-                            name1.readOnly = false;
-                        } else {
-                            name1.classList.add('team-name-readonly');
-                            name1.readOnly = true;
-                        }
-                        name1.value = match.team1;
-                        name1.dataset.round = rIdx;
-                        name1.dataset.match = mIdx;
-                        name1.dataset.slot = '1';
-                        name1.placeholder = 'Equipo';
-
-                        const score1 = document.createElement('input');
-                        score1.type = 'number';
-                        score1.className = 'score-input';
-                        score1.value = match.score1 !== '' ? match.score1 : '';
-                        score1.dataset.round = rIdx;
-                        score1.dataset.match = mIdx;
-                        score1.dataset.slot = '1';
-                        score1.placeholder = '0';
-                        score1.min = '0';
-
-                        row1.appendChild(name1);
-                        row1.appendChild(score1);
-                        matchDiv.appendChild(row1);
-
-                        // --- Fila 2 (Equipo 2) ---
-                        const row2 = document.createElement('div');
-                        row2.className = 'team-row';
-
-                        const name2 = document.createElement('input');
-                        name2.type = 'text';
-                        name2.className = 'team-name';
-                        if (rIdx === 0) {
-                            name2.classList.add('team-name-editable');
-                            name2.readOnly = false;
-                        } else {
-                            name2.classList.add('team-name-readonly');
-                            name2.readOnly = true;
-                        }
-                        name2.value = match.team2;
-                        name2.dataset.round = rIdx;
-                        name2.dataset.match = mIdx;
-                        name2.dataset.slot = '2';
-                        name2.placeholder = 'Equipo';
-
-                        const score2 = document.createElement('input');
-                        score2.type = 'number';
-                        score2.className = 'score-input';
-                        score2.value = match.score2 !== '' ? match.score2 : '';
-                        score2.dataset.round = rIdx;
-                        score2.dataset.match = mIdx;
-                        score2.dataset.slot = '2';
-                        score2.placeholder = '0';
-                        score2.min = '0';
-
-                        row2.appendChild(name2);
-                        row2.appendChild(score2);
-                        matchDiv.appendChild(row2);
-
-                        roundDiv.appendChild(matchDiv);
-                    });
-
-                    bracketContainer.appendChild(roundDiv);
-                });
-
-                requestAnimationFrame(() => {
-                    drawLines();
-                });
-            }
-
-            // ----- GUARDAR FOCUS -----
-            let activeElementId = null;
-            function saveFocus() {
-                const active = document.activeElement;
-                if (active && (active.classList.contains('team-name') || active.classList.contains('score-input'))) {
-                    activeElementId = active.id;
+            const firstRoundTeams = [];
+            for (let i = 0; i < bracketSize; i++) {
+                if (i < byes) {
+                    firstRoundTeams.push('---');
                 } else {
-                    activeElementId = null;
+                    const idx = i - byes;
+                    firstRoundTeams.push(equipos[idx] ? equipos[idx].nombre : '---');
                 }
             }
-            function restoreFocus() {
-                if (activeElementId) {
-                    const el = document.getElementById(activeElementId);
-                    if (el) el.focus();
-                    activeElementId = null;
-                }
+
+            const rounds = [];
+            let currentRoundTeams = firstRoundTeams;
+            const roundNames = [];
+            let temp = bracketSize;
+            while (temp > 1) {
+                const name = temp === bracketSize ? 'Primera Ronda' :
+                    temp === bracketSize / 2 ? 'Octavos' :
+                    temp === bracketSize / 4 ? 'Cuartos' :
+                    temp === bracketSize / 8 ? 'Semifinal' : 'Final';
+                roundNames.push(name);
+                temp /= 2;
             }
-            function assignIds() {
-                document.querySelectorAll('.team-name, .score-input').forEach(el => {
-                    const r = el.dataset.round;
-                    const m = el.dataset.match;
-                    const s = el.dataset.slot;
-                    const type = el.classList.contains('team-name') ? 'name' : 'score';
-                    el.id = `input-${type}-${r}-${m}-${s}`;
+
+            for (let r = 0; r < roundNames.length; r++) {
+                const matches = [];
+                const teams = r === 0 ? firstRoundTeams : currentRoundTeams;
+                for (let i = 0; i < teams.length; i += 2) {
+                    matches.push({
+                        team1: teams[i] || '---',
+                        team2: teams[i + 1] || '---',
+                        score1: '',
+                        score2: ''
+                    });
+                }
+                rounds.push({ name: roundNames[r], matches });
+                const nextTeams = [];
+                for (let i = 0; i < matches.length; i++) {
+                    nextTeams.push('---');
+                }
+                currentRoundTeams = nextTeams;
+            }
+
+            renderBracketStatic(rounds);
+        }
+
+        function renderBracketStatic(rounds) {
+            bracketContainer.innerHTML = '';
+            rounds.forEach((round, rIdx) => {
+                const roundDiv = document.createElement('div');
+                roundDiv.className = 'round';
+                const title = document.createElement('div');
+                title.className = 'round-title';
+                title.textContent = round.name;
+                roundDiv.appendChild(title);
+
+                round.matches.forEach((match, mIdx) => {
+                    const matchDiv = document.createElement('div');
+                    matchDiv.className = 'match';
+                    matchDiv.dataset.round = rIdx;
+                    matchDiv.dataset.match = mIdx;
+
+                    const row1 = document.createElement('div');
+                    row1.className = 'team-row';
+                    const name1 = document.createElement('span');
+                    name1.className = 'team-name team-name-readonly';
+                    name1.textContent = match.team1;
+                    const score1 = document.createElement('input');
+                    score1.type = 'number';
+                    score1.className = 'score-input';
+                    score1.value = match.score1 || '';
+                    score1.dataset.round = rIdx;
+                    score1.dataset.match = mIdx;
+                    score1.dataset.slot = '1';
+                    score1.placeholder = '0';
+                    row1.appendChild(name1);
+                    row1.appendChild(score1);
+                    matchDiv.appendChild(row1);
+
+                    const row2 = document.createElement('div');
+                    row2.className = 'team-row';
+                    const name2 = document.createElement('span');
+                    name2.className = 'team-name team-name-readonly';
+                    name2.textContent = match.team2;
+                    const score2 = document.createElement('input');
+                    score2.type = 'number';
+                    score2.className = 'score-input';
+                    score2.value = match.score2 || '';
+                    score2.dataset.round = rIdx;
+                    score2.dataset.match = mIdx;
+                    score2.dataset.slot = '2';
+                    score2.placeholder = '0';
+                    row2.appendChild(name2);
+                    row2.appendChild(score2);
+                    matchDiv.appendChild(row2);
+
+                    roundDiv.appendChild(matchDiv);
+                });
+                bracketContainer.appendChild(roundDiv);
+            });
+
+            requestAnimationFrame(drawLines);
+        }
+
+        // ===== LÍNEAS DE CONEXIÓN (SVG) =====
+        function drawLines() {
+            const wrapper = document.querySelector('.bracket-wrapper');
+            const svgRect = lineSvg.getBoundingClientRect();
+            lineSvg.innerHTML = '';
+            const rounds = document.querySelectorAll('.round');
+            if (rounds.length < 2) return;
+            for (let i = 0; i < rounds.length - 1; i++) {
+                const currentMatches = rounds[i].querySelectorAll('.match');
+                const nextMatches = rounds[i + 1].querySelectorAll('.match');
+                currentMatches.forEach((match, idx) => {
+                    const nextIdx = Math.floor(idx / 2);
+                    if (nextIdx >= nextMatches.length) return;
+                    const nextMatch = nextMatches[nextIdx];
+                    const rect1 = match.getBoundingClientRect();
+                    const rect2 = nextMatch.getBoundingClientRect();
+                    const x1 = rect1.right - svgRect.left;
+                    const y1 = rect1.top + rect1.height / 2 - svgRect.top;
+                    const x2 = rect2.left - svgRect.left;
+                    const y2 = rect2.top + rect2.height / 2 - svgRect.top;
+                    const midX = (x1 + x2) / 2;
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const d = `M ${x1} ${y1} L ${midX} ${y1} V ${y2} L ${x2} ${y2}`;
+                    path.setAttribute('d', d);
+                    path.setAttribute('stroke', '#302d7c');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke-linejoin', 'round');
+                    path.setAttribute('opacity', '0.5');
+                    lineSvg.appendChild(path);
                 });
             }
+        }
 
-            // ----- ACTUALIZAR TODO -----
-            function updateAndRender() {
-                saveFocus();
-                updateWinners();
-                renderBracket();
-                assignIds();
-                restoreFocus();
+        window.addEventListener('resize', () => {
+            clearTimeout(window._resizeTimeout);
+            window._resizeTimeout = setTimeout(drawLines, 150);
+        });
+
+        // ===== INICIALIZAR =====
+        function actualizarFormulario() {
+            if (equipos.length >= MAX_EQUIPOS) {
+                formInscripcion.classList.remove('abierto');
+            } else if (inscripcionesAbiertas) {
+                formInscripcion.classList.add('abierto');
             }
+        }
 
-            // ----- MANEJADORES DE EVENTOS (DELEGACIÓN) -----
-            bracketContainer.addEventListener('input', function(e) {
-                const target = e.target;
+        cargarEquipos();
 
-                // Solo procesamos cambios en nombres si son editables (ronda 0)
-                if (target.classList.contains('team-name') && !target.readOnly) {
-                    const r = parseInt(target.dataset.round);
-                    const m = parseInt(target.dataset.match);
-                    const s = parseInt(target.dataset.slot);
-                    const round = tournament.rounds[r];
-                    if (round) {
-                        const match = round.matches[m];
-                        if (match) {
-                            const key = `team${s}`;
-                            match[key] = target.value;
-                            updateAndRender();
-                        }
-                    }
-                    return;
-                }
+        db.ref('config/estadoInscripciones').on('value', snap => {
+            const estado = snap.val();
+            inscripcionesAbiertas = (estado !== 'cerradas');
+            actualizarEstadoInscripciones();
+        });
 
-                // Cambios en marcadores (siempre editables)
-                if (target.classList.contains('score-input')) {
-                    const r = parseInt(target.dataset.round);
-                    const m = parseInt(target.dataset.match);
-                    const s = parseInt(target.dataset.slot);
-                    const value = target.value;
-                    const round = tournament.rounds[r];
-                    if (round) {
-                        const match = round.matches[m];
-                        if (match) {
-                            const key = `score${s}`;
-                            match[key] = value;
-                            updateAndRender();
-                        }
-                    }
-                    return;
-                }
-            });
-
-            // ----- REINICIAR -----
-            function resetTournament() {
-                const teamCount = parseInt(teamSelect.value);
-                initTournament(teamCount);
-                renderBracket();
-                assignIds();
-                championBox.classList.remove('show');
-                championName.textContent = '---';
-            }
-
-            function changeTeamCount() {
-                const teamCount = parseInt(teamSelect.value);
-                initTournament(teamCount);
-                renderBracket();
-                assignIds();
-                championBox.classList.remove('show');
-                championName.textContent = '---';
-            }
-
-            // ----- EVENT LISTENERS -----
-            teamSelect.addEventListener('change', changeTeamCount);
-            resetBtn.addEventListener('click', resetTournament);
-
-            let resizeTimeout;
-            window.addEventListener('resize', function() {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(() => {
-                    drawLines();
-                }, 150);
-            });
-
-            // ----- INICIALIZAR -----
-            initTournament(16);
-            renderBracket();
-            assignIds();
-
-            document.addEventListener('focusin', function(e) {
-                if (e.target.classList.contains('team-name') || e.target.classList.contains('score-input')) {
-                    activeElementId = e.target.id;
-                }
-            });
-
-        })();
+        console.log('🏆 Torneo TMS - Inscripciones y llave en tiempo real con Firebase');
     </script>
 </body>
 </html>
