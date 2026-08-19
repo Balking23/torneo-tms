@@ -209,6 +209,15 @@
             box-shadow: 0 0 0 4px rgba(48, 45, 124, 0.15);
         }
 
+        .form-group .ayuda-color {
+            font-size: 0.8rem;
+            color: #666;
+            background: #f8f7f5;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+
         .participantes-container {
             grid-column: 1 / -1;
             margin-top: 10px;
@@ -1028,11 +1037,14 @@
                             <select id="colorEquipo" required>
                                 <option value="">-- Selecciona --</option>
                             </select>
+                            <div class="ayuda-color">
+                                📌 Cada equipo debe traer un distintivo del color que seleccionaron (ej: chaleco, cinta, camiseta). No se proporcionarán implementos.
+                            </div>
                         </div>
 
                         <!-- CAMPO PLAZAS MEJORADO -->
                         <div class="form-group" id="grupoPlazas">
-                            <label for="plazas">Jugadores que necesitas para completar el equipo</label>
+                            <label for="plazas">Jugadores extras (libres) que se necesita para completar el equipo</label>
                             <input type="number" id="plazas" min="0" max="6" value="0" placeholder="Ej: 3">
                             <div id="contadorPlazas" style="font-size:0.85rem;margin-top:4px;font-weight:600;">
                                 👥 Participantes: <span id="contadorParticipantes">0</span> | Plazas: <span
@@ -1064,10 +1076,9 @@
                                 <li>Elige el <strong>número total</strong> de jugadores que tendrá tu equipo (3 a 7).
                                 </li>
                                 <li>Registra a los jugadores que ya tienes (mínimo 1, el capitán).</li>
-                                <li>En <strong>"Jugadores que necesitas"</strong> escribe cuántos jugadores más
+                                <li>En <strong>"Jugadores extras"</strong> escribe cuántos jugadores más
                                     necesitas para llegar al total.</li>
-                                <li><em>Ejemplo: si quieres 6 jugadores y ya tienes 3, escribe 3 en "Jugadores que
-                                        necesitas".</em></li>
+                                <li><em>Ejemplo: si quieres 6 jugadores y ya tienes 3, escribe 3 en "Jugadores extras".</em></li>
                             </ol>
                         </div>
 
@@ -2069,7 +2080,7 @@
             dot.style.background = colorHex || '#ccc';
             const name = document.createElement('span');
             name.className = 'team-name team-name-readonly' + (esGanador ? ' team-winner' : '') + (esPerdedor ? ' team-loser' :
-            '');
+                '');
             name.textContent = teamName;
             nameWrapper.appendChild(dot);
             nameWrapper.appendChild(name);
