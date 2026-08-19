@@ -62,6 +62,36 @@
         .estado-inscripciones.cerradas {
             background: #870f0b;
         }
+        /* ===== ENUNCIADO / INTRO DEL EVENTO ===== */
+        .intro-evento {
+            background: linear-gradient(135deg, #302d7c 0%, #4a46a8 100%);
+            color: #f4f3f1;
+            border-radius: 20px;
+            padding: 22px 26px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 24px rgba(48,45,124,0.25);
+        }
+        .intro-evento p {
+            font-size: 0.98rem;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .intro-evento p:last-child { margin-bottom: 0; }
+        .intro-evento ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .intro-evento ul li {
+            background: rgba(244,243,241,0.12);
+            border: 1px solid rgba(244,243,241,0.25);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
         /* ===== INFO CUPOS ===== */
         .info-cupos {
             display: flex;
@@ -501,6 +531,51 @@
             margin-top: 15px;
             text-align: center;
         }
+        /* ===== MENSAJE DE CONFIRMACIÓN EN PÁGINA ===== */
+        .confirmacion-mensaje {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2d6a4f;
+            color: #f4f3f1;
+            padding: 14px 22px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            transform: translateX(140%);
+            transition: transform 0.35s ease;
+            z-index: 999;
+            max-width: 320px;
+        }
+        .confirmacion-mensaje.visible { transform: translateX(0); }
+        .confirmacion-mensaje.error { background: #870f0b; }
+        @media (max-width: 600px) {
+            .confirmacion-mensaje { left: 12px; right: 12px; max-width: none; top: 12px; }
+        }
+        /* ===== GANADOR / PERDEDOR EN BRACKET ===== */
+        .team-name.team-winner { color: #2d6a4f; font-weight: 800; }
+        .team-name.team-loser { opacity: 0.45; text-decoration: line-through; }
+        .match-bye-note {
+            font-size: 0.72rem;
+            color: #2d6a4f;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .match-penales {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            padding-top: 6px;
+            border-top: 1px dashed #d6d3cc;
+        }
+        .match-penales .penales-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #870f0b;
+        }
+        .match-penales .penales-inputs { display: flex; gap: 6px; }
         /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
             .form-grid { grid-template-columns: 1fr; }
@@ -521,12 +596,24 @@
 <body>
 <div class="app" id="app">
 
+    <!-- MENSAJE DE CONFIRMACIÓN -->
+    <div class="confirmacion-mensaje" id="confirmacionMensaje"></div>
+
     <!-- HEADER -->
     <div class="header">
         <h1>⚽ Torneo <span>TMS</span></h1>
         <div>
             <span class="estado-inscripciones" id="estadoInscripciones">⏳ Cargando...</span>
         </div>
+    </div>
+
+    <!-- ENUNCIADO / INTRO DEL EVENTO -->
+    <div class="intro-evento">
+        <p>Bienvenido a <strong>Torneo TMS</strong>, la plataforma integral para organizar torneos de fútbol 5-7: inscripción de equipos, registro de jugadores libres y llave (bracket) automatizada, todo en tiempo real.</p>
+        <p>Cada equipo se registra con su capitán, participantes y color de uniforme; el sistema asigna y ajusta los colores automáticamente para evitar que dos equipos con tonos parecidos se enfrenten en la primera ronda. Todo se sincroniza al instante entre los dispositivos de quienes estén viendo la página.</p>
+        <ul>
+            <li>🌐 Accesible desde cualquier dispositivo</li>
+        </ul>
     </div>
 
     <!-- INFO CUPOS Y COLORES -->
@@ -618,6 +705,7 @@
         <div style="margin-bottom:15px;">
             <button class="btn btn-danger" id="btnCerrarInscripciones">🔒 Cerrar inscripciones</button>
             <button class="btn btn-success" id="btnAbrirInscripciones" style="display:none;">🔓 Abrir inscripciones</button>
+            <button class="btn btn-warning" id="btnReiniciarTorneo">🗑️ Reiniciar torneo (nueva competencia)</button>
         </div>
 
         <h3>📋 Equipos inscritos</h3>
@@ -701,6 +789,19 @@
     let equipos = [];
     let jugadoresLibres = [];
     let inscripcionesAbiertas = true;
+    let resultados = {};
+
+    // ===== CONTRASEÑA DE ADMIN (guardada como hash SHA-256, no en texto plano) =====
+    // Contraseña actual: admin123
+    // Para cambiarla: abre la consola del navegador (F12) y ejecuta:
+    //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('TU_NUEVA_CLAVE')).then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+    // y reemplaza el valor de abajo por el hash que te imprima.
+    const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+    async function hashTexto(texto) {
+        const enc = new TextEncoder().encode(texto);
+        const buf = await crypto.subtle.digest('SHA-256', enc);
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
     // ===== REFERENCIAS DOM =====
     const $ = id => document.getElementById(id);
@@ -725,6 +826,8 @@
     const btnToggleAdmin = $('btnToggleAdmin');
     const btnCerrarInscripciones = $('btnCerrarInscripciones');
     const btnAbrirInscripciones = $('btnAbrirInscripciones');
+    const btnReiniciarTorneo = $('btnReiniciarTorneo');
+    const confirmacionMensaje = $('confirmacionMensaje');
     const tbodyEquipos = $('tbodyEquipos');
     const tbodyJugadoresLibres = $('tbodyJugadoresLibres');
     const whatsappList = $('whatsappList');
@@ -733,6 +836,16 @@
     const nombreJugador = $('nombreJugador');
     const telefonoJugador = $('telefonoJugador');
     const btnRegistrarJugador = $('btnRegistrarJugador');
+
+    // ===== MENSAJE DE CONFIRMACIÓN EN PÁGINA (reemplaza alert() informativos) =====
+    function mostrarConfirmacion(mensaje, esError = false) {
+        confirmacionMensaje.textContent = mensaje;
+        confirmacionMensaje.className = 'confirmacion-mensaje visible' + (esError ? ' error' : '');
+        clearTimeout(window._confirmTimeout);
+        window._confirmTimeout = setTimeout(() => {
+            confirmacionMensaje.classList.remove('visible');
+        }, 4000);
+    }
 
     // ===== PARTICIPANTES DINÁMICOS =====
     let participantes = [{ nombre: '', carnet: '', correo: '' }];
@@ -1041,6 +1154,12 @@
             inscripcionesAbiertas = (estado !== 'cerradas');
             actualizarEstadoInscripciones();
         });
+
+        // Resultados de partidos (marcadores y penales)
+        db.ref('resultados').on('value', snapshot => {
+            resultados = snapshot.val() || {};
+            actualizarBracket(equipos);
+        });
     }
 
     // ===== GUARDAR EQUIPO =====
@@ -1057,41 +1176,55 @@
         const plazasVal = parseInt(plazas.value) || 0;
 
         if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
-            alert('⚠️ Completa todos los campos obligatorios.');
+            mostrarConfirmacion('⚠️ Completa todos los campos obligatorios.', true);
             return;
         }
         if (cantidad < 5 || cantidad > 7) {
-            alert('⚠️ El número de competidores debe ser entre 5 y 7.');
+            mostrarConfirmacion('⚠️ El número de competidores debe ser entre 5 y 7.', true);
             return;
         }
         if (plazasVal < 0 || plazasVal > 3) {
-            alert('⚠️ Las plazas adicionales deben ser entre 0 y 3.');
+            mostrarConfirmacion('⚠️ Las plazas adicionales deben ser entre 0 y 3.', true);
             return;
         }
 
         const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
         if (participantesValidos.length !== cantidad) {
-            alert(`⚠️ Debes completar los datos de exactamente ${cantidad} participantes (incluyendo al capitán).`);
+            mostrarConfirmacion(`⚠️ Debes completar los datos de exactamente ${cantidad} participantes (incluyendo al capitán).`, true);
             return;
         }
         const capitanParticipante = participantesValidos[0];
         if (capitanParticipante.nombre !== capitanVal) {
-            alert('⚠️ El nombre del capitán debe coincidir con el primer participante.');
+            mostrarConfirmacion('⚠️ El nombre del capitán debe coincidir con el primer participante.', true);
             return;
         }
         const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
         for (let p of participantesValidos) {
             if (!emailRegex.test(p.correo)) {
-                alert(`⚠️ El correo "${p.correo}" no es válido. Debe ser @estudiantec.cr`);
+                mostrarConfirmacion(`⚠️ El correo "${p.correo}" no es válido. Debe ser @estudiantec.cr`, true);
                 return;
             }
+        }
+
+        // Verificar nombre de equipo duplicado
+        const nombreLower = nombre.toLowerCase();
+        if (equipos.some(eq => (eq.nombre || '').trim().toLowerCase() === nombreLower)) {
+            mostrarConfirmacion('⚠️ Ya existe un equipo inscrito con ese nombre. Elige otro.', true);
+            return;
+        }
+
+        // Verificar teléfono de capitán duplicado
+        const telefonoNormalizado = telefonoVal.replace(/\s+/g, '');
+        if (equipos.some(eq => (eq.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
+            mostrarConfirmacion('⚠️ Este teléfono ya está registrado con otro equipo.', true);
+            return;
         }
 
         // Verificar cupo de color
         const usados = {};
         equipos.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
         if ((usados[color] || 0) >= COLORES_CUPO[color]) {
-            alert(`⚠️ El color ${color} ya no tiene cupos disponibles.`);
+            mostrarConfirmacion(`⚠️ El color ${color} ya no tiene cupos disponibles.`, true);
             return;
         }
 
@@ -1108,14 +1241,14 @@
 
         try {
             await db.ref('equipos').push(nuevoEquipo);
-            alert('✅ Equipo inscrito correctamente.');
+            mostrarConfirmacion('✅ Equipo inscrito correctamente.');
             formEquipo.reset();
             participantes = [{ nombre: '', carnet: '', correo: '' }];
             renderParticipantes();
             capitan.value = '';
             plazas.value = '0';
         } catch (err) {
-            alert('❌ Error al inscribir: ' + err.message);
+            mostrarConfirmacion('❌ Error al inscribir: ' + err.message, true);
         }
     });
 
@@ -1123,9 +1256,14 @@
     btnRegistrarJugador.addEventListener('click', () => {
         const nombre = nombreJugador.value.trim();
         const telefono = telefonoJugador.value.trim();
-        if (!nombre || !telefono) return alert('Completa todos los campos.');
+        if (!nombre || !telefono) { mostrarConfirmacion('⚠️ Completa todos los campos.', true); return; }
+        const telefonoNormalizado = telefono.replace(/\s+/g, '');
+        if (jugadoresLibres.some(j => (j.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
+            mostrarConfirmacion('⚠️ Este teléfono ya está registrado como jugador libre.', true);
+            return;
+        }
         db.ref('jugadores_libres').push({ nombre, telefono, fecha: Date.now() });
-        alert('✅ Registrado como jugador libre.');
+        mostrarConfirmacion('✅ Registrado como jugador libre.');
         nombreJugador.value = '';
         telefonoJugador.value = '';
     });
@@ -1231,7 +1369,7 @@
     btnCopiarWhatsapp.addEventListener('click', () => {
         whatsappList.select();
         navigator.clipboard?.writeText(whatsappList.value)?.catch(() => document.execCommand('copy'));
-        alert('📋 Lista de contactos copiada.');
+        mostrarConfirmacion('📋 Lista de contactos copiada.');
     });
 
     // ===== ESTADO DE INSCRIPCIONES =====
@@ -1260,25 +1398,66 @@
         await db.ref('config/estadoInscripciones').set('abiertas');
     });
 
-    // ===== ADMIN PANEL TOGGLE =====
-    btnToggleAdmin.addEventListener('click', () => {
+    // ===== ADMIN PANEL TOGGLE (validación por hash, no por texto plano) =====
+    btnToggleAdmin.addEventListener('click', async () => {
         if (adminPanel.classList.contains('visible')) {
             adminPanel.classList.remove('visible');
             btnToggleAdmin.textContent = '🔐 Panel de administración';
         } else {
             const pass = prompt('Contraseña de administrador:');
-            if (pass === 'admin123') {
+            if (pass === null) return;
+            const hashIngresado = await hashTexto(pass);
+            if (hashIngresado === ADMIN_PASSWORD_HASH) {
                 adminPanel.classList.add('visible');
                 btnToggleAdmin.textContent = '🔒 Ocultar panel';
-            } else if (pass !== null) {
-                alert('Contraseña incorrecta.');
+            } else {
+                mostrarConfirmacion('❌ Contraseña incorrecta.', true);
             }
         }
     });
 
-    // ===== BRACKET CON CÍRCULOS DE COLOR =====
-    function actualizarBracket(equipos) {
-        const teamCount = equipos.length;
+    // ===== REINICIAR TORNEO (para una nueva competencia) =====
+    btnReiniciarTorneo.addEventListener('click', async () => {
+        if (!confirm('⚠️ Esto borrará TODOS los equipos, jugadores libres y resultados del bracket. ¿Continuar?')) return;
+        if (!confirm('Esta acción no se puede deshacer. ¿Confirmas que quieres reiniciar el torneo para una nueva competencia?')) return;
+        try {
+            await db.ref('equipos').remove();
+            await db.ref('jugadores_libres').remove();
+            await db.ref('resultados').remove();
+            await db.ref('config/estadoInscripciones').set('abiertas');
+            mostrarConfirmacion('✅ Torneo reiniciado. Ya puedes inscribir equipos para la nueva competencia.');
+        } catch (err) {
+            mostrarConfirmacion('❌ Error al reiniciar: ' + err.message, true);
+        }
+    });
+
+    // ===== BRACKET CON CÍRCULOS DE COLOR, RESULTADOS Y AVANCE AUTOMÁTICO =====
+
+    // Determina el ganador de un partido: por marcador, o por penales si hay empate.
+    // Los "byes" (equipo '---') pasan directo sin necesitar marcador.
+    function calcularGanador(matchKey, team1, team2) {
+        if (team1.nombre === '---' && team2.nombre === '---') return null; // casillero vacío
+        if (team1.nombre === '---') return team2; // pase directo (bye)
+        if (team2.nombre === '---') return team1; // pase directo (bye)
+        const res = resultados[matchKey];
+        if (!res || res.score1 === undefined || res.score1 === '' || res.score2 === undefined || res.score2 === '') return null;
+        const s1 = Number(res.score1), s2 = Number(res.score2);
+        if (isNaN(s1) || isNaN(s2)) return null;
+        if (s1 > s2) return team1;
+        if (s2 > s1) return team2;
+        // Empate: se decide por penales si ya se cargaron
+        if (res.penal1 !== undefined && res.penal1 !== '' && res.penal2 !== undefined && res.penal2 !== '') {
+            const p1 = Number(res.penal1), p2 = Number(res.penal2);
+            if (!isNaN(p1) && !isNaN(p2)) {
+                if (p1 > p2) return team1;
+                if (p2 > p1) return team2;
+            }
+        }
+        return null; // empate pendiente de definir por penales
+    }
+
+    function actualizarBracket(equiposActuales) {
+        const teamCount = equiposActuales.length;
         if (teamCount === 0) {
             bracketContainer.innerHTML = '<p style="text-align:center;color:#302d7c;font-weight:600;padding:40px;">Esperando inscripciones...</p>';
             lineSvg.innerHTML = '';
@@ -1288,18 +1467,16 @@
         let bracketSize = 2;
         while (bracketSize < teamCount) bracketSize *= 2;
         const byes = bracketSize - teamCount;
-        const firstRoundTeams = [];
+        let currentRoundTeams = [];
         for (let i = 0; i < bracketSize; i++) {
             if (i < byes) {
-                firstRoundTeams.push({ nombre: '---', color: null });
+                currentRoundTeams.push({ nombre: '---', color: null });
             } else {
                 const idx = i - byes;
-                const eq = equipos[idx];
-                firstRoundTeams.push({ nombre: eq ? eq.nombre : '---', color: eq ? eq.color : null });
+                const eq = equiposActuales[idx];
+                currentRoundTeams.push({ nombre: eq ? eq.nombre : '---', color: eq ? eq.color : null });
             }
         }
-        const rounds = [];
-        let currentRoundTeams = firstRoundTeams;
         const roundNames = [];
         let temp = bracketSize;
         while (temp > 1) {
@@ -1310,97 +1487,132 @@
             roundNames.push(name);
             temp /= 2;
         }
+        const rounds = [];
         for (let r = 0; r < roundNames.length; r++) {
             const matches = [];
-            const teams = r === 0 ? firstRoundTeams : currentRoundTeams;
-            for (let i = 0; i < teams.length; i += 2) {
-                const t1 = teams[i] || { nombre: '---', color: null };
-                const t2 = teams[i+1] || { nombre: '---', color: null };
+            const nextRoundTeams = [];
+            for (let i = 0; i < currentRoundTeams.length; i += 2) {
+                const t1 = currentRoundTeams[i] || { nombre: '---', color: null };
+                const t2 = currentRoundTeams[i+1] || { nombre: '---', color: null };
+                const matchKey = `r${r}m${i/2}`;
+                const res = resultados[matchKey] || {};
+                const ganador = calcularGanador(matchKey, t1, t2);
+                const esPartidoReal = t1.nombre !== '---' && t2.nombre !== '---';
+                const necesitaPenales = esPartidoReal && res.score1 !== undefined && res.score1 !== '' &&
+                    res.score2 !== undefined && res.score2 !== '' && Number(res.score1) === Number(res.score2);
                 matches.push({
+                    matchKey,
                     team1: t1.nombre,
                     team1Color: t1.color,
                     team2: t2.nombre,
                     team2Color: t2.color,
-                    score1: '',
-                    score2: ''
+                    score1: res.score1 !== undefined ? res.score1 : '',
+                    score2: res.score2 !== undefined ? res.score2 : '',
+                    penal1: res.penal1 !== undefined ? res.penal1 : '',
+                    penal2: res.penal2 !== undefined ? res.penal2 : '',
+                    esPartidoReal,
+                    necesitaPenales,
+                    ganadorNombre: ganador ? ganador.nombre : null
                 });
+                nextRoundTeams.push(ganador || { nombre: '---', color: null });
             }
             rounds.push({ name: roundNames[r], matches });
-            const nextTeams = [];
-            for (let i = 0; i < matches.length; i++) {
-                nextTeams.push({ nombre: '---', color: null });
-            }
-            currentRoundTeams = nextTeams;
+            currentRoundTeams = nextRoundTeams;
         }
         renderBracketStatic(rounds);
+
+        // Campeón: si la final ya tiene ganador, mostrar el recuadro
+        const finalRound = rounds[rounds.length - 1];
+        if (finalRound && finalRound.matches.length === 1 && finalRound.matches[0].ganadorNombre) {
+            championName.textContent = finalRound.matches[0].ganadorNombre;
+            championBox.classList.add('show');
+        } else {
+            championBox.classList.remove('show');
+        }
+    }
+
+    // Crea la fila de un equipo dentro de un partido (nombre + marcador editable si aplica)
+    function crearFilaEquipo(matchKey, teamName, teamColor, slot, score, mostrarInput, esGanador, esPerdedor) {
+        const row = document.createElement('div');
+        row.className = 'team-row';
+        const nameWrapper = document.createElement('span');
+        nameWrapper.className = 'team-name-wrapper';
+        const dot = document.createElement('span');
+        dot.className = 'team-color-dot';
+        const colorHex = teamColor ? PALETA.find(p => p.nombre === teamColor)?.color : null;
+        dot.style.background = colorHex || '#ccc';
+        const name = document.createElement('span');
+        name.className = 'team-name team-name-readonly' + (esGanador ? ' team-winner' : '') + (esPerdedor ? ' team-loser' : '');
+        name.textContent = teamName;
+        nameWrapper.appendChild(dot);
+        nameWrapper.appendChild(name);
+        row.appendChild(nameWrapper);
+        if (mostrarInput) {
+            const scoreInput = document.createElement('input');
+            scoreInput.type = 'number';
+            scoreInput.min = '0';
+            scoreInput.className = 'score-input';
+            scoreInput.value = score;
+            scoreInput.placeholder = '0';
+            scoreInput.dataset.matchKey = matchKey;
+            scoreInput.dataset.slot = slot;
+            row.appendChild(scoreInput);
+        }
+        return row;
     }
 
     function renderBracketStatic(rounds) {
         bracketContainer.innerHTML = '';
-        rounds.forEach((round, rIdx) => {
+        rounds.forEach((round) => {
             const roundDiv = document.createElement('div');
             roundDiv.className = 'round';
             const title = document.createElement('div');
             title.className = 'round-title';
             title.textContent = round.name;
             roundDiv.appendChild(title);
-            round.matches.forEach((match, mIdx) => {
+            round.matches.forEach((match) => {
                 const matchDiv = document.createElement('div');
-                matchDiv.className = 'match';
-                matchDiv.dataset.round = rIdx;
-                matchDiv.dataset.match = mIdx;
+                matchDiv.className = 'match' + (match.ganadorNombre ? ' has-winner' : '');
 
-                // Equipo 1
-                const row1 = document.createElement('div');
-                row1.className = 'team-row';
-                const nameWrapper1 = document.createElement('span');
-                nameWrapper1.className = 'team-name-wrapper';
-                const dot1 = document.createElement('span');
-                dot1.className = 'team-color-dot';
-                const colorHex1 = match.team1Color ? PALETA.find(p => p.nombre === match.team1Color)?.color : null;
-                dot1.style.background = colorHex1 || '#ccc';
-                const name1 = document.createElement('span');
-                name1.className = 'team-name team-name-readonly';
-                name1.textContent = match.team1;
-                nameWrapper1.appendChild(dot1);
-                nameWrapper1.appendChild(name1);
-                const score1 = document.createElement('input');
-                score1.type = 'number';
-                score1.className = 'score-input';
-                score1.value = match.score1 || '';
-                score1.dataset.round = rIdx;
-                score1.dataset.match = mIdx;
-                score1.dataset.slot = '1';
-                score1.placeholder = '0';
-                row1.appendChild(nameWrapper1);
-                row1.appendChild(score1);
-                matchDiv.appendChild(row1);
+                const esGanador1 = !!match.ganadorNombre && match.ganadorNombre === match.team1;
+                const esGanador2 = !!match.ganadorNombre && match.ganadorNombre === match.team2;
 
-                // Equipo 2
-                const row2 = document.createElement('div');
-                row2.className = 'team-row';
-                const nameWrapper2 = document.createElement('span');
-                nameWrapper2.className = 'team-name-wrapper';
-                const dot2 = document.createElement('span');
-                dot2.className = 'team-color-dot';
-                const colorHex2 = match.team2Color ? PALETA.find(p => p.nombre === match.team2Color)?.color : null;
-                dot2.style.background = colorHex2 || '#ccc';
-                const name2 = document.createElement('span');
-                name2.className = 'team-name team-name-readonly';
-                name2.textContent = match.team2;
-                nameWrapper2.appendChild(dot2);
-                nameWrapper2.appendChild(name2);
-                const score2 = document.createElement('input');
-                score2.type = 'number';
-                score2.className = 'score-input';
-                score2.value = match.score2 || '';
-                score2.dataset.round = rIdx;
-                score2.dataset.match = mIdx;
-                score2.dataset.slot = '2';
-                score2.placeholder = '0';
-                row2.appendChild(nameWrapper2);
-                row2.appendChild(score2);
-                matchDiv.appendChild(row2);
+                matchDiv.appendChild(crearFilaEquipo(match.matchKey, match.team1, match.team1Color, '1', match.score1, match.esPartidoReal, esGanador1, esGanador2));
+                matchDiv.appendChild(crearFilaEquipo(match.matchKey, match.team2, match.team2Color, '2', match.score2, match.esPartidoReal, esGanador2, esGanador1));
+
+                if (match.necesitaPenales) {
+                    const penalDiv = document.createElement('div');
+                    penalDiv.className = 'match-penales';
+                    const label = document.createElement('span');
+                    label.className = 'penales-label';
+                    label.textContent = '🎯 Penales';
+                    const inputsWrap = document.createElement('span');
+                    inputsWrap.className = 'penales-inputs';
+                    const p1 = document.createElement('input');
+                    p1.type = 'number'; p1.min = '0';
+                    p1.className = 'score-input penal-input';
+                    p1.value = match.penal1;
+                    p1.placeholder = '0';
+                    p1.dataset.matchKey = match.matchKey;
+                    p1.dataset.slot = '1';
+                    const p2 = document.createElement('input');
+                    p2.type = 'number'; p2.min = '0';
+                    p2.className = 'score-input penal-input';
+                    p2.value = match.penal2;
+                    p2.placeholder = '0';
+                    p2.dataset.matchKey = match.matchKey;
+                    p2.dataset.slot = '2';
+                    inputsWrap.appendChild(p1);
+                    inputsWrap.appendChild(p2);
+                    penalDiv.appendChild(label);
+                    penalDiv.appendChild(inputsWrap);
+                    matchDiv.appendChild(penalDiv);
+                } else if (!match.esPartidoReal && (match.team1 === '---') !== (match.team2 === '---')) {
+                    const note = document.createElement('div');
+                    note.className = 'match-bye-note';
+                    note.textContent = '➡️ Pase directo';
+                    matchDiv.appendChild(note);
+                }
 
                 roundDiv.appendChild(matchDiv);
             });
@@ -1408,6 +1620,18 @@
         });
         requestAnimationFrame(drawLines);
     }
+
+    // Delegación de eventos: guarda marcadores y penales en Firebase apenas se editan
+    bracketContainer.addEventListener('change', (e) => {
+        const esScore = e.target.classList.contains('score-input');
+        const esPenal = e.target.classList.contains('penal-input');
+        if (!esScore && !esPenal) return;
+        const matchKey = e.target.dataset.matchKey;
+        const slot = e.target.dataset.slot;
+        const campo = (esPenal ? 'penal' : 'score') + slot;
+        const valor = e.target.value === '' ? '' : Number(e.target.value);
+        db.ref('resultados/' + matchKey).update({ [campo]: valor });
+    });
 
     function drawLines() {
         const wrapper = document.querySelector('.bracket-wrapper');
