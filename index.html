@@ -62,7 +62,7 @@
         .estado-inscripciones.cerradas {
             background: #870f0b;
         }
-        /* ===== ENUNCIADO ===== */
+        /* ===== ENUNCIADO / INTRO DEL EVENTO ===== */
         .intro-evento {
             background: linear-gradient(135deg, #302d7c 0%, #4a46a8 100%);
             color: #f4f3f1;
@@ -234,7 +234,7 @@
         .btn-warning:hover { transform: scale(1.05); }
         .btn-info { background: #457b9d; color: #f4f3f1; }
         .btn-info:hover { transform: scale(1.05); }
-        /* ===== ACEPTAR TÉRMINOS ===== */
+        /* ===== ACEPTAR TÉRMINOS Y REGLAMENTO ===== */
         .aceptar-terminos {
             background: #fff8e6;
             border: 2px solid #f4a261;
@@ -272,25 +272,7 @@
         .campos-bloqueados:disabled {
             opacity: 0.5;
         }
-        .contador-jugadores {
-            background: #f0f0f5;
-            padding: 8px 14px;
-            border-radius: 10px;
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .contador-jugadores span {
-            font-size: 0.95rem;
-            color: #302d7c;
-            font-weight: 600;
-        }
-        .contador-jugadores strong {
-            color: #870f0b;
-        }
-        /* ===== JUGADORES LIBRES (público) ===== */
+        /* ===== JUGADORES LIBRES (público, sin botón eliminar) ===== */
         .jugadores-libres {
             margin-top: 30px;
             border-top: 2px solid #d6d3cc;
@@ -333,7 +315,7 @@
             align-items: center;
             gap: 10px;
         }
-        /* ===== MODAL ===== */
+        /* ===== MODAL PARA EDITAR EQUIPO ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -646,7 +628,7 @@
             margin-top: 15px;
             text-align: center;
         }
-        /* ===== CONFIRMACIÓN ===== */
+        /* ===== MENSAJE DE CONFIRMACIÓN ===== */
         .confirmacion-mensaje {
             position: fixed;
             top: 20px;
@@ -669,6 +651,7 @@
             .confirmacion-mensaje { left: 12px; right: 12px; max-width: none; top: 12px; }
             .modal { margin: 12px; }
         }
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
             .form-grid { grid-template-columns: 1fr; }
             .participante-row { grid-template-columns: 1fr 1fr; }
@@ -682,7 +665,6 @@
             .round { min-width: 120px; }
             .team-name { font-size: 0.7rem; }
             .score-input { width: 28px; font-size: 0.75rem; }
-            .contador-jugadores { flex-direction: column; gap: 4px; }
         }
     </style>
 </head>
@@ -742,8 +724,8 @@
                     <input type="tel" id="telefono" placeholder="+569 1234 5678" required>
                 </div>
                 <div class="form-group">
-                    <label for="maxCompetidores">Tamaño máximo del equipo (6-7) *</label>
-                    <input type="number" id="maxCompetidores" min="6" max="7" placeholder="6" required>
+                    <label for="cantidadCompetidores">Nº de competidores (6-7) *</label>
+                    <input type="number" id="cantidadCompetidores" min="6" max="7" placeholder="6" required>
                 </div>
                 <div class="form-group">
                     <label for="colorEquipo">Color de uniforme *</label>
@@ -751,15 +733,14 @@
                         <option value="">-- Selecciona --</option>
                     </select>
                 </div>
-
-                <div class="contador-jugadores">
-                    <span>👥 Jugadores actuales: <strong id="contadorActual">0</strong> de <strong id="contadorMaximo">6</strong></span>
-                    <span>📋 Plazas disponibles: <strong id="plazasDisponibles">6</strong></span>
+                <div class="form-group">
+                    <label for="plazas">Plazas por completar (con jugadores libres)</label>
+                    <input type="number" id="plazas" min="0" max="6" value="0" placeholder="0">
                 </div>
 
                 <div class="participantes-container">
                     <h3>👥 Participantes (incluye al capitán)</h3>
-                    <p style="font-size:0.8rem;color:#666;margin-bottom:10px;">Puedes inscribir a los jugadores que ya tengas; las plazas vacías se podrán completar más tarde desde el panel de administración.</p>
+                    <p style="font-size:0.8rem;color:#666;margin-bottom:10px;">No necesitas tener a todo el equipo ahora: registra a los que ya tengas (mínimo 1, el capitán) y usa "Plazas por completar" para las que falten. La suma de participantes actuales + plazas debe dar el número de competidores indicado (6 o 7).</p>
                     <div id="participantesList"></div>
                     <button type="button" class="btn-add-participante" id="btnAddParticipante">+ Agregar participante</button>
                 </div>
@@ -773,7 +754,7 @@
         </form>
     </div>
 
-    <!-- JUGADORES LIBRES -->
+    <!-- JUGADORES LIBRES (público, sin botón eliminar) -->
     <div class="jugadores-libres">
         <h2>👤 Jugadores libres</h2>
         <p>Si eres jugador sin equipo, regístrate aquí. Los capitanes te contactarán.</p>
@@ -820,7 +801,7 @@
                         <th>Capitán</th>
                         <th>Teléfono</th>
                         <th>Color</th>
-                        <th>Jugadores (actual / max)</th>
+                        <th>Jugadores (actual / plazas)</th>
                         <th colspan="2">Acción</th>
                     </tr>
                 </thead>
@@ -856,7 +837,7 @@
             <h2>✏️ Editar equipo: <span id="modalEquipoNombre"></span></h2>
             <div id="modalEquipoId" style="display:none;"></div>
             <div class="form-group">
-                <label>Participantes actuales (<span id="modalContadorActual">0</span> de <span id="modalMaximo">6</span>)</label>
+                <label>Participantes actuales:</label>
                 <div class="lista-participantes-modal" id="modalListaParticipantes"></div>
             </div>
             <div class="form-group">
@@ -887,7 +868,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ===== CONSTANTES =====
+    // ===== CONSTANTES Y VARIABLES GLOBALES =====
     const MAX_EQUIPOS = 16;
     const PALETA = [
         { nombre: 'Rojo', color: '#e63946' },
@@ -907,15 +888,19 @@
         'Rosa': 1, 'Gris': 1
     };
     const COLORES = Object.keys(COLORES_CUPO);
-    // Contraseña: TMSControl2026! (cambia el hash si la modificas)
-    const ADMIN_PASSWORD_HASH = '4c1a9c7d8e...'; // ¡REEMPLAZA CON EL HASH REAL!
+
+    // === CONTRASEÑA (genera el hash de 'TMSControl2026!' y reemplázalo) ===
+    // Para generar el hash: abre consola del navegador y ejecuta:
+    // crypto.subtle.digest('SHA-256', new TextEncoder().encode('TMSControl2026!'))
+    //   .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+    const ADMIN_PASSWORD_HASH = 'REEMPLAZA_CON_EL_HASH_DE_TMSControl2026!';
 
     let equipos = [];
     let jugadoresLibres = [];
     let inscripcionesAbiertas = true;
     let resultados = {};
 
-    // ===== DOM =====
+    // ===== REFERENCIAS DOM =====
     const $ = id => document.getElementById(id);
     const estadoInscripciones = $('estadoInscripciones');
     const cuposTexto = $('cuposTexto');
@@ -927,13 +912,11 @@
     const nombreEquipo = $('nombreEquipo');
     const capitan = $('capitan');
     const telefono = $('telefono');
-    const maxCompetidores = $('maxCompetidores');
+    const cantidadCompetidores = $('cantidadCompetidores');
     const colorEquipo = $('colorEquipo');
+    const plazas = $('plazas');
     const participantesList = $('participantesList');
     const btnAddParticipante = $('btnAddParticipante');
-    const contadorActual = $('contadorActual');
-    const contadorMaximo = $('contadorMaximo');
-    const plazasDisponibles = $('plazasDisponibles');
     const bracketContainer = $('bracketContainer');
     const lineSvg = $('lineSvg');
     const championBox = $('championBox');
@@ -953,12 +936,11 @@
     const telefonoJugador = $('telefonoJugador');
     const btnRegistrarJugador = $('btnRegistrarJugador');
 
+    // Modal
     const modalEditarEquipo = $('modalEditarEquipo');
     const modalEquipoNombre = $('modalEquipoNombre');
     const modalEquipoId = $('modalEquipoId');
     const modalListaParticipantes = $('modalListaParticipantes');
-    const modalContadorActual = $('modalContadorActual');
-    const modalMaximo = $('modalMaximo');
     const modalNuevoNombre = $('modalNuevoNombre');
     const modalNuevoCarnet = $('modalNuevoCarnet');
     const modalNuevoCorreo = $('modalNuevoCorreo');
@@ -966,7 +948,7 @@
     const modalGuardar = $('modalGuardar');
     let equipoEditandoId = null;
 
-    // ===== MENSAJE =====
+    // ===== MENSAJE DE CONFIRMACIÓN =====
     function mostrarConfirmacion(mensaje, esError = false) {
         confirmacionMensaje.textContent = mensaje;
         confirmacionMensaje.className = 'confirmacion-mensaje visible' + (esError ? ' error' : '');
@@ -974,16 +956,6 @@
         window._confirmTimeout = setTimeout(() => {
             confirmacionMensaje.classList.remove('visible');
         }, 4000);
-    }
-
-    // ===== CONTADOR DE JUGADORES =====
-    function actualizarContador() {
-        const max = parseInt(maxCompetidores.value) || 6;
-        const actual = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim()).length;
-        contadorActual.textContent = actual;
-        contadorMaximo.textContent = max;
-        const plazas = Math.max(0, max - actual);
-        plazasDisponibles.textContent = plazas;
     }
 
     // ===== PARTICIPANTES DINÁMICOS =====
@@ -1013,7 +985,6 @@
         document.querySelectorAll('.p-nombre').forEach(inp => inp.addEventListener('input', e => {
             const idx = parseInt(e.target.dataset.index);
             participantes[idx].nombre = e.target.value;
-            actualizarContador();
         }));
         document.querySelectorAll('.p-carnet').forEach(inp => inp.addEventListener('input', e => {
             const idx = parseInt(e.target.dataset.index);
@@ -1027,9 +998,7 @@
             const idx = parseInt(e.target.dataset.index);
             participantes.splice(idx, 1);
             renderParticipantes();
-            actualizarContador();
         }));
-        actualizarContador();
     }
     btnAddParticipante.addEventListener('click', () => {
         participantes.push({ nombre: '', carnet: '', correo: '' });
@@ -1041,7 +1010,6 @@
             renderParticipantes();
         }
     });
-    maxCompetidores.addEventListener('input', actualizarContador);
     renderParticipantes();
 
     aceptaTerminos.addEventListener('change', () => {
@@ -1270,27 +1238,45 @@
         const nombre = nombreEquipo.value.trim();
         const capitanVal = capitan.value.trim();
         const telefonoVal = telefono.value.trim();
-        const max = parseInt(maxCompetidores.value);
+        const cantidad = parseInt(cantidadCompetidores.value);
         const color = colorEquipo.value;
+        const plazasVal = parseInt(plazas.value) || 0;
 
-        if (!nombre || !capitanVal || !telefonoVal || !max || !color) {
+        if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
             mostrarConfirmacion('⚠️ Completa todos los campos obligatorios.', true); return;
         }
-        if (max < 6 || max > 7) {
-            mostrarConfirmacion('⚠️ El tamaño máximo debe ser 6 o 7.', true); return;
+        if (cantidad < 6 || cantidad > 7) {
+            mostrarConfirmacion('⚠️ Competidores entre 6 y 7.', true); return;
+        }
+        if (plazasVal < 0 || plazasVal > 6) {
+            mostrarConfirmacion('⚠️ Plazas por completar entre 0 y 6.', true); return;
         }
 
+        // FILTRAR PARTICIPANTES VÁLIDOS (los que tienen nombre, carnet y correo)
         const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
-        if (participantesValidos.length === 0) {
-            mostrarConfirmacion('⚠️ Debes registrar al menos al capitán.', true); return;
+
+        // Validar que haya al menos 1 participante (el capitán)
+        if (participantesValidos.length < 1) {
+            mostrarConfirmacion('⚠️ Registra al menos al capitán.', true); return;
         }
-        if (participantesValidos.length > max) {
-            mostrarConfirmacion(`⚠️ Tienes ${participantesValidos.length} participantes, pero el máximo es ${max}.`, true); return;
+
+        // Verificar que el número de participantes no exceda el total de competidores
+        if (participantesValidos.length > cantidad) {
+            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) exceden el total (${cantidad}).`, true); return;
         }
+
+        // Verificar que la suma de participantes + plazas sea exactamente igual al total de competidores
+        if (participantesValidos.length + plazasVal !== cantidad) {
+            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) + plazas (${plazasVal}) debe ser ${cantidad}.`, true); return;
+        }
+
+        // Validar que el primer participante sea el capitán
         const capitanParticipante = participantesValidos[0];
         if (capitanParticipante.nombre !== capitanVal) {
             mostrarConfirmacion('⚠️ El capitán debe ser el primer participante.', true); return;
         }
+
+        // Validar formato de correo (@estudiantec.cr)
         const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
         for (let p of participantesValidos) {
             if (!emailRegex.test(p.correo)) {
@@ -1298,14 +1284,20 @@
                 return;
             }
         }
+
+        // Validar nombre de equipo duplicado
         const nombreLower = nombre.toLowerCase();
         if (equipos.some(eq => (eq.nombre || '').trim().toLowerCase() === nombreLower)) {
             mostrarConfirmacion('⚠️ Nombre de equipo duplicado.', true); return;
         }
+
+        // Validar teléfono de capitán duplicado
         const telefonoNormalizado = telefonoVal.replace(/\s+/g, '');
         if (equipos.some(eq => (eq.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
             mostrarConfirmacion('⚠️ Teléfono ya registrado.', true); return;
         }
+
+        // Validar cupo de color
         const usados = {};
         equipos.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
         if ((usados[color] || 0) >= COLORES_CUPO[color]) {
@@ -1313,11 +1305,8 @@
         }
 
         const nuevoEquipo = {
-            nombre,
-            capitan: capitanVal,
-            telefono: telefonoVal,
-            color,
-            maxCompetidores: max,
+            nombre, capitan: capitanVal, telefono: telefonoVal, color,
+            cantidadCompetidores: cantidad, plazas: plazasVal,
             participantes: participantesValidos,
             fecha: firebase.database.ServerValue.TIMESTAMP
         };
@@ -1328,10 +1317,9 @@
             participantes = [{ nombre: '', carnet: '', correo: '' }];
             renderParticipantes();
             capitan.value = '';
-            maxCompetidores.value = '';
+            plazas.value = '0';
             aceptaTerminos.checked = false;
             camposEquipo.disabled = true;
-            actualizarContador();
         } catch (err) {
             mostrarConfirmacion('❌ Error: ' + err.message, true);
         }
@@ -1371,14 +1359,9 @@
         equipoEditandoId = equipoId;
         modalEquipoNombre.textContent = equipo.nombre;
         modalEquipoId.textContent = equipoId;
-        const participantes = equipo.participantes || [];
-        const max = equipo.maxCompetidores || 6;
-        modalContadorActual.textContent = participantes.length;
-        modalMaximo.textContent = max;
-
         modalListaParticipantes.innerHTML = '';
-        if (participantes.length > 0) {
-            participantes.forEach(p => {
+        if (equipo.participantes && equipo.participantes.length > 0) {
+            equipo.participantes.forEach(p => {
                 const div = document.createElement('p');
                 div.textContent = `${p.nombre} (${p.carnet}) - ${p.correo}`;
                 modalListaParticipantes.appendChild(div);
@@ -1404,7 +1387,7 @@
         const carnet = modalNuevoCarnet.value.trim();
         const correo = modalNuevoCorreo.value.trim();
         if (!nombre || !carnet || !correo) {
-            mostrarConfirmacion('⚠️ Completa todos los campos.', true);
+            mostrarConfirmacion('⚠️ Completa todos los campos del nuevo participante.', true);
             return;
         }
         const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
@@ -1419,21 +1402,25 @@
             const data = snapshot.val();
             if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
             const participantesActuales = data.participantes || [];
-            const max = data.maxCompetidores || 6;
-            if (participantesActuales.length >= max) {
-                mostrarConfirmacion('⚠️ El equipo ya tiene el máximo de jugadores.', true);
+            const plazasActuales = data.plazas || 0;
+            if (plazasActuales <= 0) {
+                mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas disponibles.', true);
                 return;
             }
             participantesActuales.push({ nombre, carnet, correo });
-            await equipoRef.update({ participantes: participantesActuales });
-            mostrarConfirmacion('✅ Participante agregado. Plazas restantes: ' + (max - participantesActuales.length));
+            const nuevasPlazas = plazasActuales - 1;
+            await equipoRef.update({
+                participantes: participantesActuales,
+                plazas: nuevasPlazas
+            });
+            mostrarConfirmacion('✅ Participante agregado. Plazas restantes: ' + nuevasPlazas);
             modalEditarEquipo.classList.remove('visible');
         } catch (err) {
-            mostrarConfirmacion('❌ Error: ' + err.message, true);
+            mostrarConfirmacion('❌ Error al agregar: ' + err.message, true);
         }
     });
 
-    // ===== LISTA PÚBLICA JUGADORES LIBRES (sin eliminar) =====
+    // ===== ACTUALIZAR LISTA PÚBLICA DE JUGADORES LIBRES (sin botón eliminar) =====
     function actualizarListaJugadoresLibres(lista) {
         listaJugadoresLibres.innerHTML = '';
         if (!lista || lista.length === 0) {
@@ -1448,7 +1435,7 @@
         });
     }
 
-    // ===== TABLA ADMIN JUGADORES LIBRES =====
+    // ===== TABLA JUGADORES LIBRES EN ADMIN (con eliminar) =====
     function actualizarTablaJugadoresLibres(lista) {
         tbodyJugadoresLibres.innerHTML = '';
         if (!lista || lista.length === 0) {
@@ -1472,7 +1459,7 @@
         });
     }
 
-    // ===== ADMIN PANEL EQUIPOS =====
+    // ===== ADMIN PANEL (EQUIPOS) con botón EDITAR =====
     function actualizarAdminPanel(equipos) {
         tbodyEquipos.innerHTML = '';
         if (!equipos || equipos.length === 0) {
@@ -1481,8 +1468,7 @@
         }
         equipos.forEach((eq, i) => {
             const participantesCount = eq.participantes ? eq.participantes.length : 0;
-            const max = eq.maxCompetidores || 6;
-            const plazasInfo = `${participantesCount} / ${max}`;
+            const plazasInfo = `${participantesCount} / ${eq.plazas || 0}`;
             const colorObj = PALETA.find(p => p.nombre === eq.color);
             const colorHex = colorObj ? colorObj.color : '#aaa';
             const tr = document.createElement('tr');
@@ -1546,7 +1532,7 @@
         await db.ref('config/estadoInscripciones').set('abiertas');
     });
 
-    // ===== ADMIN TOGGLE =====
+    // ===== ADMIN TOGGLE (hash) =====
     async function hashTexto(texto) {
         const enc = new TextEncoder().encode(texto);
         const buf = await crypto.subtle.digest('SHA-256', enc);
@@ -1570,7 +1556,7 @@
         }
     });
 
-    // ===== REINICIAR =====
+    // ===== REINICIAR TORNEO =====
     btnReiniciarTorneo.addEventListener('click', async () => {
         if (!confirm('⚠️ Esto borrará TODOS los datos. ¿Continuar?')) return;
         if (!confirm('¿Confirmas?')) return;
@@ -1822,7 +1808,7 @@
 
     // ===== INICIO =====
     cargarDatos();
-    console.log('🏆 Torneo TMS - Inscripción flexible (mínimo 1 jugador)');
+    console.log('🏆 Torneo TMS con edición de equipos y gestión mejorada de jugadores libres');
 </script>
 </body>
 </html>
