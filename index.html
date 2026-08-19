@@ -653,12 +653,13 @@
                 </div>
                 <!-- Nuevo campo: jugadores adicionales que acepta -->
                 <div class="form-group">
-                    <label for="plazas">Jugadores que desea aceptar para completar su equipo</label>
-                    <input type="number" id="plazas" min="0" max="3" value="0" placeholder="0">
+                    <label for="plazas">Plazas por completar (con jugadores libres)</label>
+                    <input type="number" id="plazas" min="0" max="6" value="0" placeholder="0">
                 </div>
 
                 <div class="participantes-container">
                     <h3>👥 Participantes (incluye al capitán)</h3>
+                    <p style="font-size:0.8rem;color:#666;margin-bottom:10px;">No necesitas tener a todo el equipo ahora: registra a los que ya tengas y usa "Plazas por completar" para las que falten. La suma de ambos debe dar el número de competidores indicado arriba.</p>
                     <div id="participantesList"></div>
                     <button type="button" class="btn-add-participante" id="btnAddParticipante">+ Agregar participante</button>
                 </div>
@@ -1183,14 +1184,22 @@
             mostrarConfirmacion('⚠️ El número de competidores debe ser entre 6 y 7 (mínimo un cambio disponible).', true);
             return;
         }
-        if (plazasVal < 0 || plazasVal > 3) {
-            mostrarConfirmacion('⚠️ Las plazas adicionales deben ser entre 0 y 3.', true);
+        if (plazasVal < 0 || plazasVal > 6) {
+            mostrarConfirmacion('⚠️ Las plazas por completar deben ser entre 0 y 6.', true);
             return;
         }
 
         const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
-        if (participantesValidos.length !== cantidad) {
-            mostrarConfirmacion(`⚠️ Debes completar los datos de exactamente ${cantidad} participantes (incluyendo al capitán).`, true);
+        if (participantesValidos.length < 1) {
+            mostrarConfirmacion('⚠️ Debes registrar al menos al capitán como participante.', true);
+            return;
+        }
+        if (participantesValidos.length > cantidad) {
+            mostrarConfirmacion(`⚠️ Registraste más participantes (${participantesValidos.length}) que el total de competidores indicado (${cantidad}).`, true);
+            return;
+        }
+        if (participantesValidos.length + plazasVal !== cantidad) {
+            mostrarConfirmacion(`⚠️ Los participantes registrados (${participantesValidos.length}) más las plazas por completar (${plazasVal}) deben sumar exactamente ${cantidad}.`, true);
             return;
         }
         const capitanParticipante = participantesValidos[0];
