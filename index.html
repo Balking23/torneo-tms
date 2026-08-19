@@ -232,6 +232,8 @@
         .btn-success:hover { background: #1b4332; transform: scale(1.05); }
         .btn-warning { background: #f4a261; color: #1b4332; }
         .btn-warning:hover { transform: scale(1.05); }
+        .btn-info { background: #457b9d; color: #f4f3f1; }
+        .btn-info:hover { transform: scale(1.05); }
         /* ===== ACEPTAR TÉRMINOS Y REGLAMENTO ===== */
         .aceptar-terminos {
             background: #fff8e6;
@@ -270,7 +272,7 @@
         .campos-bloqueados:disabled {
             opacity: 0.5;
         }
-        /* ===== JUGADORES LIBRES ===== */
+        /* ===== JUGADORES LIBRES (público, sin botón eliminar) ===== */
         .jugadores-libres {
             margin-top: 30px;
             border-top: 2px solid #d6d3cc;
@@ -313,16 +315,48 @@
             align-items: center;
             gap: 10px;
         }
-        .jugadores-libres .lista-jugadores .jugador-item .btn-eliminar-jugador {
-            background: #870f0b;
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            font-weight: 700;
-            line-height: 1;
+        /* ===== MODAL PARA EDITAR EQUIPO ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.visible { display: flex; }
+        .modal {
+            background: #f4f3f1;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.6);
+        }
+        .modal h2 { color: #302d7c; margin-bottom: 15px; }
+        .modal .form-group { margin-bottom: 12px; }
+        .modal .form-group label { font-weight: 600; color: #302d7c; }
+        .modal .form-group input { width: 100%; }
+        .modal .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .modal .lista-participantes-modal {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .modal .lista-participantes-modal p {
+            padding: 4px 0;
+            border-bottom: 1px solid #d6d3cc;
         }
         /* ===== BRACKET ===== */
         .bracket-wrapper {
@@ -464,6 +498,19 @@
         }
         .score-input::-webkit-inner-spin-button { -webkit-appearance: none; }
         .score-input { -moz-appearance: textfield; }
+        .team-name.team-winner { color: #2d6a4f; font-weight: 800; }
+        .team-name.team-loser { opacity: 0.45; text-decoration: line-through; }
+        .match-bye-note { font-size: 0.72rem; color: #2d6a4f; font-weight: 600; margin-top: 2px; }
+        .match-penales {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+            padding-top: 6px;
+            border-top: 1px dashed #d6d3cc;
+        }
+        .match-penales .penales-label { font-size: 0.72rem; font-weight: 700; color: #870f0b; }
+        .match-penales .penales-inputs { display: flex; gap: 6px; }
         /* ===== CAMPEÓN ===== */
         .champion-box {
             margin-top: 30px;
@@ -550,6 +597,18 @@
         .admin-panel .btn-eliminar-equipo:hover, .admin-panel .btn-eliminar-jugador-admin:hover {
             background: #6a0b08;
         }
+        .admin-panel .btn-editar-equipo {
+            background: #457b9d;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .admin-panel .btn-editar-equipo:hover {
+            background: #1d3557;
+        }
         .admin-panel .contactos-whatsapp {
             background: #fff;
             padding: 15px;
@@ -569,7 +628,7 @@
             margin-top: 15px;
             text-align: center;
         }
-        /* ===== MENSAJE DE CONFIRMACIÓN EN PÁGINA ===== */
+        /* ===== MENSAJE DE CONFIRMACIÓN ===== */
         .confirmacion-mensaje {
             position: fixed;
             top: 20px;
@@ -590,30 +649,8 @@
         .confirmacion-mensaje.error { background: #870f0b; }
         @media (max-width: 600px) {
             .confirmacion-mensaje { left: 12px; right: 12px; max-width: none; top: 12px; }
+            .modal { margin: 12px; }
         }
-        /* ===== GANADOR / PERDEDOR EN BRACKET ===== */
-        .team-name.team-winner { color: #2d6a4f; font-weight: 800; }
-        .team-name.team-loser { opacity: 0.45; text-decoration: line-through; }
-        .match-bye-note {
-            font-size: 0.72rem;
-            color: #2d6a4f;
-            font-weight: 600;
-            margin-top: 2px;
-        }
-        .match-penales {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4px;
-            padding-top: 6px;
-            border-top: 1px dashed #d6d3cc;
-        }
-        .match-penales .penales-label {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: #870f0b;
-        }
-        .match-penales .penales-inputs { display: flex; gap: 6px; }
         /* ===== RESPONSIVE ===== */
         @media (max-width: 900px) {
             .form-grid { grid-template-columns: 1fr; }
@@ -645,7 +682,7 @@
         </div>
     </div>
 
-    <!-- ENUNCIADO / INTRO DEL EVENTO -->
+    <!-- ENUNCIADO -->
     <div class="intro-evento">
         <p>Bienvenido a <strong>Torneo TMS</strong>, la plataforma integral para organizar torneos de fútbol 5-7: inscripción de equipos, registro de jugadores libres y llave (bracket) automatizada, todo en tiempo real.</p>
         <p>Cada equipo se registra con su capitán, participantes y color de uniforme; el sistema asigna y ajusta los colores automáticamente para evitar que dos equipos con tonos parecidos se enfrenten en la primera ronda. Todo se sincroniza al instante entre los dispositivos de quienes estén viendo la página.</p>
@@ -696,10 +733,9 @@
                         <option value="">-- Selecciona --</option>
                     </select>
                 </div>
-                <!-- Nuevo campo: jugadores adicionales que acepta -->
                 <div class="form-group">
                     <label for="plazas">Plazas por completar (con jugadores libres)</label>
-                    <input type="number" id="plazas" min="0" max="6" value="0" placeholder="0">
+                    <input type="number" id="plazas" min="0" max="1" value="0" placeholder="0">
                 </div>
 
                 <div class="participantes-container">
@@ -718,7 +754,7 @@
         </form>
     </div>
 
-    <!-- JUGADORES LIBRES (formulario y lista) -->
+    <!-- JUGADORES LIBRES (público, sin botón eliminar) -->
     <div class="jugadores-libres">
         <h2>👤 Jugadores libres</h2>
         <p>Si eres jugador sin equipo, regístrate aquí. Los capitanes te contactarán.</p>
@@ -766,7 +802,7 @@
                         <th>Teléfono</th>
                         <th>Color</th>
                         <th>Jugadores (actual / plazas)</th>
-                        <th>Acción</th>
+                        <th colspan="2">Acción</th>
                     </tr>
                 </thead>
                 <tbody id="tbodyEquipos"></tbody>
@@ -794,6 +830,28 @@
             <button class="btn btn-primary" style="margin-top:8px;" id="btnCopiarWhatsapp">📋 Copiar lista</button>
         </div>
     </div>
+
+    <!-- MODAL PARA EDITAR EQUIPO -->
+    <div class="modal-overlay" id="modalEditarEquipo">
+        <div class="modal">
+            <h2>✏️ Editar equipo: <span id="modalEquipoNombre"></span></h2>
+            <div id="modalEquipoId" style="display:none;"></div>
+            <div class="form-group">
+                <label>Participantes actuales:</label>
+                <div class="lista-participantes-modal" id="modalListaParticipantes"></div>
+            </div>
+            <div class="form-group">
+                <label>Agregar nuevo participante</label>
+                <input type="text" id="modalNuevoNombre" placeholder="Nombre completo">
+                <input type="text" id="modalNuevoCarnet" placeholder="Carnet" style="margin-top:6px;">
+                <input type="email" id="modalNuevoCorreo" placeholder="Correo estudiantil" style="margin-top:6px;">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="modalCerrar">Cancelar</button>
+                <button class="btn btn-success" id="modalGuardar">Agregar participante</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -812,7 +870,6 @@
 
     // ===== CONSTANTES Y VARIABLES GLOBALES =====
     const MAX_EQUIPOS = 16;
-    // Paleta de colores con nombres y códigos RGB (para calcular distancias)
     const PALETA = [
         { nombre: 'Rojo', color: '#e63946' },
         { nombre: 'Azul', color: '#457b9d' },
@@ -825,7 +882,6 @@
         { nombre: 'Rosa', color: '#ffb3c6' },
         { nombre: 'Gris', color: '#8d99ae' }
     ];
-    // Cupos por color (mismo que antes)
     const COLORES_CUPO = {
         'Rojo': 3, 'Azul': 3, 'Verde': 2, 'Amarillo': 2,
         'Blanco': 2, 'Negro': 2, 'Naranja': 2, 'Morado': 2,
@@ -833,22 +889,17 @@
     };
     const COLORES = Object.keys(COLORES_CUPO);
 
+    // === CONTRASEÑA (debes generar el hash de 'TMSControl2026!' y reemplazarlo) ===
+    // Para generar el hash: abre consola del navegador y ejecuta:
+    // crypto.subtle.digest('SHA-256', new TextEncoder().encode('TMSControl2026!'))
+    //   .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+    // Reemplaza el valor de abajo por el hash que obtengas.
+    const ADMIN_PASSWORD_HASH = 'REEMPLAZA_CON_EL_HASH_DE_TMSControl2026!';
+
     let equipos = [];
     let jugadoresLibres = [];
     let inscripcionesAbiertas = true;
     let resultados = {};
-
-    // ===== CONTRASEÑA DE ADMIN (guardada como hash SHA-256, no en texto plano) =====
-    // Contraseña actual: TorneoTMS2026!
-    // Para cambiarla: abre la consola del navegador (F12) y ejecuta:
-    //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('TU_NUEVA_CLAVE')).then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
-    // y reemplaza el valor de abajo por el hash que te imprima.
-    const ADMIN_PASSWORD_HASH = '353c39fdfc6d15e65e6282eda6c40a67e756f14ac3521f257ec3e44f0b8065b3';
-    async function hashTexto(texto) {
-        const enc = new TextEncoder().encode(texto);
-        const buf = await crypto.subtle.digest('SHA-256', enc);
-        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
 
     // ===== REFERENCIAS DOM =====
     const $ = id => document.getElementById(id);
@@ -886,7 +937,19 @@
     const telefonoJugador = $('telefonoJugador');
     const btnRegistrarJugador = $('btnRegistrarJugador');
 
-    // ===== MENSAJE DE CONFIRMACIÓN EN PÁGINA (reemplaza alert() informativos) =====
+    // Modal
+    const modalEditarEquipo = $('modalEditarEquipo');
+    const modalEquipoNombre = $('modalEquipoNombre');
+    const modalEquipoId = $('modalEquipoId');
+    const modalListaParticipantes = $('modalListaParticipantes');
+    const modalNuevoNombre = $('modalNuevoNombre');
+    const modalNuevoCarnet = $('modalNuevoCarnet');
+    const modalNuevoCorreo = $('modalNuevoCorreo');
+    const modalCerrar = $('modalCerrar');
+    const modalGuardar = $('modalGuardar');
+    let equipoEditandoId = null;
+
+    // ===== MENSAJE DE CONFIRMACIÓN =====
     function mostrarConfirmacion(mensaje, esError = false) {
         confirmacionMensaje.textContent = mensaje;
         confirmacionMensaje.className = 'confirmacion-mensaje visible' + (esError ? ' error' : '');
@@ -950,14 +1013,11 @@
     });
     renderParticipantes();
 
-    // ===== BLOQUEAR/DESBLOQUEAR FORMULARIO SEGÚN ACEPTACIÓN DE TÉRMINOS =====
     aceptaTerminos.addEventListener('change', () => {
         camposEquipo.disabled = !aceptaTerminos.checked;
     });
 
-    // ===== FUNCIONES DE COLOR (MEJORADAS) =====
-
-    // Convertir color hex a RGB
+    // ===== FUNCIONES DE COLOR =====
     function hexToRgb(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
@@ -966,8 +1026,6 @@
             b: parseInt(result[3], 16)
         } : null;
     }
-
-    // Calcular distancia entre dos colores (Euclidiana)
     function colorDistance(c1, c2) {
         const rgb1 = hexToRgb(c1);
         const rgb2 = hexToRgb(c2);
@@ -978,16 +1036,7 @@
             Math.pow(rgb1.b - rgb2.b, 2)
         );
     }
-
-    // Obtener el color más parecido (para evitar conflictos)
-    function getColorNameByHex(hex) {
-        const found = PALETA.find(p => p.color.toLowerCase() === hex.toLowerCase());
-        return found ? found.nombre : hex;
-    }
-
-    // Asignar colores automáticamente a equipos que no tengan color definido
     function asignarColoresAutomaticamente(equiposList) {
-        // Contar usos de colores actuales
         const usos = {};
         PALETA.forEach(p => usos[p.nombre] = 0);
         equiposList.forEach(eq => {
@@ -995,14 +1044,11 @@
                 usos[eq.color] = (usos[eq.color] || 0) + 1;
             }
         });
-
-        // Para cada equipo sin color, asignar el menos usado
         equiposList.forEach(eq => {
             if (!eq.color) {
                 let minUsos = Infinity;
                 let colorAsignado = PALETA[0].nombre;
                 PALETA.forEach(p => {
-                    // Verificar que no exceda el cupo
                     const cupo = COLORES_CUPO[p.nombre] || 0;
                     const usado = usos[p.nombre] || 0;
                     if (usado < cupo && usado < minUsos) {
@@ -1010,7 +1056,6 @@
                         colorAsignado = p.nombre;
                     }
                 });
-                // Si no hay color disponible (todos los cupos llenos), usar el que menos se use aunque supere cupo
                 if (minUsos === Infinity) {
                     PALETA.forEach(p => {
                         const usado = usos[p.nombre] || 0;
@@ -1024,35 +1069,22 @@
                 usos[colorAsignado] = (usos[colorAsignado] || 0) + 1;
             }
         });
-
         return equiposList;
     }
-
-    // Resolver conflictos de colores en la primera ronda
     function resolverConflictosPrimeraRonda(equiposList, bracketSize) {
-        // Obtener los equipos de la primera ronda (los que están en el bracket, sin los byes)
         const equiposEnPrimeraRonda = [];
-        const byes = bracketSize - equiposList.length;
         for (let i = 0; i < equiposList.length; i++) {
             equiposEnPrimeraRonda.push(equiposList[i]);
         }
-        // Si no hay al menos 2 equipos, no hay conflicto
         if (equiposEnPrimeraRonda.length < 2) return equiposList;
-
-        // Agrupar por partidos (cada 2 equipos)
         const partidos = [];
         for (let i = 0; i < equiposEnPrimeraRonda.length; i += 2) {
             if (i + 1 < equiposEnPrimeraRonda.length) {
                 partidos.push([equiposEnPrimeraRonda[i], equiposEnPrimeraRonda[i+1]]);
-            } else {
-                // Si queda un equipo solo (byes ya no están aquí), no hay conflicto
-                break;
-            }
+            } else break;
         }
-
         let conflictosResueltos = 0;
         partidos.forEach(([eq1, eq2]) => {
-            // Verificar si los colores son muy parecidos (distancia < 50)
             const color1 = eq1.color;
             const color2 = eq2.color;
             const hex1 = PALETA.find(p => p.nombre === color1)?.color;
@@ -1060,28 +1092,20 @@
             if (!hex1 || !hex2) return;
             const dist = colorDistance(hex1, hex2);
             if (dist < 50) {
-                // Intentar cambiar el color de eq2 por otro que no esté en el mismo partido y que sea distinto
-                const coloresUsadosEnPartido = [eq1.color, eq2.color];
-                // Buscar un color disponible que no sea igual a eq1 y que tenga cupo
                 const usos = {};
-                equiposList.forEach(eq => {
-                    usos[eq.color] = (usos[eq.color] || 0) + 1;
-                });
+                equiposList.forEach(eq => { usos[eq.color] = (usos[eq.color] || 0) + 1; });
                 let encontrado = false;
                 for (let p of PALETA) {
-                    if (p.nombre === eq1.color) continue; // no podemos usar el mismo que el rival
-                    if (usos[p.nombre] >= COLORES_CUPO[p.nombre]) continue; // sin cupo
-                    // Verificar que este color no sea también similar a eq1 (distancia > 50)
+                    if (p.nombre === eq1.color) continue;
+                    if (usos[p.nombre] >= COLORES_CUPO[p.nombre]) continue;
                     const distNuevo = colorDistance(p.color, hex1);
                     if (distNuevo >= 50) {
-                        // Asignar nuevo color a eq2
                         eq2.color = p.nombre;
                         encontrado = true;
                         conflictosResueltos++;
                         break;
                     }
                 }
-                // Si no se encontró, intentar cambiar eq1
                 if (!encontrado) {
                     for (let p of PALETA) {
                         if (p.nombre === eq2.color) continue;
@@ -1095,9 +1119,7 @@
                         }
                     }
                 }
-                // Si aún no, cambiar el color de eq1 por otro cualquiera (menos óptimo)
                 if (!encontrado) {
-                    // Buscar el color menos usado
                     let minUsos = Infinity;
                     let colorAsignado = PALETA[0].nombre;
                     PALETA.forEach(p => {
@@ -1113,14 +1135,12 @@
                 }
             }
         });
-
         if (conflictosResueltos > 0) {
-            console.log(`🔄 Resueltos ${conflictosResueltos} conflictos de colores en la primera ronda.`);
+            console.log(`🔄 Resueltos ${conflictosResueltos} conflictos de colores.`);
         }
         return equiposList;
     }
 
-    // ===== ACTUALIZAR COLORES Y CUPOS =====
     function actualizarColoresDisponibles(equiposActuales) {
         const usados = {};
         equiposActuales.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
@@ -1139,7 +1159,6 @@
             if (c === 'Blanco' || c === 'Amarillo') chip.style.color = '#333';
             coloresDisponibles.appendChild(chip);
         });
-        // Actualizar select del formulario
         colorEquipo.innerHTML = '<option value="">-- Selecciona --</option>';
         COLORES.forEach(c => {
             if (disponibilidad[c] > 0) {
@@ -1158,9 +1177,8 @@
         cuposTexto.style.color = disponibles <= 0 ? '#870f0b' : '#302d7c';
     }
 
-    // ===== LEER EQUIPOS Y JUGADORES LIBRES =====
+    // ===== LEER DATOS =====
     function cargarDatos() {
-        // Equipos
         db.ref('equipos').on('value', snapshot => {
             const data = snapshot.val();
             equipos = [];
@@ -1172,9 +1190,7 @@
                 });
                 equipos.sort((a,b) => (a.fecha || 0) - (b.fecha || 0));
             }
-            // Asignar colores automáticamente a los equipos que no tengan (por si se añadieron manualmente)
             equipos = asignarColoresAutomaticamente(equipos);
-            // Resolver conflictos en la primera ronda (después de asignar)
             const bracketSize = equipos.length > 0 ? Math.pow(2, Math.ceil(Math.log2(equipos.length))) : 0;
             if (bracketSize > 0) {
                 equipos = resolverConflictosPrimeraRonda(equipos, bracketSize);
@@ -1187,7 +1203,6 @@
             actualizarWhatsAppList(equipos);
         });
 
-        // Jugadores libres
         db.ref('jugadores_libres').on('value', snapshot => {
             const data = snapshot.val();
             jugadoresLibres = [];
@@ -1202,14 +1217,12 @@
             actualizarTablaJugadoresLibres(jugadoresLibres);
         });
 
-        // Estado de inscripciones
         db.ref('config/estadoInscripciones').on('value', snap => {
             const estado = snap.val();
             inscripcionesAbiertas = (estado !== 'cerradas');
             actualizarEstadoInscripciones();
         });
 
-        // Resultados de partidos (marcadores y penales)
         db.ref('resultados').on('value', snapshot => {
             resultados = snapshot.val() || {};
             actualizarBracket(equipos);
@@ -1219,12 +1232,9 @@
     // ===== GUARDAR EQUIPO =====
     formEquipo.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!inscripcionesAbiertas) { mostrarConfirmacion('⚠️ Las inscripciones están cerradas.', true); return; }
-        if (equipos.length >= MAX_EQUIPOS) { mostrarConfirmacion('⚠️ No hay cupos disponibles.', true); return; }
-        if (!aceptaTerminos.checked) {
-            mostrarConfirmacion('⚠️ Debes aceptar el reglamento y los términos y condiciones para inscribir tu equipo.', true);
-            return;
-        }
+        if (!inscripcionesAbiertas) { mostrarConfirmacion('⚠️ Inscripciones cerradas.', true); return; }
+        if (equipos.length >= MAX_EQUIPOS) { mostrarConfirmacion('⚠️ Sin cupos.', true); return; }
+        if (!aceptaTerminos.checked) { mostrarConfirmacion('⚠️ Acepta los términos.', true); return; }
 
         const nombre = nombreEquipo.value.trim();
         const capitanVal = capitan.value.trim();
@@ -1234,35 +1244,28 @@
         const plazasVal = parseInt(plazas.value) || 0;
 
         if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
-            mostrarConfirmacion('⚠️ Completa todos los campos obligatorios.', true);
-            return;
+            mostrarConfirmacion('⚠️ Completa todos los campos obligatorios.', true); return;
         }
         if (cantidad < 6 || cantidad > 7) {
-            mostrarConfirmacion('⚠️ El número de competidores debe ser entre 6 y 7 (mínimo un cambio disponible).', true);
-            return;
+            mostrarConfirmacion('⚠️ Competidores entre 6 y 7.', true); return;
         }
-        if (plazasVal < 0 || plazasVal > 6) {
-            mostrarConfirmacion('⚠️ Las plazas por completar deben ser entre 0 y 6.', true);
-            return;
+        if (plazasVal < 0 || plazasVal > 1) {
+            mostrarConfirmacion('⚠️ Plazas por completar entre 0 y 1.', true); return;
         }
 
         const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
         if (participantesValidos.length < 1) {
-            mostrarConfirmacion('⚠️ Debes registrar al menos al capitán como participante.', true);
-            return;
+            mostrarConfirmacion('⚠️ Registra al menos al capitán.', true); return;
         }
         if (participantesValidos.length > cantidad) {
-            mostrarConfirmacion(`⚠️ Registraste más participantes (${participantesValidos.length}) que el total de competidores indicado (${cantidad}).`, true);
-            return;
+            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) exceden el total (${cantidad}).`, true); return;
         }
         if (participantesValidos.length + plazasVal !== cantidad) {
-            mostrarConfirmacion(`⚠️ Los participantes registrados (${participantesValidos.length}) más las plazas por completar (${plazasVal}) deben sumar exactamente ${cantidad}.`, true);
-            return;
+            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) + plazas (${plazasVal}) debe ser ${cantidad}.`, true); return;
         }
         const capitanParticipante = participantesValidos[0];
         if (capitanParticipante.nombre !== capitanVal) {
-            mostrarConfirmacion('⚠️ El nombre del capitán debe coincidir con el primer participante.', true);
-            return;
+            mostrarConfirmacion('⚠️ El capitán debe ser el primer participante.', true); return;
         }
         const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
         for (let p of participantesValidos) {
@@ -1271,43 +1274,29 @@
                 return;
             }
         }
-
-        // Verificar nombre de equipo duplicado
         const nombreLower = nombre.toLowerCase();
         if (equipos.some(eq => (eq.nombre || '').trim().toLowerCase() === nombreLower)) {
-            mostrarConfirmacion('⚠️ Ya existe un equipo inscrito con ese nombre. Elige otro.', true);
-            return;
+            mostrarConfirmacion('⚠️ Nombre de equipo duplicado.', true); return;
         }
-
-        // Verificar teléfono de capitán duplicado
         const telefonoNormalizado = telefonoVal.replace(/\s+/g, '');
         if (equipos.some(eq => (eq.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
-            mostrarConfirmacion('⚠️ Este teléfono ya está registrado con otro equipo.', true);
-            return;
+            mostrarConfirmacion('⚠️ Teléfono ya registrado.', true); return;
         }
-
-        // Verificar cupo de color
         const usados = {};
         equipos.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
         if ((usados[color] || 0) >= COLORES_CUPO[color]) {
-            mostrarConfirmacion(`⚠️ El color ${color} ya no tiene cupos disponibles.`, true);
-            return;
+            mostrarConfirmacion(`⚠️ Color ${color} sin cupos.`, true); return;
         }
 
         const nuevoEquipo = {
-            nombre,
-            capitan: capitanVal,
-            telefono: telefonoVal,
-            color, // el usuario eligió manualmente, pero luego el sistema puede reasignar si hay conflicto
-            cantidadCompetidores: cantidad,
-            plazas: plazasVal,
+            nombre, capitan: capitanVal, telefono: telefonoVal, color,
+            cantidadCompetidores: cantidad, plazas: plazasVal,
             participantes: participantesValidos,
             fecha: firebase.database.ServerValue.TIMESTAMP
         };
-
         try {
             await db.ref('equipos').push(nuevoEquipo);
-            mostrarConfirmacion('✅ Equipo inscrito correctamente.');
+            mostrarConfirmacion('✅ Equipo inscrito.');
             formEquipo.reset();
             participantes = [{ nombre: '', carnet: '', correo: '' }];
             renderParticipantes();
@@ -1316,7 +1305,7 @@
             aceptaTerminos.checked = false;
             camposEquipo.disabled = true;
         } catch (err) {
-            mostrarConfirmacion('❌ Error al inscribir: ' + err.message, true);
+            mostrarConfirmacion('❌ Error: ' + err.message, true);
         }
     });
 
@@ -1327,8 +1316,7 @@
         if (!nombre || !telefono) { mostrarConfirmacion('⚠️ Completa todos los campos.', true); return; }
         const telefonoNormalizado = telefono.replace(/\s+/g, '');
         if (jugadoresLibres.some(j => (j.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
-            mostrarConfirmacion('⚠️ Este teléfono ya está registrado como jugador libre.', true);
-            return;
+            mostrarConfirmacion('⚠️ Teléfono ya registrado como jugador libre.', true); return;
         }
         db.ref('jugadores_libres').push({ nombre, telefono, fecha: Date.now() });
         mostrarConfirmacion('✅ Registrado como jugador libre.');
@@ -1336,19 +1324,89 @@
         telefonoJugador.value = '';
     });
 
-    // ===== ELIMINAR JUGADOR LIBRE Y EQUIPO =====
+    // ===== ELIMINAR =====
     function eliminarJugadorLibre(id) {
         if (confirm('¿Eliminar este jugador libre?')) {
             db.ref('jugadores_libres/' + id).remove();
         }
     }
     function eliminarEquipo(id) {
-        if (confirm('¿Eliminar este equipo y todos sus participantes?')) {
+        if (confirm('¿Eliminar este equipo?')) {
             db.ref('equipos/' + id).remove();
         }
     }
 
-    // ===== ACTUALIZAR LISTA PÚBLICA DE JUGADORES LIBRES =====
+    // ===== MODAL EDITAR EQUIPO =====
+    function abrirModalEditarEquipo(equipoId) {
+        const equipo = equipos.find(eq => eq.id === equipoId);
+        if (!equipo) return;
+        equipoEditandoId = equipoId;
+        modalEquipoNombre.textContent = equipo.nombre;
+        modalEquipoId.textContent = equipoId;
+        // Mostrar participantes actuales
+        modalListaParticipantes.innerHTML = '';
+        if (equipo.participantes && equipo.participantes.length > 0) {
+            equipo.participantes.forEach(p => {
+                const div = document.createElement('p');
+                div.textContent = `${p.nombre} (${p.carnet}) - ${p.correo}`;
+                modalListaParticipantes.appendChild(div);
+            });
+        } else {
+            modalListaParticipantes.innerHTML = '<p>No hay participantes registrados.</p>';
+        }
+        modalNuevoNombre.value = '';
+        modalNuevoCarnet.value = '';
+        modalNuevoCorreo.value = '';
+        modalEditarEquipo.classList.add('visible');
+    }
+
+    modalCerrar.addEventListener('click', () => {
+        modalEditarEquipo.classList.remove('visible');
+    });
+    modalEditarEquipo.addEventListener('click', (e) => {
+        if (e.target === modalEditarEquipo) modalEditarEquipo.classList.remove('visible');
+    });
+
+    modalGuardar.addEventListener('click', async () => {
+        const nombre = modalNuevoNombre.value.trim();
+        const carnet = modalNuevoCarnet.value.trim();
+        const correo = modalNuevoCorreo.value.trim();
+        if (!nombre || !carnet || !correo) {
+            mostrarConfirmacion('⚠️ Completa todos los campos del nuevo participante.', true);
+            return;
+        }
+        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
+        if (!emailRegex.test(correo)) {
+            mostrarConfirmacion('⚠️ Correo debe ser @estudiantec.cr', true);
+            return;
+        }
+        const equipoId = modalEquipoId.textContent;
+        const equipoRef = db.ref('equipos/' + equipoId);
+        try {
+            const snapshot = await equipoRef.once('value');
+            const data = snapshot.val();
+            if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
+            const participantesActuales = data.participantes || [];
+            const plazasActuales = data.plazas || 0;
+            if (plazasActuales <= 0) {
+                mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas disponibles.', true);
+                return;
+            }
+            // Agregar nuevo participante
+            participantesActuales.push({ nombre, carnet, correo });
+            const nuevasPlazas = plazasActuales - 1;
+            await equipoRef.update({
+                participantes: participantesActuales,
+                plazas: nuevasPlazas
+            });
+            mostrarConfirmacion('✅ Participante agregado. Plazas restantes: ' + nuevasPlazas);
+            modalEditarEquipo.classList.remove('visible');
+        } catch (err) {
+            mostrarConfirmacion('❌ Error al agregar: ' + err.message, true);
+        }
+    });
+
+    // ===== ACTUALIZAR LISTA PÚBLICA DE JUGADORES LIBRES (sin botón eliminar) =====
     function actualizarListaJugadoresLibres(lista) {
         listaJugadoresLibres.innerHTML = '';
         if (!lista || lista.length === 0) {
@@ -1358,21 +1416,12 @@
         lista.forEach(j => {
             const div = document.createElement('div');
             div.className = 'jugador-item';
-            div.innerHTML = `
-                <span>${j.nombre} - 📱 ${j.telefono}</span>
-                <button class="btn-eliminar-jugador" data-id="${j.id}">✕</button>
-            `;
+            div.innerHTML = `<span>${j.nombre} - 📱 ${j.telefono}</span>`;
             listaJugadoresLibres.appendChild(div);
-        });
-        document.querySelectorAll('.btn-eliminar-jugador').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const id = e.target.dataset.id;
-                eliminarJugadorLibre(id);
-            });
         });
     }
 
-    // ===== ACTUALIZAR TABLA DE JUGADORES LIBRES EN ADMIN =====
+    // ===== TABLA JUGADORES LIBRES EN ADMIN (con eliminar) =====
     function actualizarTablaJugadoresLibres(lista) {
         tbodyJugadoresLibres.innerHTML = '';
         if (!lista || lista.length === 0) {
@@ -1396,17 +1445,16 @@
         });
     }
 
-    // ===== ACTUALIZAR ADMIN PANEL (EQUIPOS) =====
+    // ===== ADMIN PANEL (EQUIPOS) con botón EDITAR =====
     function actualizarAdminPanel(equipos) {
         tbodyEquipos.innerHTML = '';
         if (!equipos || equipos.length === 0) {
-            tbodyEquipos.innerHTML = '<tr><td colspan="7">No hay equipos inscritos.</td></tr>';
+            tbodyEquipos.innerHTML = '<tr><td colspan="8">No hay equipos inscritos.</td></tr>';
             return;
         }
         equipos.forEach((eq, i) => {
             const participantesCount = eq.participantes ? eq.participantes.length : 0;
             const plazasInfo = `${participantesCount} / ${eq.plazas || 0}`;
-            // Buscar el color en la paleta para obtener el código hex
             const colorObj = PALETA.find(p => p.nombre === eq.color);
             const colorHex = colorObj ? colorObj.color : '#aaa';
             const tr = document.createElement('tr');
@@ -1417,9 +1465,16 @@
                 <td>${eq.telefono}</td>
                 <td><span style="background:${colorHex};color:#fff;padding:2px 10px;border-radius:12px;">${eq.color}</span></td>
                 <td>${plazasInfo}</td>
+                <td><button class="btn-editar-equipo" data-id="${eq.id}">Editar</button></td>
                 <td><button class="btn-eliminar-equipo" data-id="${eq.id}">Eliminar</button></td>
             `;
             tbodyEquipos.appendChild(tr);
+        });
+        document.querySelectorAll('.btn-editar-equipo').forEach(btn => {
+            btn.addEventListener('click', e => {
+                const id = e.target.dataset.id;
+                abrirModalEditarEquipo(id);
+            });
         });
         document.querySelectorAll('.btn-eliminar-equipo').forEach(btn => {
             btn.addEventListener('click', e => {
@@ -1429,7 +1484,7 @@
         });
     }
 
-    // ===== WHATSAPP LIST =====
+    // ===== WHATSAPP =====
     function actualizarWhatsAppList(equipos) {
         const numeros = equipos.map(eq => eq.telefono).filter(t => t);
         whatsappList.value = numeros.join('\n');
@@ -1437,10 +1492,10 @@
     btnCopiarWhatsapp.addEventListener('click', () => {
         whatsappList.select();
         navigator.clipboard?.writeText(whatsappList.value)?.catch(() => document.execCommand('copy'));
-        mostrarConfirmacion('📋 Lista de contactos copiada.');
+        mostrarConfirmacion('📋 Lista copiada.');
     });
 
-    // ===== ESTADO DE INSCRIPCIONES =====
+    // ===== ESTADO INSCRIPCIONES =====
     function actualizarEstadoInscripciones() {
         if (inscripcionesAbiertas) {
             estadoInscripciones.textContent = '📢 Inscripciones abiertas';
@@ -1456,17 +1511,20 @@
             btnCerrarInscripciones.style.display = 'none';
         }
     }
-
     btnCerrarInscripciones.addEventListener('click', async () => {
-        if (confirm('¿Seguro que quieres cerrar las inscripciones?')) {
-            await db.ref('config/estadoInscripciones').set('cerradas');
-        }
+        if (confirm('¿Cerrar inscripciones?')) await db.ref('config/estadoInscripciones').set('cerradas');
     });
     btnAbrirInscripciones.addEventListener('click', async () => {
         await db.ref('config/estadoInscripciones').set('abiertas');
     });
 
-    // ===== ADMIN PANEL TOGGLE (validación por hash, no por texto plano) =====
+    // ===== ADMIN TOGGLE (hash) =====
+    async function hashTexto(texto) {
+        const enc = new TextEncoder().encode(texto);
+        const buf = await crypto.subtle.digest('SHA-256', enc);
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
     btnToggleAdmin.addEventListener('click', async () => {
         if (adminPanel.classList.contains('visible')) {
             adminPanel.classList.remove('visible');
@@ -1484,36 +1542,32 @@
         }
     });
 
-    // ===== REINICIAR TORNEO (para una nueva competencia) =====
+    // ===== REINICIAR TORNEO =====
     btnReiniciarTorneo.addEventListener('click', async () => {
-        if (!confirm('⚠️ Esto borrará TODOS los equipos, jugadores libres y resultados del bracket. ¿Continuar?')) return;
-        if (!confirm('Esta acción no se puede deshacer. ¿Confirmas que quieres reiniciar el torneo para una nueva competencia?')) return;
+        if (!confirm('⚠️ Esto borrará TODOS los datos. ¿Continuar?')) return;
+        if (!confirm('¿Confirmas?')) return;
         try {
             await db.ref('equipos').remove();
             await db.ref('jugadores_libres').remove();
             await db.ref('resultados').remove();
             await db.ref('config/estadoInscripciones').set('abiertas');
-            mostrarConfirmacion('✅ Torneo reiniciado. Ya puedes inscribir equipos para la nueva competencia.');
+            mostrarConfirmacion('✅ Torneo reiniciado.');
         } catch (err) {
-            mostrarConfirmacion('❌ Error al reiniciar: ' + err.message, true);
+            mostrarConfirmacion('❌ Error: ' + err.message, true);
         }
     });
 
-    // ===== BRACKET CON CÍRCULOS DE COLOR, RESULTADOS Y AVANCE AUTOMÁTICO =====
-
-    // Determina el ganador de un partido: por marcador, o por penales si hay empate.
-    // Los "byes" (equipo '---') pasan directo sin necesitar marcador.
+    // ===== BRACKET =====
     function calcularGanador(matchKey, team1, team2) {
-        if (team1.nombre === '---' && team2.nombre === '---') return null; // casillero vacío
-        if (team1.nombre === '---') return team2; // pase directo (bye)
-        if (team2.nombre === '---') return team1; // pase directo (bye)
+        if (team1.nombre === '---' && team2.nombre === '---') return null;
+        if (team1.nombre === '---') return team2;
+        if (team2.nombre === '---') return team1;
         const res = resultados[matchKey];
         if (!res || res.score1 === undefined || res.score1 === '' || res.score2 === undefined || res.score2 === '') return null;
         const s1 = Number(res.score1), s2 = Number(res.score2);
         if (isNaN(s1) || isNaN(s2)) return null;
         if (s1 > s2) return team1;
         if (s2 > s1) return team2;
-        // Empate: se decide por penales si ya se cargaron
         if (res.penal1 !== undefined && res.penal1 !== '' && res.penal2 !== undefined && res.penal2 !== '') {
             const p1 = Number(res.penal1), p2 = Number(res.penal2);
             if (!isNaN(p1) && !isNaN(p2)) {
@@ -1521,7 +1575,7 @@
                 if (p2 > p1) return team2;
             }
         }
-        return null; // empate pendiente de definir por penales
+        return null;
     }
 
     function actualizarBracket(equiposActuales) {
@@ -1537,9 +1591,8 @@
         const byes = bracketSize - teamCount;
         let currentRoundTeams = [];
         for (let i = 0; i < bracketSize; i++) {
-            if (i < byes) {
-                currentRoundTeams.push({ nombre: '---', color: null });
-            } else {
+            if (i < byes) currentRoundTeams.push({ nombre: '---', color: null });
+            else {
                 const idx = i - byes;
                 const eq = equiposActuales[idx];
                 currentRoundTeams.push({ nombre: eq ? eq.nombre : '---', color: eq ? eq.color : null });
@@ -1589,7 +1642,6 @@
         }
         renderBracketStatic(rounds);
 
-        // Campeón: si la final ya tiene ganador, mostrar el recuadro
         const finalRound = rounds[rounds.length - 1];
         if (finalRound && finalRound.matches.length === 1 && finalRound.matches[0].ganadorNombre) {
             championName.textContent = finalRound.matches[0].ganadorNombre;
@@ -1599,7 +1651,6 @@
         }
     }
 
-    // Crea la fila de un equipo dentro de un partido (nombre + marcador editable si aplica)
     function crearFilaEquipo(matchKey, teamName, teamColor, slot, score, mostrarInput, esGanador, esPerdedor) {
         const row = document.createElement('div');
         row.className = 'team-row';
@@ -1641,13 +1692,10 @@
             round.matches.forEach((match) => {
                 const matchDiv = document.createElement('div');
                 matchDiv.className = 'match' + (match.ganadorNombre ? ' has-winner' : '');
-
                 const esGanador1 = !!match.ganadorNombre && match.ganadorNombre === match.team1;
                 const esGanador2 = !!match.ganadorNombre && match.ganadorNombre === match.team2;
-
                 matchDiv.appendChild(crearFilaEquipo(match.matchKey, match.team1, match.team1Color, '1', match.score1, match.esPartidoReal, esGanador1, esGanador2));
                 matchDiv.appendChild(crearFilaEquipo(match.matchKey, match.team2, match.team2Color, '2', match.score2, match.esPartidoReal, esGanador2, esGanador1));
-
                 if (match.necesitaPenales) {
                     const penalDiv = document.createElement('div');
                     penalDiv.className = 'match-penales';
@@ -1681,7 +1729,6 @@
                     note.textContent = '➡️ Pase directo';
                     matchDiv.appendChild(note);
                 }
-
                 roundDiv.appendChild(matchDiv);
             });
             bracketContainer.appendChild(roundDiv);
@@ -1689,7 +1736,6 @@
         requestAnimationFrame(drawLines);
     }
 
-    // Delegación de eventos: guarda marcadores y penales en Firebase apenas se editan
     bracketContainer.addEventListener('change', (e) => {
         const esScore = e.target.classList.contains('score-input');
         const esPenal = e.target.classList.contains('penal-input');
@@ -1746,9 +1792,9 @@
         }
     }
 
-    // ===== INICIAR =====
+    // ===== INICIO =====
     cargarDatos();
-    console.log('🏆 Torneo TMS con gestión inteligente de colores');
+    console.log('🏆 Torneo TMS con edición de equipos y gestión mejorada de jugadores libres');
 </script>
 </body>
 </html>
