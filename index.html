@@ -62,7 +62,7 @@
         .estado-inscripciones.cerradas {
             background: #870f0b;
         }
-        /* ===== ENUNCIADO / INTRO DEL EVENTO ===== */
+        /* ===== ENUNCIADO ===== */
         .intro-evento {
             background: linear-gradient(135deg, #302d7c 0%, #4a46a8 100%);
             color: #f4f3f1;
@@ -234,7 +234,7 @@
         .btn-warning:hover { transform: scale(1.05); }
         .btn-info { background: #457b9d; color: #f4f3f1; }
         .btn-info:hover { transform: scale(1.05); }
-        /* ===== ACEPTAR TÉRMINOS Y REGLAMENTO ===== */
+        /* ===== ACEPTAR TÉRMINOS ===== */
         .aceptar-terminos {
             background: #fff8e6;
             border: 2px solid #f4a261;
@@ -272,7 +272,7 @@
         .campos-bloqueados:disabled {
             opacity: 0.5;
         }
-        /* ===== JUGADORES LIBRES (público, sin botón eliminar) ===== */
+        /* ===== JUGADORES LIBRES (público con botón Fichar) ===== */
         .jugadores-libres {
             margin-top: 30px;
             border-top: 2px solid #d6d3cc;
@@ -305,6 +305,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
+            margin-top: 10px;
         }
         .jugadores-libres .lista-jugadores .jugador-item {
             background: #fff;
@@ -314,8 +315,26 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
-        /* ===== MODAL PARA EDITAR EQUIPO ===== */
+        .jugadores-libres .lista-jugadores .jugador-item .btn-fichar {
+            background: #2d6a4f;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 4px 14px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .jugadores-libres .lista-jugadores .jugador-item .btn-fichar:hover {
+            background: #1b4332;
+        }
+        .jugadores-libres .lista-jugadores .jugador-item .btn-fichar:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* ===== MODAL FICHAR ===== */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -339,24 +358,12 @@
         .modal h2 { color: #302d7c; margin-bottom: 15px; }
         .modal .form-group { margin-bottom: 12px; }
         .modal .form-group label { font-weight: 600; color: #302d7c; }
-        .modal .form-group input { width: 100%; }
+        .modal .form-group input, .modal .form-group select { width: 100%; padding: 10px; border: 2px solid #d6d3cc; border-radius: 10px; }
         .modal .modal-actions {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
             margin-top: 20px;
-        }
-        .modal .lista-participantes-modal {
-            background: #fff;
-            padding: 10px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        .modal .lista-participantes-modal p {
-            padding: 4px 0;
-            border-bottom: 1px solid #d6d3cc;
         }
         /* ===== BRACKET ===== */
         .bracket-wrapper {
@@ -754,17 +761,40 @@
         </form>
     </div>
 
-    <!-- JUGADORES LIBRES (público, sin botón eliminar) -->
+    <!-- JUGADORES LIBRES (con botón Fichar) -->
     <div class="jugadores-libres">
         <h2>👤 Jugadores libres</h2>
-        <p>Si eres jugador sin equipo, regístrate aquí. Los capitanes te contactarán.</p>
+        <p>Si eres jugador sin equipo, regístrate aquí. Los capitanes pueden ficharte directamente.</p>
         <div class="form-jugador">
             <input type="text" id="nombreJugador" placeholder="Nombre completo" required>
+            <input type="text" id="carnetJugador" placeholder="Carnet" required>
             <input type="tel" id="telefonoJugador" placeholder="Teléfono" required>
+            <input type="email" id="correoJugador" placeholder="Correo estudiantil" required>
             <button id="btnRegistrarJugador">Registrarme</button>
         </div>
         <div class="lista-jugadores" id="listaJugadoresLibres">
             <p>Cargando...</p>
+        </div>
+    </div>
+
+    <!-- MODAL FICHAR JUGADOR -->
+    <div class="modal-overlay" id="modalFichar">
+        <div class="modal">
+            <h2>⚡ Fichar jugador libre</h2>
+            <div class="form-group">
+                <label>Jugador:</label>
+                <p id="modalFicharInfo" style="font-weight:600;color:#302d7c;background:#e9e5f0;padding:8px;border-radius:8px;"></p>
+            </div>
+            <div class="form-group">
+                <label for="modalFicharEquipo">Selecciona tu equipo *</label>
+                <select id="modalFicharEquipo">
+                    <option value="">-- Elige --</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="modalFicharCancelar">Cancelar</button>
+                <button class="btn btn-success" id="modalFicharConfirmar">✅ Fichar</button>
+            </div>
         </div>
     </div>
 
@@ -788,7 +818,7 @@
         <div style="margin-bottom:15px;">
             <button class="btn btn-danger" id="btnCerrarInscripciones">🔒 Cerrar inscripciones</button>
             <button class="btn btn-success" id="btnAbrirInscripciones" style="display:none;">🔓 Abrir inscripciones</button>
-            <button class="btn btn-warning" id="btnReiniciarTorneo">🗑️ Reiniciar torneo (nueva competencia)</button>
+            <button class="btn btn-warning" id="btnReiniciarTorneo">🗑️ Reiniciar torneo</button>
         </div>
 
         <h3>📋 Equipos inscritos</h3>
@@ -809,13 +839,15 @@
             </table>
         </div>
 
-        <h3>👤 Jugadores libres</h3>
+        <h3>👤 Jugadores libres (detalle)</h3>
         <div style="overflow-x:auto;">
             <table id="tablaJugadoresLibres">
                 <thead>
                     <tr>
                         <th>Nombre</th>
+                        <th>Carnet</th>
                         <th>Teléfono</th>
+                        <th>Correo</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -831,27 +863,6 @@
         </div>
     </div>
 
-    <!-- MODAL PARA EDITAR EQUIPO -->
-    <div class="modal-overlay" id="modalEditarEquipo">
-        <div class="modal">
-            <h2>✏️ Editar equipo: <span id="modalEquipoNombre"></span></h2>
-            <div id="modalEquipoId" style="display:none;"></div>
-            <div class="form-group">
-                <label>Participantes actuales:</label>
-                <div class="lista-participantes-modal" id="modalListaParticipantes"></div>
-            </div>
-            <div class="form-group">
-                <label>Agregar nuevo participante</label>
-                <input type="text" id="modalNuevoNombre" placeholder="Nombre completo">
-                <input type="text" id="modalNuevoCarnet" placeholder="Carnet" style="margin-top:6px;">
-                <input type="email" id="modalNuevoCorreo" placeholder="Correo estudiantil" style="margin-top:6px;">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-danger" id="modalCerrar">Cancelar</button>
-                <button class="btn btn-success" id="modalGuardar">Agregar participante</button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -868,7 +879,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ===== CONSTANTES Y VARIABLES GLOBALES =====
+    // ===== CONSTANTES =====
     const MAX_EQUIPOS = 16;
     const PALETA = [
         { nombre: 'Rojo', color: '#e63946' },
@@ -889,11 +900,8 @@
     };
     const COLORES = Object.keys(COLORES_CUPO);
 
-    // === CONTRASEÑA (genera el hash de 'TMSControl2026!' y reemplázalo) ===
-    // Para generar el hash: abre consola del navegador y ejecuta:
-    // crypto.subtle.digest('SHA-256', new TextEncoder().encode('TMSControl2026!'))
-    //   .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
-    const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+    // === CONTRASEÑA ACTUALIZADA: TMSControl2026! ===
+    const ADMIN_PASSWORD_HASH = '18768ee365660f6a7cd5c1141e38dee52ff7fe84a514892a257f71a110725aaf';
 
     let equipos = [];
     let jugadoresLibres = [];
@@ -933,22 +941,20 @@
     const btnCopiarWhatsapp = $('btnCopiarWhatsapp');
     const listaJugadoresLibres = $('listaJugadoresLibres');
     const nombreJugador = $('nombreJugador');
+    const carnetJugador = $('carnetJugador');
     const telefonoJugador = $('telefonoJugador');
+    const correoJugador = $('correoJugador');
     const btnRegistrarJugador = $('btnRegistrarJugador');
 
-    // Modal
-    const modalEditarEquipo = $('modalEditarEquipo');
-    const modalEquipoNombre = $('modalEquipoNombre');
-    const modalEquipoId = $('modalEquipoId');
-    const modalListaParticipantes = $('modalListaParticipantes');
-    const modalNuevoNombre = $('modalNuevoNombre');
-    const modalNuevoCarnet = $('modalNuevoCarnet');
-    const modalNuevoCorreo = $('modalNuevoCorreo');
-    const modalCerrar = $('modalCerrar');
-    const modalGuardar = $('modalGuardar');
-    let equipoEditandoId = null;
+    // Modal Fichar
+    const modalFichar = $('modalFichar');
+    const modalFicharInfo = $('modalFicharInfo');
+    const modalFicharEquipo = $('modalFicharEquipo');
+    const modalFicharCancelar = $('modalFicharCancelar');
+    const modalFicharConfirmar = $('modalFicharConfirmar');
+    let jugadorFicharId = null;
 
-    // ===== MENSAJE DE CONFIRMACIÓN =====
+    // ===== FUNCIONES =====
     function mostrarConfirmacion(mensaje, esError = false) {
         confirmacionMensaje.textContent = mensaje;
         confirmacionMensaje.className = 'confirmacion-mensaje visible' + (esError ? ' error' : '');
@@ -956,6 +962,12 @@
         window._confirmTimeout = setTimeout(() => {
             confirmacionMensaje.classList.remove('visible');
         }, 4000);
+    }
+
+    async function hashTexto(texto) {
+        const enc = new TextEncoder().encode(texto);
+        const buf = await crypto.subtle.digest('SHA-256', enc);
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
     // ===== PARTICIPANTES DINÁMICOS =====
@@ -1019,50 +1031,27 @@
     // ===== FUNCIONES DE COLOR =====
     function hexToRgb(hex) {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
+        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
     }
     function colorDistance(c1, c2) {
-        const rgb1 = hexToRgb(c1);
-        const rgb2 = hexToRgb(c2);
+        const rgb1 = hexToRgb(c1), rgb2 = hexToRgb(c2);
         if (!rgb1 || !rgb2) return Infinity;
-        return Math.sqrt(
-            Math.pow(rgb1.r - rgb2.r, 2) +
-            Math.pow(rgb1.g - rgb2.g, 2) +
-            Math.pow(rgb1.b - rgb2.b, 2)
-        );
+        return Math.sqrt(Math.pow(rgb1.r - rgb2.r, 2) + Math.pow(rgb1.g - rgb2.g, 2) + Math.pow(rgb1.b - rgb2.b, 2));
     }
     function asignarColoresAutomaticamente(equiposList) {
         const usos = {};
         PALETA.forEach(p => usos[p.nombre] = 0);
-        equiposList.forEach(eq => {
-            if (eq.color && usos[eq.color] !== undefined) {
-                usos[eq.color] = (usos[eq.color] || 0) + 1;
-            }
-        });
+        equiposList.forEach(eq => { if (eq.color && usos[eq.color] !== undefined) usos[eq.color] = (usos[eq.color] || 0) + 1; });
         equiposList.forEach(eq => {
             if (!eq.color) {
-                let minUsos = Infinity;
-                let colorAsignado = PALETA[0].nombre;
+                let minUsos = Infinity, colorAsignado = PALETA[0].nombre;
                 PALETA.forEach(p => {
                     const cupo = COLORES_CUPO[p.nombre] || 0;
                     const usado = usos[p.nombre] || 0;
-                    if (usado < cupo && usado < minUsos) {
-                        minUsos = usado;
-                        colorAsignado = p.nombre;
-                    }
+                    if (usado < cupo && usado < minUsos) { minUsos = usado; colorAsignado = p.nombre; }
                 });
                 if (minUsos === Infinity) {
-                    PALETA.forEach(p => {
-                        const usado = usos[p.nombre] || 0;
-                        if (usado < minUsos) {
-                            minUsos = usado;
-                            colorAsignado = p.nombre;
-                        }
-                    });
+                    PALETA.forEach(p => { const usado = usos[p.nombre] || 0; if (usado < minUsos) { minUsos = usado; colorAsignado = p.nombre; } });
                 }
                 eq.color = colorAsignado;
                 usos[colorAsignado] = (usos[colorAsignado] || 0) + 1;
@@ -1071,37 +1060,27 @@
         return equiposList;
     }
     function resolverConflictosPrimeraRonda(equiposList, bracketSize) {
-        const equiposEnPrimeraRonda = [];
-        for (let i = 0; i < equiposList.length; i++) {
-            equiposEnPrimeraRonda.push(equiposList[i]);
-        }
+        const equiposEnPrimeraRonda = equiposList.slice();
         if (equiposEnPrimeraRonda.length < 2) return equiposList;
         const partidos = [];
         for (let i = 0; i < equiposEnPrimeraRonda.length; i += 2) {
-            if (i + 1 < equiposEnPrimeraRonda.length) {
-                partidos.push([equiposEnPrimeraRonda[i], equiposEnPrimeraRonda[i+1]]);
-            } else break;
+            if (i + 1 < equiposEnPrimeraRonda.length) partidos.push([equiposEnPrimeraRonda[i], equiposEnPrimeraRonda[i+1]]);
+            else break;
         }
-        let conflictosResueltos = 0;
         partidos.forEach(([eq1, eq2]) => {
-            const color1 = eq1.color;
-            const color2 = eq2.color;
-            const hex1 = PALETA.find(p => p.nombre === color1)?.color;
-            const hex2 = PALETA.find(p => p.nombre === color2)?.color;
+            const hex1 = PALETA.find(p => p.nombre === eq1.color)?.color;
+            const hex2 = PALETA.find(p => p.nombre === eq2.color)?.color;
             if (!hex1 || !hex2) return;
-            const dist = colorDistance(hex1, hex2);
-            if (dist < 50) {
+            if (colorDistance(hex1, hex2) < 50) {
                 const usos = {};
                 equiposList.forEach(eq => { usos[eq.color] = (usos[eq.color] || 0) + 1; });
                 let encontrado = false;
                 for (let p of PALETA) {
                     if (p.nombre === eq1.color) continue;
                     if (usos[p.nombre] >= COLORES_CUPO[p.nombre]) continue;
-                    const distNuevo = colorDistance(p.color, hex1);
-                    if (distNuevo >= 50) {
+                    if (colorDistance(p.color, hex1) >= 50) {
                         eq2.color = p.nombre;
                         encontrado = true;
-                        conflictosResueltos++;
                         break;
                     }
                 }
@@ -1109,34 +1088,24 @@
                     for (let p of PALETA) {
                         if (p.nombre === eq2.color) continue;
                         if (usos[p.nombre] >= COLORES_CUPO[p.nombre]) continue;
-                        const distNuevo = colorDistance(p.color, hex2);
-                        if (distNuevo >= 50) {
+                        if (colorDistance(p.color, hex2) >= 50) {
                             eq1.color = p.nombre;
                             encontrado = true;
-                            conflictosResueltos++;
                             break;
                         }
                     }
                 }
                 if (!encontrado) {
-                    let minUsos = Infinity;
-                    let colorAsignado = PALETA[0].nombre;
+                    let minUsos = Infinity, colorAsignado = PALETA[0].nombre;
                     PALETA.forEach(p => {
                         if (p.nombre === eq1.color) return;
                         const usado = usos[p.nombre] || 0;
-                        if (usado < minUsos) {
-                            minUsos = usado;
-                            colorAsignado = p.nombre;
-                        }
+                        if (usado < minUsos) { minUsos = usado; colorAsignado = p.nombre; }
                     });
                     eq1.color = colorAsignado;
-                    conflictosResueltos++;
                 }
             }
         });
-        if (conflictosResueltos > 0) {
-            console.log(`🔄 Resueltos ${conflictosResueltos} conflictos de colores.`);
-        }
         return equiposList;
     }
 
@@ -1144,10 +1113,7 @@
         const usados = {};
         equiposActuales.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
         const disponibilidad = {};
-        COLORES.forEach(c => {
-            const disponibles = (COLORES_CUPO[c] || 0) - (usados[c] || 0);
-            disponibilidad[c] = Math.max(0, disponibles);
-        });
+        COLORES.forEach(c => { disponibilidad[c] = Math.max(0, (COLORES_CUPO[c] || 0) - (usados[c] || 0)); });
         coloresDisponibles.innerHTML = '<span style="font-weight:600;color:#302d7c;">🎨 Colores disponibles:</span>';
         COLORES.forEach(c => {
             const chip = document.createElement('span');
@@ -1191,15 +1157,14 @@
             }
             equipos = asignarColoresAutomaticamente(equipos);
             const bracketSize = equipos.length > 0 ? Math.pow(2, Math.ceil(Math.log2(equipos.length))) : 0;
-            if (bracketSize > 0) {
-                equipos = resolverConflictosPrimeraRonda(equipos, bracketSize);
-            }
+            if (bracketSize > 0) equipos = resolverConflictosPrimeraRonda(equipos, bracketSize);
             actualizarCupos(equipos);
             actualizarColoresDisponibles(equipos);
             actualizarFormulario();
             actualizarBracket(equipos);
             actualizarAdminPanel(equipos);
             actualizarWhatsAppList(equipos);
+            actualizarListaFicharEquipos();
         });
 
         db.ref('jugadores_libres').on('value', snapshot => {
@@ -1228,117 +1193,126 @@
         });
     }
 
-    // ===== GUARDAR EQUIPO =====
-    formEquipo.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!inscripcionesAbiertas) { mostrarConfirmacion('⚠️ Inscripciones cerradas.', true); return; }
-        if (equipos.length >= MAX_EQUIPOS) { mostrarConfirmacion('⚠️ Sin cupos.', true); return; }
-        if (!aceptaTerminos.checked) { mostrarConfirmacion('⚠️ Acepta los términos.', true); return; }
-
-        const nombre = nombreEquipo.value.trim();
-        const capitanVal = capitan.value.trim();
-        const telefonoVal = telefono.value.trim();
-        const cantidad = parseInt(cantidadCompetidores.value);
-        const color = colorEquipo.value;
-        const plazasVal = parseInt(plazas.value) || 0;
-
-        if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
-            mostrarConfirmacion('⚠️ Completa todos los campos obligatorios.', true); return;
-        }
-        if (cantidad < 6 || cantidad > 7) {
-            mostrarConfirmacion('⚠️ Competidores entre 6 y 7.', true); return;
-        }
-        if (plazasVal < 0 || plazasVal > 6) {
-            mostrarConfirmacion('⚠️ Plazas por completar entre 0 y 6.', true); return;
-        }
-
-        // FILTRAR PARTICIPANTES VÁLIDOS (los que tienen nombre, carnet y correo)
-        const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
-
-        // Validar que haya al menos 1 participante (el capitán)
-        if (participantesValidos.length < 1) {
-            mostrarConfirmacion('⚠️ Registra al menos al capitán.', true); return;
-        }
-
-        // Verificar que el número de participantes no exceda el total de competidores
-        if (participantesValidos.length > cantidad) {
-            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) exceden el total (${cantidad}).`, true); return;
-        }
-
-        // Verificar que la suma de participantes + plazas sea exactamente igual al total de competidores
-        if (participantesValidos.length + plazasVal !== cantidad) {
-            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) + plazas (${plazasVal}) debe ser ${cantidad}.`, true); return;
-        }
-
-        // Validar que el primer participante sea el capitán
-        const capitanParticipante = participantesValidos[0];
-        if (capitanParticipante.nombre !== capitanVal) {
-            mostrarConfirmacion('⚠️ El capitán debe ser el primer participante.', true); return;
-        }
-
-        // Validar formato de correo (@estudiantec.cr)
-        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
-        for (let p of participantesValidos) {
-            if (!emailRegex.test(p.correo)) {
-                mostrarConfirmacion(`⚠️ El correo "${p.correo}" no es válido. Debe ser @estudiantec.cr`, true);
-                return;
-            }
-        }
-
-        // Validar nombre de equipo duplicado
-        const nombreLower = nombre.toLowerCase();
-        if (equipos.some(eq => (eq.nombre || '').trim().toLowerCase() === nombreLower)) {
-            mostrarConfirmacion('⚠️ Nombre de equipo duplicado.', true); return;
-        }
-
-        // Validar teléfono de capitán duplicado
-        const telefonoNormalizado = telefonoVal.replace(/\s+/g, '');
-        if (equipos.some(eq => (eq.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
-            mostrarConfirmacion('⚠️ Teléfono ya registrado.', true); return;
-        }
-
-        // Validar cupo de color
-        const usados = {};
-        equipos.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
-        if ((usados[color] || 0) >= COLORES_CUPO[color]) {
-            mostrarConfirmacion(`⚠️ Color ${color} sin cupos.`, true); return;
-        }
-
-        const nuevoEquipo = {
-            nombre, capitan: capitanVal, telefono: telefonoVal, color,
-            cantidadCompetidores: cantidad, plazas: plazasVal,
-            participantes: participantesValidos,
-            fecha: firebase.database.ServerValue.TIMESTAMP
-        };
-        try {
-            await db.ref('equipos').push(nuevoEquipo);
-            mostrarConfirmacion('✅ Equipo inscrito.');
-            formEquipo.reset();
-            participantes = [{ nombre: '', carnet: '', correo: '' }];
-            renderParticipantes();
-            capitan.value = '';
-            plazas.value = '0';
-            aceptaTerminos.checked = false;
-            camposEquipo.disabled = true;
-        } catch (err) {
-            mostrarConfirmacion('❌ Error: ' + err.message, true);
-        }
-    });
-
     // ===== REGISTRAR JUGADOR LIBRE =====
     btnRegistrarJugador.addEventListener('click', () => {
         const nombre = nombreJugador.value.trim();
+        const carnet = carnetJugador.value.trim();
         const telefono = telefonoJugador.value.trim();
-        if (!nombre || !telefono) { mostrarConfirmacion('⚠️ Completa todos los campos.', true); return; }
+        const correo = correoJugador.value.trim();
+        if (!nombre || !carnet || !telefono || !correo) {
+            mostrarConfirmacion('⚠️ Completa todos los campos.', true);
+            return;
+        }
+        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
+        if (!emailRegex.test(correo)) {
+            mostrarConfirmacion('⚠️ Correo debe ser @estudiantec.cr', true);
+            return;
+        }
         const telefonoNormalizado = telefono.replace(/\s+/g, '');
         if (jugadoresLibres.some(j => (j.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
-            mostrarConfirmacion('⚠️ Teléfono ya registrado como jugador libre.', true); return;
+            mostrarConfirmacion('⚠️ Teléfono ya registrado como jugador libre.', true);
+            return;
         }
-        db.ref('jugadores_libres').push({ nombre, telefono, fecha: Date.now() });
+        if (jugadoresLibres.some(j => (j.carnet || '').trim() === carnet)) {
+            mostrarConfirmacion('⚠️ Carnet ya registrado como jugador libre.', true);
+            return;
+        }
+        db.ref('jugadores_libres').push({ nombre, carnet, telefono, correo, fecha: Date.now() });
         mostrarConfirmacion('✅ Registrado como jugador libre.');
         nombreJugador.value = '';
+        carnetJugador.value = '';
         telefonoJugador.value = '';
+        correoJugador.value = '';
     });
+
+    // ===== FICHAR JUGADOR LIBRE =====
+    function abrirModalFichar(jugadorId) {
+        const jugador = jugadoresLibres.find(j => j.id === jugadorId);
+        if (!jugador) return;
+        jugadorFicharId = jugadorId;
+        modalFicharInfo.textContent = `${jugador.nombre} (${jugador.carnet}) - ${jugador.correo}`;
+        modalFicharEquipo.innerHTML = '<option value="">-- Elige --</option>';
+        equipos.forEach(eq => {
+            if ((eq.plazas || 0) > 0) {
+                const opt = document.createElement('option');
+                opt.value = eq.id;
+                opt.textContent = `${eq.nombre} (${eq.plazas} plazas)`;
+                modalFicharEquipo.appendChild(opt);
+            }
+        });
+        if (modalFicharEquipo.options.length === 1) {
+            mostrarConfirmacion('⚠️ No hay equipos con plazas disponibles.', true);
+            return;
+        }
+        modalFichar.classList.add('visible');
+    }
+
+    modalFicharCancelar.addEventListener('click', () => {
+        modalFichar.classList.remove('visible');
+        jugadorFicharId = null;
+    });
+    modalFichar.addEventListener('click', (e) => {
+        if (e.target === modalFichar) {
+            modalFichar.classList.remove('visible');
+            jugadorFicharId = null;
+        }
+    });
+
+    modalFicharConfirmar.addEventListener('click', async () => {
+        const equipoId = modalFicharEquipo.value;
+        if (!equipoId) {
+            mostrarConfirmacion('⚠️ Selecciona un equipo.', true);
+            return;
+        }
+        const jugador = jugadoresLibres.find(j => j.id === jugadorFicharId);
+        if (!jugador) {
+            mostrarConfirmacion('❌ El jugador ya no está disponible.', true);
+            modalFichar.classList.remove('visible');
+            return;
+        }
+        const equipo = equipos.find(eq => eq.id === equipoId);
+        if (!equipo) {
+            mostrarConfirmacion('❌ El equipo ya no existe.', true);
+            modalFichar.classList.remove('visible');
+            return;
+        }
+        if ((equipo.plazas || 0) <= 0) {
+            mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas.', true);
+            modalFichar.classList.remove('visible');
+            return;
+        }
+
+        try {
+            const equipoRef = db.ref('equipos/' + equipoId);
+            const snapshot = await equipoRef.once('value');
+            const data = snapshot.val();
+            if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
+            const participantesActuales = data.participantes || [];
+            const plazasActuales = data.plazas || 0;
+            if (plazasActuales <= 0) {
+                mostrarConfirmacion('⚠️ El equipo ya no tiene plazas.', true);
+                return;
+            }
+            participantesActuales.push({
+                nombre: jugador.nombre,
+                carnet: jugador.carnet,
+                correo: jugador.correo
+            });
+            const nuevasPlazas = plazasActuales - 1;
+            await equipoRef.update({
+                participantes: participantesActuales,
+                plazas: nuevasPlazas
+            });
+            await db.ref('jugadores_libres/' + jugadorFicharId).remove();
+            mostrarConfirmacion(`✅ ${jugador.nombre} fichado por ${equipo.nombre}. Plazas restantes: ${nuevasPlazas}`);
+            modalFichar.classList.remove('visible');
+            jugadorFicharId = null;
+        } catch (err) {
+            mostrarConfirmacion('❌ Error al fichar: ' + err.message, true);
+        }
+    });
+
+    function actualizarListaFicharEquipos() {}
 
     // ===== ELIMINAR =====
     function eliminarJugadorLibre(id) {
@@ -1352,75 +1326,7 @@
         }
     }
 
-    // ===== MODAL EDITAR EQUIPO =====
-    function abrirModalEditarEquipo(equipoId) {
-        const equipo = equipos.find(eq => eq.id === equipoId);
-        if (!equipo) return;
-        equipoEditandoId = equipoId;
-        modalEquipoNombre.textContent = equipo.nombre;
-        modalEquipoId.textContent = equipoId;
-        modalListaParticipantes.innerHTML = '';
-        if (equipo.participantes && equipo.participantes.length > 0) {
-            equipo.participantes.forEach(p => {
-                const div = document.createElement('p');
-                div.textContent = `${p.nombre} (${p.carnet}) - ${p.correo}`;
-                modalListaParticipantes.appendChild(div);
-            });
-        } else {
-            modalListaParticipantes.innerHTML = '<p>No hay participantes registrados.</p>';
-        }
-        modalNuevoNombre.value = '';
-        modalNuevoCarnet.value = '';
-        modalNuevoCorreo.value = '';
-        modalEditarEquipo.classList.add('visible');
-    }
-
-    modalCerrar.addEventListener('click', () => {
-        modalEditarEquipo.classList.remove('visible');
-    });
-    modalEditarEquipo.addEventListener('click', (e) => {
-        if (e.target === modalEditarEquipo) modalEditarEquipo.classList.remove('visible');
-    });
-
-    modalGuardar.addEventListener('click', async () => {
-        const nombre = modalNuevoNombre.value.trim();
-        const carnet = modalNuevoCarnet.value.trim();
-        const correo = modalNuevoCorreo.value.trim();
-        if (!nombre || !carnet || !correo) {
-            mostrarConfirmacion('⚠️ Completa todos los campos del nuevo participante.', true);
-            return;
-        }
-        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
-        if (!emailRegex.test(correo)) {
-            mostrarConfirmacion('⚠️ Correo debe ser @estudiantec.cr', true);
-            return;
-        }
-        const equipoId = modalEquipoId.textContent;
-        const equipoRef = db.ref('equipos/' + equipoId);
-        try {
-            const snapshot = await equipoRef.once('value');
-            const data = snapshot.val();
-            if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
-            const participantesActuales = data.participantes || [];
-            const plazasActuales = data.plazas || 0;
-            if (plazasActuales <= 0) {
-                mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas disponibles.', true);
-                return;
-            }
-            participantesActuales.push({ nombre, carnet, correo });
-            const nuevasPlazas = plazasActuales - 1;
-            await equipoRef.update({
-                participantes: participantesActuales,
-                plazas: nuevasPlazas
-            });
-            mostrarConfirmacion('✅ Participante agregado. Plazas restantes: ' + nuevasPlazas);
-            modalEditarEquipo.classList.remove('visible');
-        } catch (err) {
-            mostrarConfirmacion('❌ Error al agregar: ' + err.message, true);
-        }
-    });
-
-    // ===== ACTUALIZAR LISTA PÚBLICA DE JUGADORES LIBRES (sin botón eliminar) =====
+    // ===== ACTUALIZAR LISTA PÚBLICA DE JUGADORES LIBRES =====
     function actualizarListaJugadoresLibres(lista) {
         listaJugadoresLibres.innerHTML = '';
         if (!lista || lista.length === 0) {
@@ -1430,23 +1336,34 @@
         lista.forEach(j => {
             const div = document.createElement('div');
             div.className = 'jugador-item';
-            div.innerHTML = `<span>${j.nombre} - 📱 ${j.telefono}</span>`;
+            div.innerHTML = `
+                <span>${j.nombre} - 📱 ${j.telefono} - 🆔 ${j.carnet}</span>
+                <button class="btn-fichar" data-id="${j.id}">⚡ Fichar</button>
+            `;
             listaJugadoresLibres.appendChild(div);
+        });
+        document.querySelectorAll('.btn-fichar').forEach(btn => {
+            btn.addEventListener('click', e => {
+                const id = e.target.dataset.id;
+                abrirModalFichar(id);
+            });
         });
     }
 
-    // ===== TABLA JUGADORES LIBRES EN ADMIN (con eliminar) =====
+    // ===== TABLA JUGADORES LIBRES EN ADMIN =====
     function actualizarTablaJugadoresLibres(lista) {
         tbodyJugadoresLibres.innerHTML = '';
         if (!lista || lista.length === 0) {
-            tbodyJugadoresLibres.innerHTML = '<tr><td colspan="3">No hay jugadores libres.</td></tr>';
+            tbodyJugadoresLibres.innerHTML = '<tr><td colspan="5">No hay jugadores libres.</td></tr>';
             return;
         }
         lista.forEach(j => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${j.nombre}</td>
+                <td>${j.carnet}</td>
                 <td>${j.telefono}</td>
+                <td>${j.correo}</td>
                 <td><button class="btn-eliminar-jugador-admin" data-id="${j.id}">Eliminar</button></td>
             `;
             tbodyJugadoresLibres.appendChild(tr);
@@ -1459,7 +1376,7 @@
         });
     }
 
-    // ===== ADMIN PANEL (EQUIPOS) con botón EDITAR =====
+    // ===== ADMIN PANEL (EQUIPOS) =====
     function actualizarAdminPanel(equipos) {
         tbodyEquipos.innerHTML = '';
         if (!equipos || equipos.length === 0) {
@@ -1498,6 +1415,104 @@
         });
     }
 
+    // ===== MODAL EDITAR EQUIPO (existente) =====
+    const modalEditarEquipo = document.createElement('div');
+    modalEditarEquipo.id = 'modalEditarEquipo';
+    modalEditarEquipo.className = 'modal-overlay';
+    modalEditarEquipo.innerHTML = `
+        <div class="modal">
+            <h2>✏️ Editar equipo: <span id="modalEquipoNombre"></span></h2>
+            <div id="modalEquipoId" style="display:none;"></div>
+            <div class="form-group">
+                <label>Participantes actuales:</label>
+                <div class="lista-participantes-modal" id="modalListaParticipantes"></div>
+            </div>
+            <div class="form-group">
+                <label>Agregar nuevo participante</label>
+                <input type="text" id="modalNuevoNombre" placeholder="Nombre completo">
+                <input type="text" id="modalNuevoCarnet" placeholder="Carnet" style="margin-top:6px;">
+                <input type="email" id="modalNuevoCorreo" placeholder="Correo estudiantil" style="margin-top:6px;">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-danger" id="modalCerrar">Cancelar</button>
+                <button class="btn btn-success" id="modalGuardar">Agregar participante</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modalEditarEquipo);
+
+    const modalEquipoNombre = $('modalEquipoNombre');
+    const modalEquipoId = $('modalEquipoId');
+    const modalListaParticipantes = $('modalListaParticipantes');
+    const modalNuevoNombre = $('modalNuevoNombre');
+    const modalNuevoCarnet = $('modalNuevoCarnet');
+    const modalNuevoCorreo = $('modalNuevoCorreo');
+    const modalCerrar = $('modalCerrar');
+    const modalGuardar = $('modalGuardar');
+
+    function abrirModalEditarEquipo(equipoId) {
+        const equipo = equipos.find(eq => eq.id === equipoId);
+        if (!equipo) return;
+        modalEquipoNombre.textContent = equipo.nombre;
+        modalEquipoId.textContent = equipoId;
+        modalListaParticipantes.innerHTML = '';
+        if (equipo.participantes && equipo.participantes.length > 0) {
+            equipo.participantes.forEach(p => {
+                const div = document.createElement('p');
+                div.textContent = `${p.nombre} (${p.carnet}) - ${p.correo}`;
+                modalListaParticipantes.appendChild(div);
+            });
+        } else {
+            modalListaParticipantes.innerHTML = '<p>No hay participantes registrados.</p>';
+        }
+        modalNuevoNombre.value = '';
+        modalNuevoCarnet.value = '';
+        modalNuevoCorreo.value = '';
+        modalEditarEquipo.classList.add('visible');
+    }
+
+    modalCerrar.addEventListener('click', () => {
+        modalEditarEquipo.classList.remove('visible');
+    });
+    modalEditarEquipo.addEventListener('click', (e) => {
+        if (e.target === modalEditarEquipo) modalEditarEquipo.classList.remove('visible');
+    });
+
+    modalGuardar.addEventListener('click', async () => {
+        const nombre = modalNuevoNombre.value.trim();
+        const carnet = modalNuevoCarnet.value.trim();
+        const correo = modalNuevoCorreo.value.trim();
+        if (!nombre || !carnet || !correo) {
+            mostrarConfirmacion('⚠️ Completa todos los campos.', true);
+            return;
+        }
+        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
+        if (!emailRegex.test(correo)) {
+            mostrarConfirmacion('⚠️ Correo debe ser @estudiantec.cr', true);
+            return;
+        }
+        const equipoId = modalEquipoId.textContent;
+        const equipoRef = db.ref('equipos/' + equipoId);
+        try {
+            const snapshot = await equipoRef.once('value');
+            const data = snapshot.val();
+            if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
+            const participantesActuales = data.participantes || [];
+            const plazasActuales = data.plazas || 0;
+            if (plazasActuales <= 0) {
+                mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas disponibles.', true);
+                return;
+            }
+            participantesActuales.push({ nombre, carnet, correo });
+            const nuevasPlazas = plazasActuales - 1;
+            await equipoRef.update({ participantes: participantesActuales, plazas: nuevasPlazas });
+            mostrarConfirmacion('✅ Participante agregado. Plazas restantes: ' + nuevasPlazas);
+            modalEditarEquipo.classList.remove('visible');
+        } catch (err) {
+            mostrarConfirmacion('❌ Error: ' + err.message, true);
+        }
+    });
+
     // ===== WHATSAPP =====
     function actualizarWhatsAppList(equipos) {
         const numeros = equipos.map(eq => eq.telefono).filter(t => t);
@@ -1532,13 +1547,7 @@
         await db.ref('config/estadoInscripciones').set('abiertas');
     });
 
-    // ===== ADMIN TOGGLE (hash) =====
-    async function hashTexto(texto) {
-        const enc = new TextEncoder().encode(texto);
-        const buf = await crypto.subtle.digest('SHA-256', enc);
-        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
+    // ===== ADMIN TOGGLE =====
     btnToggleAdmin.addEventListener('click', async () => {
         if (adminPanel.classList.contains('visible')) {
             adminPanel.classList.remove('visible');
@@ -1806,9 +1815,89 @@
         }
     }
 
+    // ===== GUARDAR EQUIPO =====
+    formEquipo.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!inscripcionesAbiertas) { mostrarConfirmacion('⚠️ Inscripciones cerradas.', true); return; }
+        if (equipos.length >= MAX_EQUIPOS) { mostrarConfirmacion('⚠️ Sin cupos.', true); return; }
+        if (!aceptaTerminos.checked) { mostrarConfirmacion('⚠️ Acepta los términos.', true); return; }
+
+        const nombre = nombreEquipo.value.trim();
+        const capitanVal = capitan.value.trim();
+        const telefonoVal = telefono.value.trim();
+        const cantidad = parseInt(cantidadCompetidores.value);
+        const color = colorEquipo.value;
+        const plazasVal = parseInt(plazas.value) || 0;
+
+        if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
+            mostrarConfirmacion('⚠️ Completa todos los campos obligatorios.', true); return;
+        }
+        if (cantidad < 6 || cantidad > 7) {
+            mostrarConfirmacion('⚠️ Competidores entre 6 y 7.', true); return;
+        }
+        if (plazasVal < 0 || plazasVal > 6) {
+            mostrarConfirmacion('⚠️ Plazas por completar entre 0 y 6.', true); return;
+        }
+
+        const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
+        if (participantesValidos.length < 1) {
+            mostrarConfirmacion('⚠️ Registra al menos al capitán.', true); return;
+        }
+        if (participantesValidos.length > cantidad) {
+            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) exceden el total (${cantidad}).`, true); return;
+        }
+        if (participantesValidos.length + plazasVal !== cantidad) {
+            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) + plazas (${plazasVal}) debe ser ${cantidad}.`, true); return;
+        }
+        const capitanParticipante = participantesValidos[0];
+        if (capitanParticipante.nombre !== capitanVal) {
+            mostrarConfirmacion('⚠️ El capitán debe ser el primer participante.', true); return;
+        }
+        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
+        for (let p of participantesValidos) {
+            if (!emailRegex.test(p.correo)) {
+                mostrarConfirmacion(`⚠️ El correo "${p.correo}" no es válido. Debe ser @estudiantec.cr`, true);
+                return;
+            }
+        }
+        const nombreLower = nombre.toLowerCase();
+        if (equipos.some(eq => (eq.nombre || '').trim().toLowerCase() === nombreLower)) {
+            mostrarConfirmacion('⚠️ Nombre de equipo duplicado.', true); return;
+        }
+        const telefonoNormalizado = telefonoVal.replace(/\s+/g, '');
+        if (equipos.some(eq => (eq.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
+            mostrarConfirmacion('⚠️ Teléfono ya registrado.', true); return;
+        }
+        const usados = {};
+        equipos.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
+        if ((usados[color] || 0) >= COLORES_CUPO[color]) {
+            mostrarConfirmacion(`⚠️ Color ${color} sin cupos.`, true); return;
+        }
+
+        const nuevoEquipo = {
+            nombre, capitan: capitanVal, telefono: telefonoVal, color,
+            cantidadCompetidores: cantidad, plazas: plazasVal,
+            participantes: participantesValidos,
+            fecha: firebase.database.ServerValue.TIMESTAMP
+        };
+        try {
+            await db.ref('equipos').push(nuevoEquipo);
+            mostrarConfirmacion('✅ Equipo inscrito.');
+            formEquipo.reset();
+            participantes = [{ nombre: '', carnet: '', correo: '' }];
+            renderParticipantes();
+            capitan.value = '';
+            plazas.value = '0';
+            aceptaTerminos.checked = false;
+            camposEquipo.disabled = true;
+        } catch (err) {
+            mostrarConfirmacion('❌ Error: ' + err.message, true);
+        }
+    });
+
     // ===== INICIO =====
     cargarDatos();
-    console.log('🏆 Torneo TMS con edición de equipos y gestión mejorada de jugadores libres');
+    console.log('🏆 Torneo TMS con fichaje automático de jugadores libres');
 </script>
 </body>
 </html>
