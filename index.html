@@ -232,6 +232,44 @@
         .btn-success:hover { background: #1b4332; transform: scale(1.05); }
         .btn-warning { background: #f4a261; color: #1b4332; }
         .btn-warning:hover { transform: scale(1.05); }
+        /* ===== ACEPTAR TÉRMINOS Y REGLAMENTO ===== */
+        .aceptar-terminos {
+            background: #fff8e6;
+            border: 2px solid #f4a261;
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .aceptar-terminos label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #302d7c;
+            cursor: pointer;
+        }
+        .aceptar-terminos input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            accent-color: #302d7c;
+            cursor: pointer;
+        }
+        .aceptar-terminos a {
+            color: #870f0b;
+            font-weight: 700;
+            text-decoration: underline;
+        }
+        .campos-bloqueados {
+            border: none;
+            margin: 0;
+            padding: 0;
+            display: contents;
+        }
+        .campos-bloqueados:disabled {
+            opacity: 0.5;
+        }
         /* ===== JUGADORES LIBRES ===== */
         .jugadores-libres {
             margin-top: 30px;
@@ -629,6 +667,13 @@
         <h2>📝 Inscribir equipo</h2>
         <form id="formEquipo" autocomplete="off">
             <div class="form-grid">
+                <div class="form-group full-width aceptar-terminos">
+                    <label for="aceptaTerminos">
+                        <input type="checkbox" id="aceptaTerminos">
+                        <span>Acepto el <a href="reglamento.pdf" target="_blank" rel="noopener">reglamento del torneo y los términos y condiciones establecidos</a>. Debes marcar esta casilla para poder llenar el formulario.</span>
+                    </label>
+                </div>
+                <fieldset class="campos-bloqueados" id="camposEquipo" disabled>
                 <div class="form-group full-width">
                     <label for="nombreEquipo">Nombre del equipo *</label>
                     <input type="text" id="nombreEquipo" placeholder="Ej: Los Titanes" required>
@@ -663,6 +708,7 @@
                     <div id="participantesList"></div>
                     <button type="button" class="btn-add-participante" id="btnAddParticipante">+ Agregar participante</button>
                 </div>
+                </fieldset>
 
                 <div class="form-actions">
                     <button type="reset" class="btn btn-danger">Limpiar</button>
@@ -793,11 +839,11 @@
     let resultados = {};
 
     // ===== CONTRASEÑA DE ADMIN (guardada como hash SHA-256, no en texto plano) =====
-    // Contraseña actual: admin123
+    // Contraseña actual: TorneoTMS2026!
     // Para cambiarla: abre la consola del navegador (F12) y ejecuta:
     //   crypto.subtle.digest('SHA-256', new TextEncoder().encode('TU_NUEVA_CLAVE')).then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
     // y reemplaza el valor de abajo por el hash que te imprima.
-    const ADMIN_PASSWORD_HASH = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+    const ADMIN_PASSWORD_HASH = '353c39fdfc6d15e65e6282eda6c40a67e756f14ac3521f257ec3e44f0b8065b3';
     async function hashTexto(texto) {
         const enc = new TextEncoder().encode(texto);
         const buf = await crypto.subtle.digest('SHA-256', enc);
@@ -811,6 +857,8 @@
     const coloresDisponibles = $('coloresDisponibles');
     const formInscripcion = $('formInscripcion');
     const formEquipo = $('formEquipo');
+    const aceptaTerminos = $('aceptaTerminos');
+    const camposEquipo = $('camposEquipo');
     const nombreEquipo = $('nombreEquipo');
     const capitan = $('capitan');
     const telefono = $('telefono');
@@ -901,6 +949,11 @@
         }
     });
     renderParticipantes();
+
+    // ===== BLOQUEAR/DESBLOQUEAR FORMULARIO SEGÚN ACEPTACIÓN DE TÉRMINOS =====
+    aceptaTerminos.addEventListener('change', () => {
+        camposEquipo.disabled = !aceptaTerminos.checked;
+    });
 
     // ===== FUNCIONES DE COLOR (MEJORADAS) =====
 
@@ -1166,8 +1219,12 @@
     // ===== GUARDAR EQUIPO =====
     formEquipo.addEventListener('submit', async (e) => {
         e.preventDefault();
-        if (!inscripcionesAbiertas) { alert('⚠️ Las inscripciones están cerradas.'); return; }
-        if (equipos.length >= MAX_EQUIPOS) { alert('⚠️ No hay cupos disponibles.'); return; }
+        if (!inscripcionesAbiertas) { mostrarConfirmacion('⚠️ Las inscripciones están cerradas.', true); return; }
+        if (equipos.length >= MAX_EQUIPOS) { mostrarConfirmacion('⚠️ No hay cupos disponibles.', true); return; }
+        if (!aceptaTerminos.checked) {
+            mostrarConfirmacion('⚠️ Debes aceptar el reglamento y los términos y condiciones para inscribir tu equipo.', true);
+            return;
+        }
 
         const nombre = nombreEquipo.value.trim();
         const capitanVal = capitan.value.trim();
@@ -1256,6 +1313,8 @@
             renderParticipantes();
             capitan.value = '';
             plazas.value = '0';
+            aceptaTerminos.checked = false;
+            camposEquipo.disabled = true;
         } catch (err) {
             mostrarConfirmacion('❌ Error al inscribir: ' + err.message, true);
         }
