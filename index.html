@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,7 +10,12 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <style>
         /* ===== RESET Y ESTILOS BASE ===== */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Segoe UI', Roboto, sans-serif;
             background: #302d7c;
@@ -19,15 +25,16 @@
             padding: 20px;
             margin: 0;
         }
+
         .app {
             max-width: 1400px;
             width: 100%;
             background: #f4f3f1;
             border-radius: 32px;
             padding: 30px 25px 40px;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.7);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7);
         }
-        /* ===== HEADER ===== */
+
         .header {
             display: flex;
             flex-wrap: wrap;
@@ -37,11 +44,13 @@
             padding-bottom: 15px;
             margin-bottom: 25px;
         }
+
         .header h1 {
             font-size: 2.1rem;
             font-weight: 800;
             color: #302d7c;
         }
+
         .header h1 span {
             background: #870f0b;
             color: #f4f3f1;
@@ -49,8 +58,9 @@
             border-radius: 40px;
             font-size: 1.4rem;
             margin-left: 6px;
-            box-shadow: 0 4px 15px rgba(135,15,11,0.4);
+            box-shadow: 0 4px 15px rgba(135, 15, 11, 0.4);
         }
+
         .estado-inscripciones {
             background: #2d6a4f;
             color: #f4f3f1;
@@ -59,24 +69,30 @@
             font-weight: 600;
             font-size: 0.9rem;
         }
+
         .estado-inscripciones.cerradas {
             background: #870f0b;
         }
-        /* ===== ENUNCIADO ===== */
+
         .intro-evento {
             background: linear-gradient(135deg, #302d7c 0%, #4a46a8 100%);
             color: #f4f3f1;
             border-radius: 20px;
             padding: 22px 26px;
             margin-bottom: 25px;
-            box-shadow: 0 8px 24px rgba(48,45,124,0.25);
+            box-shadow: 0 8px 24px rgba(48, 45, 124, 0.25);
         }
+
         .intro-evento p {
             font-size: 0.98rem;
             line-height: 1.6;
             margin-bottom: 10px;
         }
-        .intro-evento p:last-child { margin-bottom: 0; }
+
+        .intro-evento p:last-child {
+            margin-bottom: 0;
+        }
+
         .intro-evento ul {
             list-style: none;
             display: flex;
@@ -84,15 +100,16 @@
             gap: 10px;
             margin-top: 12px;
         }
+
         .intro-evento ul li {
-            background: rgba(244,243,241,0.12);
-            border: 1px solid rgba(244,243,241,0.25);
+            background: rgba(244, 243, 241, 0.12);
+            border: 1px solid rgba(244, 243, 241, 0.25);
             padding: 6px 14px;
             border-radius: 30px;
             font-size: 0.85rem;
             font-weight: 600;
         }
-        /* ===== INFO CUPOS ===== */
+
         .info-cupos {
             display: flex;
             flex-wrap: wrap;
@@ -104,16 +121,19 @@
             align-items: center;
             justify-content: space-between;
         }
+
         .info-cupos .cupos {
             font-weight: 700;
             color: #302d7c;
         }
+
         .colores-disponibles {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             align-items: center;
         }
+
         .color-chip {
             padding: 4px 12px;
             border-radius: 20px;
@@ -123,59 +143,83 @@
             background: #aaa;
             border: 1px solid #ccc;
         }
-        .color-chip.disponible { opacity: 1; }
-        .color-chip.agotado { opacity: 0.4; text-decoration: line-through; }
-        /* ===== FORMULARIO ===== */
+
+        .color-chip.disponible {
+            opacity: 1;
+        }
+
+        .color-chip.agotado {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+
         .form-inscripcion {
             background: #fff;
             border-radius: 16px;
             padding: 25px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
             margin-bottom: 30px;
             display: none;
         }
-        .form-inscripcion.abierto { display: block; }
+
+        .form-inscripcion.abierto {
+            display: block;
+        }
+
         .form-inscripcion h2 {
             color: #302d7c;
             margin-bottom: 20px;
         }
+
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        .form-grid .full-width { grid-column: 1 / -1; }
+
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
         .form-group {
             display: flex;
             flex-direction: column;
             gap: 4px;
         }
+
         .form-group label {
             font-weight: 600;
             font-size: 0.85rem;
             color: #302d7c;
         }
-        .form-group input, .form-group select {
+
+        .form-group input,
+        .form-group select {
             padding: 10px 12px;
             border: 2px solid #d6d3cc;
             border-radius: 10px;
             font-size: 0.95rem;
             transition: 0.2s;
         }
-        .form-group input:focus, .form-group select:focus {
+
+        .form-group input:focus,
+        .form-group select:focus {
             outline: none;
             border-color: #302d7c;
-            box-shadow: 0 0 0 4px rgba(48,45,124,0.15);
+            box-shadow: 0 0 0 4px rgba(48, 45, 124, 0.15);
         }
+
         .participantes-container {
             grid-column: 1 / -1;
             margin-top: 10px;
         }
+
         .participantes-container h3 {
             color: #302d7c;
             font-size: 1rem;
             margin-bottom: 10px;
         }
+
         .participante-row {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr auto;
@@ -186,7 +230,11 @@
             background: #f8f7f5;
             border-radius: 10px;
         }
-        .participante-row .form-group { margin-bottom: 0; }
+
+        .participante-row .form-group {
+            margin-bottom: 0;
+        }
+
         .btn-remove-participante {
             background: #ddd;
             border: none;
@@ -197,7 +245,12 @@
             color: #333;
             margin-top: 4px;
         }
-        .btn-remove-participante:hover { background: #870f0b; color: #fff; }
+
+        .btn-remove-participante:hover {
+            background: #870f0b;
+            color: #fff;
+        }
+
         .btn-add-participante {
             background: #e9e5f0;
             border: 2px dashed #302d7c;
@@ -208,7 +261,11 @@
             color: #302d7c;
             transition: 0.2s;
         }
-        .btn-add-participante:hover { background: #d6d0e6; }
+
+        .btn-add-participante:hover {
+            background: #d6d0e6;
+        }
+
         .form-actions {
             grid-column: 1 / -1;
             display: flex;
@@ -216,6 +273,7 @@
             margin-top: 15px;
             justify-content: flex-end;
         }
+
         .btn {
             border: none;
             padding: 10px 24px;
@@ -224,23 +282,62 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .btn-primary { background: #302d7c; color: #f4f3f1; }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(48,45,124,0.4); }
-        .btn-danger { background: #870f0b; color: #f4f3f1; }
-        .btn-danger:hover { background: #6a0b08; transform: scale(1.05); }
-        .btn-success { background: #2d6a4f; color: #f4f3f1; }
-        .btn-success:hover { background: #1b4332; transform: scale(1.05); }
-        .btn-warning { background: #f4a261; color: #1b4332; }
-        .btn-warning:hover { transform: scale(1.05); }
-        .btn-info { background: #457b9d; color: #f4f3f1; }
-        .btn-info:hover { transform: scale(1.05); }
-        /* ===== ACEPTAR TÉRMINOS ===== */
+
+        .btn-primary {
+            background: #302d7c;
+            color: #f4f3f1;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(48, 45, 124, 0.4);
+        }
+
+        .btn-danger {
+            background: #870f0b;
+            color: #f4f3f1;
+        }
+
+        .btn-danger:hover {
+            background: #6a0b08;
+            transform: scale(1.05);
+        }
+
+        .btn-success {
+            background: #2d6a4f;
+            color: #f4f3f1;
+        }
+
+        .btn-success:hover {
+            background: #1b4332;
+            transform: scale(1.05);
+        }
+
+        .btn-warning {
+            background: #f4a261;
+            color: #1b4332;
+        }
+
+        .btn-warning:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-info {
+            background: #457b9d;
+            color: #f4f3f1;
+        }
+
+        .btn-info:hover {
+            transform: scale(1.05);
+        }
+
         .aceptar-terminos {
             background: #fff8e6;
             border: 2px solid #f4a261;
             border-radius: 12px;
             padding: 14px 16px;
         }
+
         .aceptar-terminos label {
             display: flex;
             align-items: flex-start;
@@ -250,6 +347,7 @@
             color: #302d7c;
             cursor: pointer;
         }
+
         .aceptar-terminos input[type="checkbox"] {
             width: 20px;
             height: 20px;
@@ -258,33 +356,42 @@
             accent-color: #302d7c;
             cursor: pointer;
         }
+
         .aceptar-terminos a {
             color: #870f0b;
             font-weight: 700;
             text-decoration: underline;
         }
+
         .campos-bloqueados {
             border: none;
             margin: 0;
             padding: 0;
             display: contents;
         }
+
         .campos-bloqueados:disabled {
             opacity: 0.5;
         }
-        /* ===== JUGADORES LIBRES (público con botón Fichar) ===== */
+
         .jugadores-libres {
             margin-top: 30px;
             border-top: 2px solid #d6d3cc;
             padding-top: 20px;
         }
-        .jugadores-libres h2 { color: #302d7c; margin-bottom: 10px; }
+
+        .jugadores-libres h2 {
+            color: #302d7c;
+            margin-bottom: 10px;
+        }
+
         .jugadores-libres .form-jugador {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
             margin-bottom: 15px;
         }
+
         .jugadores-libres .form-jugador input {
             padding: 10px 12px;
             border: 2px solid #d6d3cc;
@@ -292,6 +399,7 @@
             flex: 1;
             min-width: 150px;
         }
+
         .jugadores-libres .form-jugador button {
             padding: 10px 24px;
             border: none;
@@ -301,12 +409,14 @@
             font-weight: 700;
             cursor: pointer;
         }
+
         .jugadores-libres .lista-jugadores {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 10px;
         }
+
         .jugadores-libres .lista-jugadores .jugador-item {
             background: #fff;
             padding: 8px 16px;
@@ -317,6 +427,7 @@
             gap: 10px;
             flex-wrap: wrap;
         }
+
         .jugadores-libres .lista-jugadores .jugador-item .btn-fichar {
             background: #2d6a4f;
             color: #fff;
@@ -327,24 +438,33 @@
             font-weight: 600;
             font-size: 0.8rem;
         }
+
         .jugadores-libres .lista-jugadores .jugador-item .btn-fichar:hover {
             background: #1b4332;
         }
+
         .jugadores-libres .lista-jugadores .jugador-item .btn-fichar:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        /* ===== MODAL FICHAR ===== */
+
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
             z-index: 999;
             justify-content: center;
             align-items: center;
         }
-        .modal-overlay.visible { display: flex; }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
         .modal {
             background: #f4f3f1;
             border-radius: 24px;
@@ -353,24 +473,44 @@
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 25px 70px rgba(0,0,0,0.6);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.6);
         }
-        .modal h2 { color: #302d7c; margin-bottom: 15px; }
-        .modal .form-group { margin-bottom: 12px; }
-        .modal .form-group label { font-weight: 600; color: #302d7c; }
-        .modal .form-group input, .modal .form-group select { width: 100%; padding: 10px; border: 2px solid #d6d3cc; border-radius: 10px; }
+
+        .modal h2 {
+            color: #302d7c;
+            margin-bottom: 15px;
+        }
+
+        .modal .form-group {
+            margin-bottom: 12px;
+        }
+
+        .modal .form-group label {
+            font-weight: 600;
+            color: #302d7c;
+        }
+
+        .modal .form-group input,
+        .modal .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #d6d3cc;
+            border-radius: 10px;
+        }
+
         .modal .modal-actions {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
             margin-top: 20px;
         }
-        /* ===== BRACKET ===== */
+
         .bracket-wrapper {
             position: relative;
             overflow-x: auto;
             padding: 20px 10px;
         }
+
         .bracket {
             display: flex;
             gap: 40px;
@@ -378,6 +518,7 @@
             min-width: fit-content;
             position: relative;
         }
+
         #lineSvg {
             position: absolute;
             top: 0;
@@ -387,6 +528,7 @@
             pointer-events: none;
             z-index: 1;
         }
+
         #lineSvg path {
             stroke: #302d7c;
             stroke-width: 2.5;
@@ -395,7 +537,12 @@
             opacity: 0.5;
             transition: opacity 0.3s ease, stroke-width 0.3s ease;
         }
-        .bracket-wrapper:hover #lineSvg path { opacity: 1; stroke-width: 3.5; }
+
+        .bracket-wrapper:hover #lineSvg path {
+            opacity: 1;
+            stroke-width: 3.5;
+        }
+
         .round {
             display: flex;
             flex-direction: column;
@@ -405,6 +552,7 @@
             z-index: 2;
             position: relative;
         }
+
         .round-title {
             background: #302d7c;
             color: #f4f3f1;
@@ -416,8 +564,9 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             margin-bottom: 8px;
-            box-shadow: 0 2px 8px rgba(48,45,124,0.3);
+            box-shadow: 0 2px 8px rgba(48, 45, 124, 0.3);
         }
+
         .match {
             background: #fff;
             border: 2px solid #d6d3cc;
@@ -429,34 +578,48 @@
             gap: 4px;
             position: relative;
         }
+
         .match:hover {
             border-color: #870f0b;
             transform: scale(1.03);
-            box-shadow: 0 12px 30px rgba(135,15,11,0.15);
+            box-shadow: 0 12px 30px rgba(135, 15, 11, 0.15);
             z-index: 10;
         }
+
         .match.has-winner {
             border-color: #870f0b;
             background: #fdf5f4;
             animation: pulseWinner 2s infinite ease-in-out;
         }
+
         @keyframes pulseWinner {
-            0% { box-shadow: 0 0 0 0 rgba(135,15,11,0.2); }
-            50% { box-shadow: 0 0 0 10px rgba(135,15,11,0.05); }
-            100% { box-shadow: 0 0 0 0 rgba(135,15,11,0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(135, 15, 11, 0.2);
+            }
+
+            50% {
+                box-shadow: 0 0 0 10px rgba(135, 15, 11, 0.05);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(135, 15, 11, 0);
+            }
         }
+
         .team-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 6px;
         }
+
         .team-name-wrapper {
             display: flex;
             align-items: center;
             gap: 6px;
             flex: 1;
         }
+
         .team-color-dot {
             width: 14px;
             height: 14px;
@@ -465,6 +628,7 @@
             flex-shrink: 0;
             display: inline-block;
         }
+
         .team-name {
             border: none;
             background: transparent;
@@ -477,6 +641,7 @@
             transition: 0.15s;
             font-family: inherit;
         }
+
         .team-name-readonly {
             border-bottom: 2px solid #d6d3cc;
             color: #1a1a3a;
@@ -485,6 +650,7 @@
             width: auto;
             flex: 1;
         }
+
         .score-input {
             width: 44px;
             text-align: center;
@@ -497,17 +663,39 @@
             color: #302d7c;
             transition: 0.2s;
         }
+
         .score-input:focus {
             outline: none;
             border-color: #870f0b;
-            box-shadow: 0 0 0 5px rgba(135,15,11,0.15);
+            box-shadow: 0 0 0 5px rgba(135, 15, 11, 0.15);
             transform: scale(1.05);
         }
-        .score-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-        .score-input { -moz-appearance: textfield; }
-        .team-name.team-winner { color: #2d6a4f; font-weight: 800; }
-        .team-name.team-loser { opacity: 0.45; text-decoration: line-through; }
-        .match-bye-note { font-size: 0.72rem; color: #2d6a4f; font-weight: 600; margin-top: 2px; }
+
+        .score-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .score-input {
+            -moz-appearance: textfield;
+        }
+
+        .team-name.team-winner {
+            color: #2d6a4f;
+            font-weight: 800;
+        }
+
+        .team-name.team-loser {
+            opacity: 0.45;
+            text-decoration: line-through;
+        }
+
+        .match-bye-note {
+            font-size: 0.72rem;
+            color: #2d6a4f;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
         .match-penales {
             display: flex;
             justify-content: space-between;
@@ -516,9 +704,18 @@
             padding-top: 6px;
             border-top: 1px dashed #d6d3cc;
         }
-        .match-penales .penales-label { font-size: 0.72rem; font-weight: 700; color: #870f0b; }
-        .match-penales .penales-inputs { display: flex; gap: 6px; }
-        /* ===== CAMPEÓN ===== */
+
+        .match-penales .penales-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #870f0b;
+        }
+
+        .match-penales .penales-inputs {
+            display: flex;
+            gap: 6px;
+        }
+
         .champion-box {
             margin-top: 30px;
             padding: 20px 25px;
@@ -527,14 +724,26 @@
             text-align: center;
             border: 2px solid #302d7c;
             display: none;
-            animation: championReveal 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards;
-            box-shadow: 0 8px 30px rgba(135,15,11,0.4);
+            animation: championReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            box-shadow: 0 8px 30px rgba(135, 15, 11, 0.4);
         }
-        .champion-box.show { display: block; }
+
+        .champion-box.show {
+            display: block;
+        }
+
         @keyframes championReveal {
-            0% { transform: scale(0.5) rotate(-3deg); opacity: 0; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            0% {
+                transform: scale(0.5) rotate(-3deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
         }
+
         .champion-box h2 {
             font-size: 2.2rem;
             color: #f4f3f1;
@@ -544,20 +753,29 @@
             gap: 15px;
             flex-wrap: wrap;
         }
+
         .champion-box h2 span {
             background: #302d7c;
             padding: 6px 30px;
             border-radius: 60px;
             color: #f4f3f1;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             font-weight: 800;
             animation: glowText 1.8s infinite alternate;
         }
+
         @keyframes glowText {
-            0% { box-shadow: 0 4px 20px rgba(48,45,124,0.3); transform: scale(1); }
-            100% { box-shadow: 0 4px 40px rgba(135,15,11,0.7), 0 0 60px rgba(48,45,124,0.3); transform: scale(1.02); }
+            0% {
+                box-shadow: 0 4px 20px rgba(48, 45, 124, 0.3);
+                transform: scale(1);
+            }
+
+            100% {
+                box-shadow: 0 4px 40px rgba(135, 15, 11, 0.7), 0 0 60px rgba(48, 45, 124, 0.3);
+                transform: scale(1.02);
+            }
         }
-        /* ===== ADMIN PANEL ===== */
+
         .admin-panel {
             margin-top: 30px;
             background: #e9e5f0;
@@ -565,15 +783,21 @@
             padding: 20px;
             display: none;
         }
-        .admin-panel.visible { display: block; }
+
+        .admin-panel.visible {
+            display: block;
+        }
+
         .admin-panel h2 {
             color: #302d7c;
             margin-bottom: 15px;
         }
+
         .admin-panel h3 {
             color: #302d7c;
             margin: 20px 0 10px;
         }
+
         .admin-panel table {
             width: 100%;
             border-collapse: collapse;
@@ -582,17 +806,22 @@
             overflow: hidden;
             margin-bottom: 15px;
         }
-        .admin-panel th, .admin-panel td {
+
+        .admin-panel th,
+        .admin-panel td {
             padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #d6d3cc;
         }
+
         .admin-panel th {
             background: #302d7c;
             color: #f4f3f1;
             font-weight: 600;
         }
-        .admin-panel .btn-eliminar-equipo, .admin-panel .btn-eliminar-jugador-admin {
+
+        .admin-panel .btn-eliminar-equipo,
+        .admin-panel .btn-eliminar-jugador-admin {
             background: #870f0b;
             color: #fff;
             border: none;
@@ -601,9 +830,12 @@
             cursor: pointer;
             font-weight: 600;
         }
-        .admin-panel .btn-eliminar-equipo:hover, .admin-panel .btn-eliminar-jugador-admin:hover {
+
+        .admin-panel .btn-eliminar-equipo:hover,
+        .admin-panel .btn-eliminar-jugador-admin:hover {
             background: #6a0b08;
         }
+
         .admin-panel .btn-editar-equipo {
             background: #457b9d;
             color: #fff;
@@ -613,15 +845,18 @@
             cursor: pointer;
             font-weight: 600;
         }
+
         .admin-panel .btn-editar-equipo:hover {
             background: #1d3557;
         }
+
         .admin-panel .contactos-whatsapp {
             background: #fff;
             padding: 15px;
             border-radius: 12px;
             margin-top: 15px;
         }
+
         .admin-panel .contactos-whatsapp textarea {
             width: 100%;
             height: 120px;
@@ -631,11 +866,12 @@
             font-family: inherit;
             resize: vertical;
         }
+
         .admin-toggle {
             margin-top: 15px;
             text-align: center;
         }
-        /* ===== MENSAJE DE CONFIRMACIÓN ===== */
+
         .confirmacion-mensaje {
             position: fixed;
             top: 20px;
@@ -646,1258 +882,1427 @@
             border-radius: 14px;
             font-weight: 600;
             font-size: 0.9rem;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
             transform: translateX(140%);
             transition: transform 0.35s ease;
             z-index: 999;
             max-width: 320px;
         }
-        .confirmacion-mensaje.visible { transform: translateX(0); }
-        .confirmacion-mensaje.error { background: #870f0b; }
-        @media (max-width: 600px) {
-            .confirmacion-mensaje { left: 12px; right: 12px; max-width: none; top: 12px; }
-            .modal { margin: 12px; }
+
+        .confirmacion-mensaje.visible {
+            transform: translateX(0);
         }
-        /* ===== RESPONSIVE ===== */
+
+        .confirmacion-mensaje.error {
+            background: #870f0b;
+        }
+
+        @media (max-width: 600px) {
+            .confirmacion-mensaje {
+                left: 12px;
+                right: 12px;
+                max-width: none;
+                top: 12px;
+            }
+
+            .modal {
+                margin: 12px;
+            }
+        }
+
         @media (max-width: 900px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .participante-row { grid-template-columns: 1fr 1fr; }
-            .bracket { gap: 20px; }
-            .round { min-width: 140px; }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .participante-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .bracket {
+                gap: 20px;
+            }
+
+            .round {
+                min-width: 140px;
+            }
         }
+
         @media (max-width: 600px) {
-            .header h1 { font-size: 1.6rem; }
-            .info-cupos { flex-direction: column; align-items: stretch; }
-            .participante-row { grid-template-columns: 1fr; }
-            .round { min-width: 120px; }
-            .team-name { font-size: 0.7rem; }
-            .score-input { width: 28px; font-size: 0.75rem; }
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .info-cupos {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .participante-row {
+                grid-template-columns: 1fr;
+            }
+
+            .round {
+                min-width: 120px;
+            }
+
+            .team-name {
+                font-size: 0.7rem;
+            }
+
+            .score-input {
+                width: 28px;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
+
 <body>
-<div class="app" id="app">
+    <div class="app" id="app">
 
-    <!-- MENSAJE DE CONFIRMACIÓN -->
-    <div class="confirmacion-mensaje" id="confirmacionMensaje"></div>
+        <!-- MENSAJE DE CONFIRMACIÓN -->
+        <div class="confirmacion-mensaje" id="confirmacionMensaje"></div>
 
-    <!-- HEADER -->
-    <div class="header">
-        <h1>⚽ Torneo <span>TMS</span></h1>
-        <div>
-            <span class="estado-inscripciones" id="estadoInscripciones">⏳ Cargando...</span>
+        <!-- HEADER -->
+        <div class="header">
+            <h1>⚽ Torneo <span>TMS</span></h1>
+            <div>
+                <span class="estado-inscripciones" id="estadoInscripciones">⏳ Cargando...</span>
+            </div>
         </div>
-    </div>
 
-    <!-- ENUNCIADO -->
-    <div class="intro-evento">
-        <p>Bienvenido a <strong>Torneo TMS</strong>, la plataforma integral para organizar torneos de fútbol 5-7: inscripción de equipos, registro de jugadores libres y llave (bracket) automatizada, todo en tiempo real.</p>
-        <p>Cada equipo se registra con su capitán, participantes y color de uniforme; el sistema asigna y ajusta los colores automáticamente para evitar que dos equipos con tonos parecidos se enfrenten en la primera ronda. Todo se sincroniza al instante entre los dispositivos de quienes estén viendo la página.</p>
-        <ul>
-            <li>🌐 Accesible desde cualquier dispositivo</li>
-        </ul>
-    </div>
-
-    <!-- INFO CUPOS Y COLORES -->
-    <div class="info-cupos" id="infoCupos">
-        <div class="cupos">🏟️ <span id="cuposTexto">Cargando cupos...</span></div>
-        <div class="colores-disponibles" id="coloresDisponibles">
-            <span style="font-weight:600;color:#302d7c;">🎨 Colores disponibles:</span>
+        <!-- ENUNCIADO -->
+        <div class="intro-evento">
+            <p>Bienvenido a <strong>Torneo TMS</strong>, la plataforma integral para organizar torneos de fútbol 5-7:
+                inscripción de equipos, registro de jugadores libres y llave (bracket) automatizada, todo en tiempo
+                real.</p>
+            <p>Cada equipo se registra con su capitán, participantes y color de uniforme; el sistema asigna y ajusta los
+                colores automáticamente para evitar que dos equipos con tonos parecidos se enfrenten en la primera
+                ronda. Todo se sincroniza al instante entre los dispositivos de quienes estén viendo la página.</p>
+            <ul>
+                <li>🌐 Accesible desde cualquier dispositivo</li>
+            </ul>
         </div>
-    </div>
 
-    <!-- FORMULARIO DE INSCRIPCIÓN DE EQUIPOS -->
-    <div class="form-inscripcion" id="formInscripcion">
-        <h2>📝 Inscribir equipo</h2>
-        <form id="formEquipo" autocomplete="off">
-            <div class="form-grid">
-                <div class="form-group full-width aceptar-terminos">
-                    <label for="aceptaTerminos">
-                        <input type="checkbox" id="aceptaTerminos">
-                        <span>Acepto el <a href="reglamento.pdf" target="_blank" rel="noopener">reglamento del torneo y los términos y condiciones establecidos</a>. Debes marcar esta casilla para poder llenar el formulario.</span>
-                    </label>
+        <!-- INFO CUPOS Y COLORES -->
+        <div class="info-cupos" id="infoCupos">
+            <div class="cupos">🏟️ <span id="cuposTexto">Cargando cupos...</span></div>
+            <div class="colores-disponibles" id="coloresDisponibles">
+                <span style="font-weight:600;color:#302d7c;">🎨 Colores disponibles:</span>
+            </div>
+        </div>
+
+        <!-- FORMULARIO DE INSCRIPCIÓN DE EQUIPOS -->
+        <div class="form-inscripcion" id="formInscripcion">
+            <h2>📝 Inscribir equipo</h2>
+            <form id="formEquipo" autocomplete="off">
+                <div class="form-grid">
+                    <div class="form-group full-width aceptar-terminos">
+                        <label for="aceptaTerminos">
+                            <input type="checkbox" id="aceptaTerminos">
+                            <span>Acepto el <a href="reglamento.pdf" target="_blank" rel="noopener">reglamento del
+                                    torneo y los términos y condiciones establecidos</a>. Debes marcar esta casilla para
+                                poder llenar el formulario.</span>
+                        </label>
+                    </div>
+                    <fieldset class="campos-bloqueados" id="camposEquipo" disabled>
+                        <div class="form-group full-width">
+                            <label for="nombreEquipo">Nombre del equipo *</label>
+                            <input type="text" id="nombreEquipo" placeholder="Ej: Los Titanes" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="capitan">Capitán *</label>
+                            <input type="text" id="capitan" placeholder="Nombre completo" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Teléfono del capitán *</label>
+                            <input type="tel" id="telefono" placeholder="+569 1234 5678" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="cantidadCompetidores">Nº de competidores (3-7) *</label>
+                            <input type="number" id="cantidadCompetidores" min="3" max="7" placeholder="6" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="colorEquipo">Color de uniforme *</label>
+                            <select id="colorEquipo" required>
+                                <option value="">-- Selecciona --</option>
+                            </select>
+                        </div>
+
+                        <!-- CAMPO PLAZAS MEJORADO -->
+                        <div class="form-group" id="grupoPlazas">
+                            <label for="plazas">Jugadores que necesitas para completar el equipo</label>
+                            <input type="number" id="plazas" min="0" max="6" value="0" placeholder="Ej: 3">
+                            <div id="contadorPlazas" style="font-size:0.85rem;margin-top:4px;font-weight:600;">
+                                👥 Participantes: <span id="contadorParticipantes">0</span> | Plazas: <span
+                                    id="contadorPlazasValor">0</span> | Total: <span id="contadorTotal">0</span> de
+                                <span id="contadorCompetidores">0</span>
+                            </div>
+                            <div id="mensajeAyudaPlazas"
+                                style="font-size:0.8rem;color:#666;margin-top:4px;background:#f8f7f5;padding:6px 10px;border-radius:8px;">
+                                💡 Ejemplo: si quieres 6 jugadores y ya tienes 3, escribe 3 aquí.
+                            </div>
+                        </div>
+
+                        <div class="participantes-container">
+                            <h3>👥 Participantes (incluye al capitán)</h3>
+                            <p style="font-size:0.8rem;color:#666;margin-bottom:10px;">Registra a los jugadores que ya
+                                tengas (mínimo 1, el capitán). Las plazas por completar son para llegar al total de
+                                competidores que indicaste (3-7).</p>
+                            <div id="participantesList"></div>
+                            <button type="button" class="btn-add-participante" id="btnAddParticipante">+ Agregar
+                                participante</button>
+                        </div>
+
+                        <!-- BLOQUE DE AYUDA FIJO -->
+                        <div class="form-group full-width"
+                            style="background:#e9e5f0;padding:12px 16px;border-radius:12px;margin-top:10px;">
+                            <p style="font-size:0.85rem;color:#302d7c;margin:0;font-weight:600;">📌 ¿Cómo inscribir tu
+                                equipo si no tienes a todos los jugadores?</p>
+                            <ol style="font-size:0.8rem;color:#302d7c;margin:6px 0 0 18px;padding-left:0;">
+                                <li>Elige el <strong>número total</strong> de jugadores que tendrá tu equipo (3 a 7).
+                                </li>
+                                <li>Registra a los jugadores que ya tienes (mínimo 1, el capitán).</li>
+                                <li>En <strong>"Jugadores que necesitas"</strong> escribe cuántos jugadores más
+                                    necesitas para llegar al total.</li>
+                                <li><em>Ejemplo: si quieres 6 jugadores y ya tienes 3, escribe 3 en "Jugadores que
+                                        necesitas".</em></li>
+                            </ol>
+                        </div>
+
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-danger">Limpiar</button>
+                        <button type="submit" class="btn btn-success">✅ Inscribir equipo</button>
+                    </div>
                 </div>
-                <fieldset class="campos-bloqueados" id="camposEquipo" disabled>
-                <div class="form-group full-width">
-                    <label for="nombreEquipo">Nombre del equipo *</label>
-                    <input type="text" id="nombreEquipo" placeholder="Ej: Los Titanes" required>
+            </form>
+        </div>
+
+        <!-- JUGADORES LIBRES (con botón Fichar) -->
+        <div class="jugadores-libres">
+            <h2>👤 Jugadores libres</h2>
+            <p>Si eres jugador sin equipo, regístrate aquí. Los capitanes pueden ficharte directamente.</p>
+            <div class="form-jugador">
+                <input type="text" id="nombreJugador" placeholder="Nombre completo" required>
+                <input type="text" id="carnetJugador" placeholder="Carnet" required>
+                <input type="tel" id="telefonoJugador" placeholder="Teléfono" required>
+                <input type="email" id="correoJugador" placeholder="Correo estudiantil" required>
+                <button id="btnRegistrarJugador">Registrarme</button>
+            </div>
+            <div class="lista-jugadores" id="listaJugadoresLibres">
+                <p>Cargando...</p>
+            </div>
+        </div>
+
+        <!-- MODAL FICHAR JUGADOR -->
+        <div class="modal-overlay" id="modalFichar">
+            <div class="modal">
+                <h2>⚡ Fichar jugador libre</h2>
+                <div class="form-group">
+                    <label>Jugador:</label>
+                    <p id="modalFicharInfo"
+                        style="font-weight:600;color:#302d7c;background:#e9e5f0;padding:8px;border-radius:8px;"></p>
                 </div>
                 <div class="form-group">
-                    <label for="capitan">Capitán *</label>
-                    <input type="text" id="capitan" placeholder="Nombre completo" required>
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Teléfono del capitán *</label>
-                    <input type="tel" id="telefono" placeholder="+569 1234 5678" required>
-                </div>
-                <div class="form-group">
-                    <label for="cantidadCompetidores">Nº de competidores (6-7) *</label>
-                    <input type="number" id="cantidadCompetidores" min="6" max="7" placeholder="6" required>
-                </div>
-                <div class="form-group">
-                    <label for="colorEquipo">Color de uniforme *</label>
-                    <select id="colorEquipo" required>
-                        <option value="">-- Selecciona --</option>
+                    <label for="modalFicharEquipo">Selecciona tu equipo *</label>
+                    <select id="modalFicharEquipo">
+                        <option value="">-- Elige --</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="plazas">Plazas por completar (con jugadores libres)</label>
-                    <input type="number" id="plazas" min="0" max="6" value="0" placeholder="0">
-                </div>
-
-                <div class="participantes-container">
-                    <h3>👥 Participantes (incluye al capitán)</h3>
-                    <p style="font-size:0.8rem;color:#666;margin-bottom:10px;">No necesitas tener a todo el equipo ahora: registra a los que ya tengas (mínimo 1, el capitán) y usa "Plazas por completar" para las que falten. La suma de participantes actuales + plazas debe dar el número de competidores indicado (6 o 7).</p>
-                    <div id="participantesList"></div>
-                    <button type="button" class="btn-add-participante" id="btnAddParticipante">+ Agregar participante</button>
-                </div>
-                </fieldset>
-
-                <div class="form-actions">
-                    <button type="reset" class="btn btn-danger">Limpiar</button>
-                    <button type="submit" class="btn btn-success">✅ Inscribir equipo</button>
+                <div class="modal-actions">
+                    <button class="btn btn-danger" id="modalFicharCancelar">Cancelar</button>
+                    <button class="btn btn-success" id="modalFicharConfirmar">✅ Fichar</button>
                 </div>
             </div>
-        </form>
-    </div>
-
-    <!-- JUGADORES LIBRES (con botón Fichar) -->
-    <div class="jugadores-libres">
-        <h2>👤 Jugadores libres</h2>
-        <p>Si eres jugador sin equipo, regístrate aquí. Los capitanes pueden ficharte directamente.</p>
-        <div class="form-jugador">
-            <input type="text" id="nombreJugador" placeholder="Nombre completo" required>
-            <input type="text" id="carnetJugador" placeholder="Carnet" required>
-            <input type="tel" id="telefonoJugador" placeholder="Teléfono" required>
-            <input type="email" id="correoJugador" placeholder="Correo estudiantil" required>
-            <button id="btnRegistrarJugador">Registrarme</button>
         </div>
-        <div class="lista-jugadores" id="listaJugadoresLibres">
-            <p>Cargando...</p>
-        </div>
-    </div>
 
-    <!-- MODAL FICHAR JUGADOR -->
-    <div class="modal-overlay" id="modalFichar">
-        <div class="modal">
-            <h2>⚡ Fichar jugador libre</h2>
-            <div class="form-group">
-                <label>Jugador:</label>
-                <p id="modalFicharInfo" style="font-weight:600;color:#302d7c;background:#e9e5f0;padding:8px;border-radius:8px;"></p>
+        <!-- BRACKET -->
+        <div class="bracket-wrapper">
+            <svg id="lineSvg"></svg>
+            <div class="bracket" id="bracketContainer"></div>
+        </div>
+
+        <!-- CAMPEÓN -->
+        <div class="champion-box" id="championBox">
+            <h2>🏆 Campeón: <span id="championName">---</span></h2>
+        </div>
+
+        <!-- ADMIN PANEL -->
+        <div class="admin-toggle">
+            <button class="btn btn-primary" id="btnToggleAdmin">🔐 Panel de administración</button>
+        </div>
+        <div class="admin-panel" id="adminPanel">
+            <h2>🛠️ Administración</h2>
+            <div style="margin-bottom:15px;">
+                <button class="btn btn-danger" id="btnCerrarInscripciones">🔒 Cerrar inscripciones</button>
+                <button class="btn btn-success" id="btnAbrirInscripciones" style="display:none;">🔓 Abrir
+                    inscripciones</button>
+                <button class="btn btn-warning" id="btnReiniciarTorneo">🗑️ Reiniciar torneo</button>
             </div>
-            <div class="form-group">
-                <label for="modalFicharEquipo">Selecciona tu equipo *</label>
-                <select id="modalFicharEquipo">
-                    <option value="">-- Elige --</option>
-                </select>
+
+            <h3>📋 Equipos inscritos</h3>
+            <div style="overflow-x:auto;">
+                <table id="tablaEquipos">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Equipo</th>
+                            <th>Capitán</th>
+                            <th>Teléfono</th>
+                            <th>Color</th>
+                            <th>Jugadores (actual / plazas)</th>
+                            <th colspan="2">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyEquipos"></tbody>
+                </table>
             </div>
-            <div class="modal-actions">
-                <button class="btn btn-danger" id="modalFicharCancelar">Cancelar</button>
-                <button class="btn btn-success" id="modalFicharConfirmar">✅ Fichar</button>
+
+            <h3>👤 Jugadores libres (detalle)</h3>
+            <div style="overflow-x:auto;">
+                <table id="tablaJugadoresLibres">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Carnet</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyJugadoresLibres"></tbody>
+                </table>
+            </div>
+
+            <div class="contactos-whatsapp">
+                <h3>📱 Lista de contactos para WhatsApp</h3>
+                <p style="font-size:0.9rem;color:#302d7c;">Copia estos números para crear el grupo:</p>
+                <textarea id="whatsappList" readonly></textarea>
+                <button class="btn btn-primary" style="margin-top:8px;" id="btnCopiarWhatsapp">📋 Copiar lista</button>
             </div>
         </div>
+
     </div>
 
-    <!-- BRACKET -->
-    <div class="bracket-wrapper">
-        <svg id="lineSvg"></svg>
-        <div class="bracket" id="bracketContainer"></div>
-    </div>
+    <script>
+        // ===== CONFIGURACIÓN DE FIREBASE =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5kod9L1yL5F9vB5YLqI9HRHF-OLUnrS0",
+            authDomain: "torneo-tms.firebaseapp.com",
+            databaseURL: "https://torneo-tms-default-rtdb.firebaseio.com",
+            projectId: "torneo-tms",
+            storageBucket: "torneo-tms.firebasestorage.app",
+            messagingSenderId: "134294614667",
+            appId: "1:134294614667:web:6d26a9a273a226c4cc5a8e"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    <!-- CAMPEÓN -->
-    <div class="champion-box" id="championBox">
-        <h2>🏆 Campeón: <span id="championName">---</span></h2>
-    </div>
+        // ===== CONSTANTES =====
+        const MAX_EQUIPOS = 16;
+        const MIN_COMPETIDORES = 3;
+        const MAX_COMPETIDORES = 7;
+        const PALETA = [
+            { nombre: 'Rojo', color: '#e63946' },
+            { nombre: 'Azul', color: '#457b9d' },
+            { nombre: 'Verde', color: '#2a9d8f' },
+            { nombre: 'Amarillo', color: '#f4a261' },
+            { nombre: 'Naranja', color: '#e76f51' },
+            { nombre: 'Morado', color: '#6d597a' },
+            { nombre: 'Negro', color: '#1d3557' },
+            { nombre: 'Blanco', color: '#f1faee' },
+            { nombre: 'Rosa', color: '#ffb3c6' },
+            { nombre: 'Gris', color: '#8d99ae' }
+        ];
+        const COLORES_CUPO = {
+            'Rojo': 3, 'Azul': 3, 'Verde': 2, 'Amarillo': 2,
+            'Blanco': 2, 'Negro': 2, 'Naranja': 2, 'Morado': 2,
+            'Rosa': 1, 'Gris': 1
+        };
+        const COLORES = Object.keys(COLORES_CUPO);
 
-    <!-- ADMIN PANEL -->
-    <div class="admin-toggle">
-        <button class="btn btn-primary" id="btnToggleAdmin">🔐 Panel de administración</button>
-    </div>
-    <div class="admin-panel" id="adminPanel">
-        <h2>🛠️ Administración</h2>
-        <div style="margin-bottom:15px;">
-            <button class="btn btn-danger" id="btnCerrarInscripciones">🔒 Cerrar inscripciones</button>
-            <button class="btn btn-success" id="btnAbrirInscripciones" style="display:none;">🔓 Abrir inscripciones</button>
-            <button class="btn btn-warning" id="btnReiniciarTorneo">🗑️ Reiniciar torneo</button>
-        </div>
+        // Contraseña: TMSControl2026!
+        const ADMIN_PASSWORD_HASH = '18768ee365660f6a7cd5c1141e38dee52ff7fe84a514892a257f71a110725aaf';
 
-        <h3>📋 Equipos inscritos</h3>
-        <div style="overflow-x:auto;">
-            <table id="tablaEquipos">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Equipo</th>
-                        <th>Capitán</th>
-                        <th>Teléfono</th>
-                        <th>Color</th>
-                        <th>Jugadores (actual / plazas)</th>
-                        <th colspan="2">Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tbodyEquipos"></tbody>
-            </table>
-        </div>
+        let equipos = [];
+        let jugadoresLibres = [];
+        let inscripcionesAbiertas = true;
+        let resultados = {};
 
-        <h3>👤 Jugadores libres (detalle)</h3>
-        <div style="overflow-x:auto;">
-            <table id="tablaJugadoresLibres">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Carnet</th>
-                        <th>Teléfono</th>
-                        <th>Correo</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tbodyJugadoresLibres"></tbody>
-            </table>
-        </div>
+        // ===== REFERENCIAS DOM =====
+        const $ = id => document.getElementById(id);
+        const estadoInscripciones = $('estadoInscripciones');
+        const cuposTexto = $('cuposTexto');
+        const coloresDisponibles = $('coloresDisponibles');
+        const formInscripcion = $('formInscripcion');
+        const formEquipo = $('formEquipo');
+        const aceptaTerminos = $('aceptaTerminos');
+        const camposEquipo = $('camposEquipo');
+        const nombreEquipo = $('nombreEquipo');
+        const capitan = $('capitan');
+        const telefono = $('telefono');
+        const cantidadCompetidores = $('cantidadCompetidores');
+        const colorEquipo = $('colorEquipo');
+        const plazas = $('plazas');
+        const participantesList = $('participantesList');
+        const btnAddParticipante = $('btnAddParticipante');
+        const bracketContainer = $('bracketContainer');
+        const lineSvg = $('lineSvg');
+        const championBox = $('championBox');
+        const championName = $('championName');
+        const adminPanel = $('adminPanel');
+        const btnToggleAdmin = $('btnToggleAdmin');
+        const btnCerrarInscripciones = $('btnCerrarInscripciones');
+        const btnAbrirInscripciones = $('btnAbrirInscripciones');
+        const btnReiniciarTorneo = $('btnReiniciarTorneo');
+        const confirmacionMensaje = $('confirmacionMensaje');
+        const tbodyEquipos = $('tbodyEquipos');
+        const tbodyJugadoresLibres = $('tbodyJugadoresLibres');
+        const whatsappList = $('whatsappList');
+        const btnCopiarWhatsapp = $('btnCopiarWhatsapp');
+        const listaJugadoresLibres = $('listaJugadoresLibres');
+        const nombreJugador = $('nombreJugador');
+        const carnetJugador = $('carnetJugador');
+        const telefonoJugador = $('telefonoJugador');
+        const correoJugador = $('correoJugador');
+        const btnRegistrarJugador = $('btnRegistrarJugador');
 
-        <div class="contactos-whatsapp">
-            <h3>📱 Lista de contactos para WhatsApp</h3>
-            <p style="font-size:0.9rem;color:#302d7c;">Copia estos números para crear el grupo:</p>
-            <textarea id="whatsappList" readonly></textarea>
-            <button class="btn btn-primary" style="margin-top:8px;" id="btnCopiarWhatsapp">📋 Copiar lista</button>
-        </div>
-    </div>
+        // Modal Fichar
+        const modalFichar = $('modalFichar');
+        const modalFicharInfo = $('modalFicharInfo');
+        const modalFicharEquipo = $('modalFicharEquipo');
+        const modalFicharCancelar = $('modalFicharCancelar');
+        const modalFicharConfirmar = $('modalFicharConfirmar');
+        let jugadorFicharId = null;
 
-</div>
-
-<script>
-    // ===== CONFIGURACIÓN DE FIREBASE =====
-    const firebaseConfig = {
-        apiKey: "AIzaSyA5kod9L1yL5F9vB5YLqI9HRHF-OLUnrS0",
-        authDomain: "torneo-tms.firebaseapp.com",
-        databaseURL: "https://torneo-tms-default-rtdb.firebaseio.com",
-        projectId: "torneo-tms",
-        storageBucket: "torneo-tms.firebasestorage.app",
-        messagingSenderId: "134294614667",
-        appId: "1:134294614667:web:6d26a9a273a226c4cc5a8e"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // ===== CONSTANTES =====
-    const MAX_EQUIPOS = 16;
-    const PALETA = [
-        { nombre: 'Rojo', color: '#e63946' },
-        { nombre: 'Azul', color: '#457b9d' },
-        { nombre: 'Verde', color: '#2a9d8f' },
-        { nombre: 'Amarillo', color: '#f4a261' },
-        { nombre: 'Naranja', color: '#e76f51' },
-        { nombre: 'Morado', color: '#6d597a' },
-        { nombre: 'Negro', color: '#1d3557' },
-        { nombre: 'Blanco', color: '#f1faee' },
-        { nombre: 'Rosa', color: '#ffb3c6' },
-        { nombre: 'Gris', color: '#8d99ae' }
-    ];
-    const COLORES_CUPO = {
-        'Rojo': 3, 'Azul': 3, 'Verde': 2, 'Amarillo': 2,
-        'Blanco': 2, 'Negro': 2, 'Naranja': 2, 'Morado': 2,
-        'Rosa': 1, 'Gris': 1
-    };
-    const COLORES = Object.keys(COLORES_CUPO);
-
-    // === CONTRASEÑA ACTUALIZADA: TMSControl2026! ===
-    const ADMIN_PASSWORD_HASH = '18768ee365660f6a7cd5c1141e38dee52ff7fe84a514892a257f71a110725aaf';
-
-    let equipos = [];
-    let jugadoresLibres = [];
-    let inscripcionesAbiertas = true;
-    let resultados = {};
-
-    // ===== REFERENCIAS DOM =====
-    const $ = id => document.getElementById(id);
-    const estadoInscripciones = $('estadoInscripciones');
-    const cuposTexto = $('cuposTexto');
-    const coloresDisponibles = $('coloresDisponibles');
-    const formInscripcion = $('formInscripcion');
-    const formEquipo = $('formEquipo');
-    const aceptaTerminos = $('aceptaTerminos');
-    const camposEquipo = $('camposEquipo');
-    const nombreEquipo = $('nombreEquipo');
-    const capitan = $('capitan');
-    const telefono = $('telefono');
-    const cantidadCompetidores = $('cantidadCompetidores');
-    const colorEquipo = $('colorEquipo');
-    const plazas = $('plazas');
-    const participantesList = $('participantesList');
-    const btnAddParticipante = $('btnAddParticipante');
-    const bracketContainer = $('bracketContainer');
-    const lineSvg = $('lineSvg');
-    const championBox = $('championBox');
-    const championName = $('championName');
-    const adminPanel = $('adminPanel');
-    const btnToggleAdmin = $('btnToggleAdmin');
-    const btnCerrarInscripciones = $('btnCerrarInscripciones');
-    const btnAbrirInscripciones = $('btnAbrirInscripciones');
-    const btnReiniciarTorneo = $('btnReiniciarTorneo');
-    const confirmacionMensaje = $('confirmacionMensaje');
-    const tbodyEquipos = $('tbodyEquipos');
-    const tbodyJugadoresLibres = $('tbodyJugadoresLibres');
-    const whatsappList = $('whatsappList');
-    const btnCopiarWhatsapp = $('btnCopiarWhatsapp');
-    const listaJugadoresLibres = $('listaJugadoresLibres');
-    const nombreJugador = $('nombreJugador');
-    const carnetJugador = $('carnetJugador');
-    const telefonoJugador = $('telefonoJugador');
-    const correoJugador = $('correoJugador');
-    const btnRegistrarJugador = $('btnRegistrarJugador');
-
-    // Modal Fichar
-    const modalFichar = $('modalFichar');
-    const modalFicharInfo = $('modalFicharInfo');
-    const modalFicharEquipo = $('modalFicharEquipo');
-    const modalFicharCancelar = $('modalFicharCancelar');
-    const modalFicharConfirmar = $('modalFicharConfirmar');
-    let jugadorFicharId = null;
-
-    // ===== FUNCIONES =====
-    function mostrarConfirmacion(mensaje, esError = false) {
-        confirmacionMensaje.textContent = mensaje;
-        confirmacionMensaje.className = 'confirmacion-mensaje visible' + (esError ? ' error' : '');
-        clearTimeout(window._confirmTimeout);
-        window._confirmTimeout = setTimeout(() => {
-            confirmacionMensaje.classList.remove('visible');
-        }, 4000);
-    }
-
-    async function hashTexto(texto) {
-        const enc = new TextEncoder().encode(texto);
-        const buf = await crypto.subtle.digest('SHA-256', enc);
-        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    // ===== PARTICIPANTES DINÁMICOS =====
-    let participantes = [{ nombre: '', carnet: '', correo: '' }];
-    function renderParticipantes() {
-        participantesList.innerHTML = '';
-        participantes.forEach((p, i) => {
-            const row = document.createElement('div');
-            row.className = 'participante-row';
-            row.innerHTML = `
-                <div class="form-group">
-                    <label>Nombre completo</label>
-                    <input type="text" class="p-nombre" value="${p.nombre || ''}" placeholder="Nombre" data-index="${i}">
-                </div>
-                <div class="form-group">
-                    <label>Carnet</label>
-                    <input type="text" class="p-carnet" value="${p.carnet || ''}" placeholder="12345678-9" data-index="${i}">
-                </div>
-                <div class="form-group">
-                    <label>Correo estudiantil</label>
-                    <input type="email" class="p-correo" value="${p.correo || ''}" placeholder="estudiante@estudiantec.cr" data-index="${i}">
-                </div>
-                <button type="button" class="btn-remove-participante" data-index="${i}">✕</button>
-            `;
-            participantesList.appendChild(row);
-        });
-        document.querySelectorAll('.p-nombre').forEach(inp => inp.addEventListener('input', e => {
-            const idx = parseInt(e.target.dataset.index);
-            participantes[idx].nombre = e.target.value;
-        }));
-        document.querySelectorAll('.p-carnet').forEach(inp => inp.addEventListener('input', e => {
-            const idx = parseInt(e.target.dataset.index);
-            participantes[idx].carnet = e.target.value;
-        }));
-        document.querySelectorAll('.p-correo').forEach(inp => inp.addEventListener('input', e => {
-            const idx = parseInt(e.target.dataset.index);
-            participantes[idx].correo = e.target.value;
-        }));
-        document.querySelectorAll('.btn-remove-participante').forEach(btn => btn.addEventListener('click', e => {
-            const idx = parseInt(e.target.dataset.index);
-            participantes.splice(idx, 1);
-            renderParticipantes();
-        }));
-    }
-    btnAddParticipante.addEventListener('click', () => {
-        participantes.push({ nombre: '', carnet: '', correo: '' });
-        renderParticipantes();
-    });
-    capitan.addEventListener('input', () => {
-        if (participantes.length > 0 && !participantes[0].nombre) {
-            participantes[0].nombre = capitan.value;
-            renderParticipantes();
+        // ===== FUNCIONES =====
+        function mostrarConfirmacion(mensaje, esError = false) {
+            confirmacionMensaje.textContent = mensaje;
+            confirmacionMensaje.className = 'confirmacion-mensaje visible' + (esError ? ' error' : '');
+            clearTimeout(window._confirmTimeout);
+            window._confirmTimeout = setTimeout(() => {
+                confirmacionMensaje.classList.remove('visible');
+            }, 4000);
         }
-    });
-    renderParticipantes();
 
-    aceptaTerminos.addEventListener('change', () => {
-        camposEquipo.disabled = !aceptaTerminos.checked;
-    });
+        async function hashTexto(texto) {
+            const enc = new TextEncoder().encode(texto);
+            const buf = await crypto.subtle.digest('SHA-256', enc);
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
-    // ===== FUNCIONES DE COLOR =====
-    function hexToRgb(hex) {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
-    }
-    function colorDistance(c1, c2) {
-        const rgb1 = hexToRgb(c1), rgb2 = hexToRgb(c2);
-        if (!rgb1 || !rgb2) return Infinity;
-        return Math.sqrt(Math.pow(rgb1.r - rgb2.r, 2) + Math.pow(rgb1.g - rgb2.g, 2) + Math.pow(rgb1.b - rgb2.b, 2));
-    }
-    function asignarColoresAutomaticamente(equiposList) {
-        const usos = {};
-        PALETA.forEach(p => usos[p.nombre] = 0);
-        equiposList.forEach(eq => { if (eq.color && usos[eq.color] !== undefined) usos[eq.color] = (usos[eq.color] || 0) + 1; });
-        equiposList.forEach(eq => {
-            if (!eq.color) {
-                let minUsos = Infinity, colorAsignado = PALETA[0].nombre;
-                PALETA.forEach(p => {
-                    const cupo = COLORES_CUPO[p.nombre] || 0;
-                    const usado = usos[p.nombre] || 0;
-                    if (usado < cupo && usado < minUsos) { minUsos = usado; colorAsignado = p.nombre; }
-                });
-                if (minUsos === Infinity) {
-                    PALETA.forEach(p => { const usado = usos[p.nombre] || 0; if (usado < minUsos) { minUsos = usado; colorAsignado = p.nombre; } });
-                }
-                eq.color = colorAsignado;
-                usos[colorAsignado] = (usos[colorAsignado] || 0) + 1;
+        // ===== CONTADOR DINÁMICO DE PLAZAS =====
+        function actualizarContadorPlazas() {
+            const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
+            const totalCompetidores = parseInt(cantidadCompetidores.value) || 0;
+            const plazasVal = parseInt(plazas.value) || 0;
+            const total = participantesValidos.length + plazasVal;
+            const esValido = total === totalCompetidores && totalCompetidores > 0;
+
+            document.getElementById('contadorParticipantes').textContent = participantesValidos.length;
+            document.getElementById('contadorPlazasValor').textContent = plazasVal;
+            document.getElementById('contadorTotal').textContent = total;
+            document.getElementById('contadorCompetidores').textContent = totalCompetidores;
+
+            const grupoPlazas = document.getElementById('grupoPlazas');
+            const mensajeAyuda = document.getElementById('mensajeAyudaPlazas');
+
+            if (totalCompetidores === 0) {
+                grupoPlazas.style.borderLeft = '4px solid #d6d3cc';
+                mensajeAyuda.textContent = '💡 Primero elige el número total de competidores (3-7).';
+                mensajeAyuda.style.color = '#666';
+            } else if (esValido) {
+                grupoPlazas.style.borderLeft = '4px solid #2d6a4f';
+                mensajeAyuda.textContent = '✅ ¡Perfecto! La suma de participantes + plazas coincide con el total.';
+                mensajeAyuda.style.color = '#2d6a4f';
+            } else {
+                grupoPlazas.style.borderLeft = '4px solid #870f0b';
+                const faltan = totalCompetidores - participantesValidos.length;
+                mensajeAyuda.textContent = `⚠️ Necesitas ${faltan} plazas para llegar a ${totalCompetidores} (tienes ${participantesValidos.length} participantes).`;
+                mensajeAyuda.style.color = '#870f0b';
+            }
+        }
+
+        // ===== PARTICIPANTES DINÁMICOS =====
+        let participantes = [{ nombre: '', carnet: '', correo: '' }];
+        function renderParticipantes() {
+            participantesList.innerHTML = '';
+            participantes.forEach((p, i) => {
+                const row = document.createElement('div');
+                row.className = 'participante-row';
+                row.innerHTML = `
+                        <div class="form-group">
+                            <label>Nombre completo</label>
+                            <input type="text" class="p-nombre" value="${p.nombre || ''}" placeholder="Nombre" data-index="${i}">
+                        </div>
+                        <div class="form-group">
+                            <label>Carnet</label>
+                            <input type="text" class="p-carnet" value="${p.carnet || ''}" placeholder="12345678-9" data-index="${i}">
+                        </div>
+                        <div class="form-group">
+                            <label>Correo estudiantil</label>
+                            <input type="email" class="p-correo" value="${p.correo || ''}" placeholder="estudiante@estudiantec.cr" data-index="${i}">
+                        </div>
+                        <button type="button" class="btn-remove-participante" data-index="${i}">✕</button>
+                    `;
+                participantesList.appendChild(row);
+            });
+            document.querySelectorAll('.p-nombre').forEach(inp => inp.addEventListener('input', e => {
+                const idx = parseInt(e.target.dataset.index);
+                participantes[idx].nombre = e.target.value;
+            }));
+            document.querySelectorAll('.p-carnet').forEach(inp => inp.addEventListener('input', e => {
+                const idx = parseInt(e.target.dataset.index);
+                participantes[idx].carnet = e.target.value;
+            }));
+            document.querySelectorAll('.p-correo').forEach(inp => inp.addEventListener('input', e => {
+                const idx = parseInt(e.target.dataset.index);
+                participantes[idx].correo = e.target.value;
+            }));
+            document.querySelectorAll('.btn-remove-participante').forEach(btn => btn.addEventListener('click', e => {
+                const idx = parseInt(e.target.dataset.index);
+                participantes.splice(idx, 1);
+                renderParticipantes();
+            }));
+            // Actualizar contador al cambiar participantes
+            actualizarContadorPlazas();
+        }
+
+        // Eventos para el contador dinámico
+        cantidadCompetidores.addEventListener('input', actualizarContadorPlazas);
+        plazas.addEventListener('input', actualizarContadorPlazas);
+
+        // Observar cambios en participantesList (cuando se agrega o elimina un participante)
+        const observer = new MutationObserver(actualizarContadorPlazas);
+        observer.observe(participantesList, { childList: true, subtree: true });
+
+        // Inicializar contador al cargar la página
+        setTimeout(actualizarContadorPlazas, 200);
+
+        btnAddParticipante.addEventListener('click', () => {
+            participantes.push({ nombre: '', carnet: '', correo: '' });
+            renderParticipantes();
+            actualizarContadorPlazas();
+        });
+        capitan.addEventListener('input', () => {
+            if (participantes.length > 0 && !participantes[0].nombre) {
+                participantes[0].nombre = capitan.value;
+                renderParticipantes();
+                actualizarContadorPlazas();
             }
         });
-        return equiposList;
-    }
-    function resolverConflictosPrimeraRonda(equiposList, bracketSize) {
-        const equiposEnPrimeraRonda = equiposList.slice();
-        if (equiposEnPrimeraRonda.length < 2) return equiposList;
-        const partidos = [];
-        for (let i = 0; i < equiposEnPrimeraRonda.length; i += 2) {
-            if (i + 1 < equiposEnPrimeraRonda.length) partidos.push([equiposEnPrimeraRonda[i], equiposEnPrimeraRonda[i+1]]);
-            else break;
+        renderParticipantes();
+
+        aceptaTerminos.addEventListener('change', () => {
+            camposEquipo.disabled = !aceptaTerminos.checked;
+        });
+
+        // ===== FUNCIONES DE COLOR =====
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
         }
-        partidos.forEach(([eq1, eq2]) => {
-            const hex1 = PALETA.find(p => p.nombre === eq1.color)?.color;
-            const hex2 = PALETA.find(p => p.nombre === eq2.color)?.color;
-            if (!hex1 || !hex2) return;
-            if (colorDistance(hex1, hex2) < 50) {
-                const usos = {};
-                equiposList.forEach(eq => { usos[eq.color] = (usos[eq.color] || 0) + 1; });
-                let encontrado = false;
-                for (let p of PALETA) {
-                    if (p.nombre === eq1.color) continue;
-                    if (usos[p.nombre] >= COLORES_CUPO[p.nombre]) continue;
-                    if (colorDistance(p.color, hex1) >= 50) {
-                        eq2.color = p.nombre;
-                        encontrado = true;
-                        break;
+
+        function colorDistance(c1, c2) {
+            const rgb1 = hexToRgb(c1),
+                rgb2 = hexToRgb(c2);
+            if (!rgb1 || !rgb2) return Infinity;
+            return Math.sqrt(Math.pow(rgb1.r - rgb2.r, 2) + Math.pow(rgb1.g - rgb2.g, 2) + Math.pow(rgb1.b - rgb2.b, 2));
+        }
+
+        function asignarColoresAutomaticamente(equiposList) {
+            const usos = {};
+            PALETA.forEach(p => usos[p.nombre] = 0);
+            equiposList.forEach(eq => { if (eq.color && usos[eq.color] !== undefined) usos[eq.color] = (usos[eq.color] || 0) + 1; });
+            equiposList.forEach(eq => {
+                if (!eq.color) {
+                    let minUsos = Infinity,
+                        colorAsignado = PALETA[0].nombre;
+                    PALETA.forEach(p => {
+                        const cupo = COLORES_CUPO[p.nombre] || 0;
+                        const usado = usos[p.nombre] || 0;
+                        if (usado < cupo && usado < minUsos) { minUsos = usado;
+                            colorAsignado = p.nombre; }
+                    });
+                    if (minUsos === Infinity) {
+                        PALETA.forEach(p => { const usado = usos[p.nombre] || 0; if (usado < minUsos) { minUsos = usado;
+                                colorAsignado = p.nombre; } });
                     }
+                    eq.color = colorAsignado;
+                    usos[colorAsignado] = (usos[colorAsignado] || 0) + 1;
                 }
-                if (!encontrado) {
+            });
+            return equiposList;
+        }
+
+        function resolverConflictosPrimeraRonda(equiposList, bracketSize) {
+            const equiposEnPrimeraRonda = equiposList.slice();
+            if (equiposEnPrimeraRonda.length < 2) return equiposList;
+            const partidos = [];
+            for (let i = 0; i < equiposEnPrimeraRonda.length; i += 2) {
+                if (i + 1 < equiposEnPrimeraRonda.length) partidos.push([equiposEnPrimeraRonda[i], equiposEnPrimeraRonda[i + 1]]);
+                else break;
+            }
+            partidos.forEach(([eq1, eq2]) => {
+                const hex1 = PALETA.find(p => p.nombre === eq1.color)?.color;
+                const hex2 = PALETA.find(p => p.nombre === eq2.color)?.color;
+                if (!hex1 || !hex2) return;
+                if (colorDistance(hex1, hex2) < 50) {
+                    const usos = {};
+                    equiposList.forEach(eq => { usos[eq.color] = (usos[eq.color] || 0) + 1; });
+                    let encontrado = false;
                     for (let p of PALETA) {
-                        if (p.nombre === eq2.color) continue;
+                        if (p.nombre === eq1.color) continue;
                         if (usos[p.nombre] >= COLORES_CUPO[p.nombre]) continue;
-                        if (colorDistance(p.color, hex2) >= 50) {
-                            eq1.color = p.nombre;
+                        if (colorDistance(p.color, hex1) >= 50) {
+                            eq2.color = p.nombre;
                             encontrado = true;
                             break;
                         }
                     }
+                    if (!encontrado) {
+                        for (let p of PALETA) {
+                            if (p.nombre === eq2.color) continue;
+                            if (usos[p.nombre] >= COLORES_CUPO[p.nombre]) continue;
+                            if (colorDistance(p.color, hex2) >= 50) {
+                                eq1.color = p.nombre;
+                                encontrado = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!encontrado) {
+                        let minUsos = Infinity,
+                            colorAsignado = PALETA[0].nombre;
+                        PALETA.forEach(p => {
+                            if (p.nombre === eq1.color) return;
+                            const usado = usos[p.nombre] || 0;
+                            if (usado < minUsos) { minUsos = usado;
+                                colorAsignado = p.nombre; }
+                        });
+                        eq1.color = colorAsignado;
+                    }
                 }
-                if (!encontrado) {
-                    let minUsos = Infinity, colorAsignado = PALETA[0].nombre;
-                    PALETA.forEach(p => {
-                        if (p.nombre === eq1.color) return;
-                        const usado = usos[p.nombre] || 0;
-                        if (usado < minUsos) { minUsos = usado; colorAsignado = p.nombre; }
+            });
+            return equiposList;
+        }
+
+        function actualizarColoresDisponibles(equiposActuales) {
+            const usados = {};
+            equiposActuales.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
+            const disponibilidad = {};
+            COLORES.forEach(c => { disponibilidad[c] = Math.max(0, (COLORES_CUPO[c] || 0) - (usados[c] || 0)); });
+            coloresDisponibles.innerHTML = '<span style="font-weight:600;color:#302d7c;">🎨 Colores disponibles:</span>';
+            COLORES.forEach(c => {
+                const chip = document.createElement('span');
+                chip.className = `color-chip ${disponibilidad[c] > 0 ? 'disponible' : 'agotado'}`;
+                chip.textContent = `${c} (${disponibilidad[c]})`;
+                chip.style.background = c.toLowerCase();
+                chip.style.color = '#fff';
+                if (c === 'Blanco' || c === 'Amarillo') chip.style.color = '#333';
+                coloresDisponibles.appendChild(chip);
+            });
+            colorEquipo.innerHTML = '<option value="">-- Selecciona --</option>';
+            COLORES.forEach(c => {
+                if (disponibilidad[c] > 0) {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = `${c} (${disponibilidad[c]} disponibles)`;
+                    colorEquipo.appendChild(opt);
+                }
+            });
+        }
+
+        function actualizarCupos(equiposActuales) {
+            const inscritos = equiposActuales.length;
+            const disponibles = MAX_EQUIPOS - inscritos;
+            cuposTexto.textContent = `${disponibles} cupos disponibles de ${MAX_EQUIPOS} (${inscritos} inscritos)`;
+            cuposTexto.style.color = disponibles <= 0 ? '#870f0b' : '#302d7c';
+        }
+
+        // ===== LEER DATOS =====
+        function cargarDatos() {
+            db.ref('equipos').on('value', snapshot => {
+                const data = snapshot.val();
+                equipos = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const eq = data[key];
+                        eq.id = key;
+                        equipos.push(eq);
                     });
-                    eq1.color = colorAsignado;
+                    equipos.sort((a, b) => (a.fecha || 0) - (b.fecha || 0));
                 }
-            }
-        });
-        return equiposList;
-    }
+                equipos = asignarColoresAutomaticamente(equipos);
+                const bracketSize = equipos.length > 0 ? Math.pow(2, Math.ceil(Math.log2(equipos.length))) : 0;
+                if (bracketSize > 0) equipos = resolverConflictosPrimeraRonda(equipos, bracketSize);
+                actualizarCupos(equipos);
+                actualizarColoresDisponibles(equipos);
+                actualizarFormulario();
+                actualizarBracket(equipos);
+                actualizarAdminPanel(equipos);
+                actualizarWhatsAppList(equipos);
+                actualizarListaFicharEquipos();
+            });
 
-    function actualizarColoresDisponibles(equiposActuales) {
-        const usados = {};
-        equiposActuales.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
-        const disponibilidad = {};
-        COLORES.forEach(c => { disponibilidad[c] = Math.max(0, (COLORES_CUPO[c] || 0) - (usados[c] || 0)); });
-        coloresDisponibles.innerHTML = '<span style="font-weight:600;color:#302d7c;">🎨 Colores disponibles:</span>';
-        COLORES.forEach(c => {
-            const chip = document.createElement('span');
-            chip.className = `color-chip ${disponibilidad[c] > 0 ? 'disponible' : 'agotado'}`;
-            chip.textContent = `${c} (${disponibilidad[c]})`;
-            chip.style.background = c.toLowerCase();
-            chip.style.color = '#fff';
-            if (c === 'Blanco' || c === 'Amarillo') chip.style.color = '#333';
-            coloresDisponibles.appendChild(chip);
-        });
-        colorEquipo.innerHTML = '<option value="">-- Selecciona --</option>';
-        COLORES.forEach(c => {
-            if (disponibilidad[c] > 0) {
-                const opt = document.createElement('option');
-                opt.value = c;
-                opt.textContent = `${c} (${disponibilidad[c]} disponibles)`;
-                colorEquipo.appendChild(opt);
-            }
-        });
-    }
+            db.ref('jugadores_libres').on('value', snapshot => {
+                const data = snapshot.val();
+                jugadoresLibres = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        const j = data[key];
+                        j.id = key;
+                        jugadoresLibres.push(j);
+                    });
+                }
+                actualizarListaJugadoresLibres(jugadoresLibres);
+                actualizarTablaJugadoresLibres(jugadoresLibres);
+            });
 
-    function actualizarCupos(equiposActuales) {
-        const inscritos = equiposActuales.length;
-        const disponibles = MAX_EQUIPOS - inscritos;
-        cuposTexto.textContent = `${disponibles} cupos disponibles de ${MAX_EQUIPOS} (${inscritos} inscritos)`;
-        cuposTexto.style.color = disponibles <= 0 ? '#870f0b' : '#302d7c';
-    }
+            db.ref('config/estadoInscripciones').on('value', snap => {
+                const estado = snap.val();
+                inscripcionesAbiertas = (estado !== 'cerradas');
+                actualizarEstadoInscripciones();
+            });
 
-    // ===== LEER DATOS =====
-    function cargarDatos() {
-        db.ref('equipos').on('value', snapshot => {
-            const data = snapshot.val();
-            equipos = [];
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    const eq = data[key];
-                    eq.id = key;
-                    equipos.push(eq);
-                });
-                equipos.sort((a,b) => (a.fecha || 0) - (b.fecha || 0));
-            }
-            equipos = asignarColoresAutomaticamente(equipos);
-            const bracketSize = equipos.length > 0 ? Math.pow(2, Math.ceil(Math.log2(equipos.length))) : 0;
-            if (bracketSize > 0) equipos = resolverConflictosPrimeraRonda(equipos, bracketSize);
-            actualizarCupos(equipos);
-            actualizarColoresDisponibles(equipos);
-            actualizarFormulario();
-            actualizarBracket(equipos);
-            actualizarAdminPanel(equipos);
-            actualizarWhatsAppList(equipos);
-            actualizarListaFicharEquipos();
-        });
-
-        db.ref('jugadores_libres').on('value', snapshot => {
-            const data = snapshot.val();
-            jugadoresLibres = [];
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    const j = data[key];
-                    j.id = key;
-                    jugadoresLibres.push(j);
-                });
-            }
-            actualizarListaJugadoresLibres(jugadoresLibres);
-            actualizarTablaJugadoresLibres(jugadoresLibres);
-        });
-
-        db.ref('config/estadoInscripciones').on('value', snap => {
-            const estado = snap.val();
-            inscripcionesAbiertas = (estado !== 'cerradas');
-            actualizarEstadoInscripciones();
-        });
-
-        db.ref('resultados').on('value', snapshot => {
-            resultados = snapshot.val() || {};
-            actualizarBracket(equipos);
-        });
-    }
-
-    // ===== REGISTRAR JUGADOR LIBRE =====
-    btnRegistrarJugador.addEventListener('click', () => {
-        const nombre = nombreJugador.value.trim();
-        const carnet = carnetJugador.value.trim();
-        const telefono = telefonoJugador.value.trim();
-        const correo = correoJugador.value.trim();
-        if (!nombre || !carnet || !telefono || !correo) {
-            mostrarConfirmacion('⚠️ Completa todos los campos.', true);
-            return;
-        }
-        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
-        if (!emailRegex.test(correo)) {
-            mostrarConfirmacion('⚠️ Correo debe ser @estudiantec.cr', true);
-            return;
-        }
-        const telefonoNormalizado = telefono.replace(/\s+/g, '');
-        if (jugadoresLibres.some(j => (j.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
-            mostrarConfirmacion('⚠️ Teléfono ya registrado como jugador libre.', true);
-            return;
-        }
-        if (jugadoresLibres.some(j => (j.carnet || '').trim() === carnet)) {
-            mostrarConfirmacion('⚠️ Carnet ya registrado como jugador libre.', true);
-            return;
-        }
-        db.ref('jugadores_libres').push({ nombre, carnet, telefono, correo, fecha: Date.now() });
-        mostrarConfirmacion('✅ Registrado como jugador libre.');
-        nombreJugador.value = '';
-        carnetJugador.value = '';
-        telefonoJugador.value = '';
-        correoJugador.value = '';
-    });
-
-    // ===== FICHAR JUGADOR LIBRE =====
-    function abrirModalFichar(jugadorId) {
-        const jugador = jugadoresLibres.find(j => j.id === jugadorId);
-        if (!jugador) return;
-        jugadorFicharId = jugadorId;
-        modalFicharInfo.textContent = `${jugador.nombre} (${jugador.carnet}) - ${jugador.correo}`;
-        modalFicharEquipo.innerHTML = '<option value="">-- Elige --</option>';
-        equipos.forEach(eq => {
-            if ((eq.plazas || 0) > 0) {
-                const opt = document.createElement('option');
-                opt.value = eq.id;
-                opt.textContent = `${eq.nombre} (${eq.plazas} plazas)`;
-                modalFicharEquipo.appendChild(opt);
-            }
-        });
-        if (modalFicharEquipo.options.length === 1) {
-            mostrarConfirmacion('⚠️ No hay equipos con plazas disponibles.', true);
-            return;
-        }
-        modalFichar.classList.add('visible');
-    }
-
-    modalFicharCancelar.addEventListener('click', () => {
-        modalFichar.classList.remove('visible');
-        jugadorFicharId = null;
-    });
-    modalFichar.addEventListener('click', (e) => {
-        if (e.target === modalFichar) {
-            modalFichar.classList.remove('visible');
-            jugadorFicharId = null;
-        }
-    });
-
-    modalFicharConfirmar.addEventListener('click', async () => {
-        const equipoId = modalFicharEquipo.value;
-        if (!equipoId) {
-            mostrarConfirmacion('⚠️ Selecciona un equipo.', true);
-            return;
-        }
-        const jugador = jugadoresLibres.find(j => j.id === jugadorFicharId);
-        if (!jugador) {
-            mostrarConfirmacion('❌ El jugador ya no está disponible.', true);
-            modalFichar.classList.remove('visible');
-            return;
-        }
-        const equipo = equipos.find(eq => eq.id === equipoId);
-        if (!equipo) {
-            mostrarConfirmacion('❌ El equipo ya no existe.', true);
-            modalFichar.classList.remove('visible');
-            return;
-        }
-        if ((equipo.plazas || 0) <= 0) {
-            mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas.', true);
-            modalFichar.classList.remove('visible');
-            return;
+            db.ref('resultados').on('value', snapshot => {
+                resultados = snapshot.val() || {};
+                actualizarBracket(equipos);
+            });
         }
 
-        try {
-            const equipoRef = db.ref('equipos/' + equipoId);
-            const snapshot = await equipoRef.once('value');
-            const data = snapshot.val();
-            if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
-            const participantesActuales = data.participantes || [];
-            const plazasActuales = data.plazas || 0;
-            if (plazasActuales <= 0) {
-                mostrarConfirmacion('⚠️ El equipo ya no tiene plazas.', true);
+        // ===== REGISTRAR JUGADOR LIBRE =====
+        btnRegistrarJugador.addEventListener('click', () => {
+            const nombre = nombreJugador.value.trim();
+            const carnet = carnetJugador.value.trim();
+            const telefono = telefonoJugador.value.trim();
+            const correo = correoJugador.value.trim();
+            if (!nombre || !carnet || !telefono || !correo) {
+                mostrarConfirmacion('⚠️ Completa todos los campos.', true);
                 return;
             }
-            participantesActuales.push({
-                nombre: jugador.nombre,
-                carnet: jugador.carnet,
-                correo: jugador.correo
-            });
-            const nuevasPlazas = plazasActuales - 1;
-            await equipoRef.update({
-                participantes: participantesActuales,
-                plazas: nuevasPlazas
-            });
-            await db.ref('jugadores_libres/' + jugadorFicharId).remove();
-            mostrarConfirmacion(`✅ ${jugador.nombre} fichado por ${equipo.nombre}. Plazas restantes: ${nuevasPlazas}`);
-            modalFichar.classList.remove('visible');
-            jugadorFicharId = null;
-        } catch (err) {
-            mostrarConfirmacion('❌ Error al fichar: ' + err.message, true);
-        }
-    });
-
-    function actualizarListaFicharEquipos() {}
-
-    // ===== ELIMINAR =====
-    function eliminarJugadorLibre(id) {
-        if (confirm('¿Eliminar este jugador libre?')) {
-            db.ref('jugadores_libres/' + id).remove();
-        }
-    }
-    function eliminarEquipo(id) {
-        if (confirm('¿Eliminar este equipo?')) {
-            db.ref('equipos/' + id).remove();
-        }
-    }
-
-    // ===== ACTUALIZAR LISTA PÚBLICA DE JUGADORES LIBRES =====
-    function actualizarListaJugadoresLibres(lista) {
-        listaJugadoresLibres.innerHTML = '';
-        if (!lista || lista.length === 0) {
-            listaJugadoresLibres.innerHTML = '<p>No hay jugadores libres aún.</p>';
-            return;
-        }
-        lista.forEach(j => {
-            const div = document.createElement('div');
-            div.className = 'jugador-item';
-            div.innerHTML = `
-                <span>${j.nombre} - 📱 ${j.telefono} - 🆔 ${j.carnet}</span>
-                <button class="btn-fichar" data-id="${j.id}">⚡ Fichar</button>
-            `;
-            listaJugadoresLibres.appendChild(div);
-        });
-        document.querySelectorAll('.btn-fichar').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const id = e.target.dataset.id;
-                abrirModalFichar(id);
-            });
-        });
-    }
-
-    // ===== TABLA JUGADORES LIBRES EN ADMIN =====
-    function actualizarTablaJugadoresLibres(lista) {
-        tbodyJugadoresLibres.innerHTML = '';
-        if (!lista || lista.length === 0) {
-            tbodyJugadoresLibres.innerHTML = '<tr><td colspan="5">No hay jugadores libres.</td></tr>';
-            return;
-        }
-        lista.forEach(j => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${j.nombre}</td>
-                <td>${j.carnet}</td>
-                <td>${j.telefono}</td>
-                <td>${j.correo}</td>
-                <td><button class="btn-eliminar-jugador-admin" data-id="${j.id}">Eliminar</button></td>
-            `;
-            tbodyJugadoresLibres.appendChild(tr);
-        });
-        document.querySelectorAll('.btn-eliminar-jugador-admin').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const id = e.target.dataset.id;
-                eliminarJugadorLibre(id);
-            });
-        });
-    }
-
-    // ===== ADMIN PANEL (EQUIPOS) =====
-    function actualizarAdminPanel(equipos) {
-        tbodyEquipos.innerHTML = '';
-        if (!equipos || equipos.length === 0) {
-            tbodyEquipos.innerHTML = '<tr><td colspan="8">No hay equipos inscritos.</td></tr>';
-            return;
-        }
-        equipos.forEach((eq, i) => {
-            const participantesCount = eq.participantes ? eq.participantes.length : 0;
-            const plazasInfo = `${participantesCount} / ${eq.plazas || 0}`;
-            const colorObj = PALETA.find(p => p.nombre === eq.color);
-            const colorHex = colorObj ? colorObj.color : '#aaa';
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${i+1}</td>
-                <td>${eq.nombre}</td>
-                <td>${eq.capitan}</td>
-                <td>${eq.telefono}</td>
-                <td><span style="background:${colorHex};color:#fff;padding:2px 10px;border-radius:12px;">${eq.color}</span></td>
-                <td>${plazasInfo}</td>
-                <td><button class="btn-editar-equipo" data-id="${eq.id}">Editar</button></td>
-                <td><button class="btn-eliminar-equipo" data-id="${eq.id}">Eliminar</button></td>
-            `;
-            tbodyEquipos.appendChild(tr);
-        });
-        document.querySelectorAll('.btn-editar-equipo').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const id = e.target.dataset.id;
-                abrirModalEditarEquipo(id);
-            });
-        });
-        document.querySelectorAll('.btn-eliminar-equipo').forEach(btn => {
-            btn.addEventListener('click', e => {
-                const id = e.target.dataset.id;
-                eliminarEquipo(id);
-            });
-        });
-    }
-
-    // ===== MODAL EDITAR EQUIPO (existente) =====
-    const modalEditarEquipo = document.createElement('div');
-    modalEditarEquipo.id = 'modalEditarEquipo';
-    modalEditarEquipo.className = 'modal-overlay';
-    modalEditarEquipo.innerHTML = `
-        <div class="modal">
-            <h2>✏️ Editar equipo: <span id="modalEquipoNombre"></span></h2>
-            <div id="modalEquipoId" style="display:none;"></div>
-            <div class="form-group">
-                <label>Participantes actuales:</label>
-                <div class="lista-participantes-modal" id="modalListaParticipantes"></div>
-            </div>
-            <div class="form-group">
-                <label>Agregar nuevo participante</label>
-                <input type="text" id="modalNuevoNombre" placeholder="Nombre completo">
-                <input type="text" id="modalNuevoCarnet" placeholder="Carnet" style="margin-top:6px;">
-                <input type="email" id="modalNuevoCorreo" placeholder="Correo estudiantil" style="margin-top:6px;">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-danger" id="modalCerrar">Cancelar</button>
-                <button class="btn btn-success" id="modalGuardar">Agregar participante</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modalEditarEquipo);
-
-    const modalEquipoNombre = $('modalEquipoNombre');
-    const modalEquipoId = $('modalEquipoId');
-    const modalListaParticipantes = $('modalListaParticipantes');
-    const modalNuevoNombre = $('modalNuevoNombre');
-    const modalNuevoCarnet = $('modalNuevoCarnet');
-    const modalNuevoCorreo = $('modalNuevoCorreo');
-    const modalCerrar = $('modalCerrar');
-    const modalGuardar = $('modalGuardar');
-
-    function abrirModalEditarEquipo(equipoId) {
-        const equipo = equipos.find(eq => eq.id === equipoId);
-        if (!equipo) return;
-        modalEquipoNombre.textContent = equipo.nombre;
-        modalEquipoId.textContent = equipoId;
-        modalListaParticipantes.innerHTML = '';
-        if (equipo.participantes && equipo.participantes.length > 0) {
-            equipo.participantes.forEach(p => {
-                const div = document.createElement('p');
-                div.textContent = `${p.nombre} (${p.carnet}) - ${p.correo}`;
-                modalListaParticipantes.appendChild(div);
-            });
-        } else {
-            modalListaParticipantes.innerHTML = '<p>No hay participantes registrados.</p>';
-        }
-        modalNuevoNombre.value = '';
-        modalNuevoCarnet.value = '';
-        modalNuevoCorreo.value = '';
-        modalEditarEquipo.classList.add('visible');
-    }
-
-    modalCerrar.addEventListener('click', () => {
-        modalEditarEquipo.classList.remove('visible');
-    });
-    modalEditarEquipo.addEventListener('click', (e) => {
-        if (e.target === modalEditarEquipo) modalEditarEquipo.classList.remove('visible');
-    });
-
-    modalGuardar.addEventListener('click', async () => {
-        const nombre = modalNuevoNombre.value.trim();
-        const carnet = modalNuevoCarnet.value.trim();
-        const correo = modalNuevoCorreo.value.trim();
-        if (!nombre || !carnet || !correo) {
-            mostrarConfirmacion('⚠️ Completa todos los campos.', true);
-            return;
-        }
-        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
-        if (!emailRegex.test(correo)) {
-            mostrarConfirmacion('⚠️ Correo debe ser @estudiantec.cr', true);
-            return;
-        }
-        const equipoId = modalEquipoId.textContent;
-        const equipoRef = db.ref('equipos/' + equipoId);
-        try {
-            const snapshot = await equipoRef.once('value');
-            const data = snapshot.val();
-            if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
-            const participantesActuales = data.participantes || [];
-            const plazasActuales = data.plazas || 0;
-            if (plazasActuales <= 0) {
-                mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas disponibles.', true);
+            const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
+            if (!emailRegex.test(correo)) {
+                mostrarConfirmacion('⚠️ Correo debe ser @estudiantec.cr', true);
                 return;
             }
-            participantesActuales.push({ nombre, carnet, correo });
-            const nuevasPlazas = plazasActuales - 1;
-            await equipoRef.update({ participantes: participantesActuales, plazas: nuevasPlazas });
-            mostrarConfirmacion('✅ Participante agregado. Plazas restantes: ' + nuevasPlazas);
-            modalEditarEquipo.classList.remove('visible');
-        } catch (err) {
-            mostrarConfirmacion('❌ Error: ' + err.message, true);
+            const telefonoNormalizado = telefono.replace(/\s+/g, '');
+            if (jugadoresLibres.some(j => (j.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
+                mostrarConfirmacion('⚠️ Teléfono ya registrado como jugador libre.', true);
+                return;
+            }
+            if (jugadoresLibres.some(j => (j.carnet || '').trim() === carnet)) {
+                mostrarConfirmacion('⚠️ Carnet ya registrado como jugador libre.', true);
+                return;
+            }
+            db.ref('jugadores_libres').push({ nombre, carnet, telefono, correo, fecha: Date.now() });
+            mostrarConfirmacion('✅ Registrado como jugador libre.');
+            nombreJugador.value = '';
+            carnetJugador.value = '';
+            telefonoJugador.value = '';
+            correoJugador.value = '';
+        });
+
+        // ===== FICHAR JUGADOR LIBRE =====
+        function abrirModalFichar(jugadorId) {
+            const jugador = jugadoresLibres.find(j => j.id === jugadorId);
+            if (!jugador) return;
+            jugadorFicharId = jugadorId;
+            modalFicharInfo.textContent = `${jugador.nombre} (${jugador.carnet}) - ${jugador.correo}`;
+            modalFicharEquipo.innerHTML = '<option value="">-- Elige --</option>';
+            equipos.forEach(eq => {
+                if ((eq.plazas || 0) > 0) {
+                    const opt = document.createElement('option');
+                    opt.value = eq.id;
+                    opt.textContent = `${eq.nombre} (${eq.plazas} plazas)`;
+                    modalFicharEquipo.appendChild(opt);
+                }
+            });
+            if (modalFicharEquipo.options.length === 1) {
+                mostrarConfirmacion('⚠️ No hay equipos con plazas disponibles.', true);
+                return;
+            }
+            modalFichar.classList.add('visible');
         }
-    });
 
-    // ===== WHATSAPP =====
-    function actualizarWhatsAppList(equipos) {
-        const numeros = equipos.map(eq => eq.telefono).filter(t => t);
-        whatsappList.value = numeros.join('\n');
-    }
-    btnCopiarWhatsapp.addEventListener('click', () => {
-        whatsappList.select();
-        navigator.clipboard?.writeText(whatsappList.value)?.catch(() => document.execCommand('copy'));
-        mostrarConfirmacion('📋 Lista copiada.');
-    });
+        modalFicharCancelar.addEventListener('click', () => {
+            modalFichar.classList.remove('visible');
+            jugadorFicharId = null;
+        });
+        modalFichar.addEventListener('click', (e) => {
+            if (e.target === modalFichar) {
+                modalFichar.classList.remove('visible');
+                jugadorFicharId = null;
+            }
+        });
 
-    // ===== ESTADO INSCRIPCIONES =====
-    function actualizarEstadoInscripciones() {
-        if (inscripcionesAbiertas) {
-            estadoInscripciones.textContent = '📢 Inscripciones abiertas';
-            estadoInscripciones.className = 'estado-inscripciones';
-            formInscripcion.classList.add('abierto');
-            btnAbrirInscripciones.style.display = 'none';
-            btnCerrarInscripciones.style.display = 'inline-block';
-        } else {
-            estadoInscripciones.textContent = '🔒 Inscripciones cerradas';
-            estadoInscripciones.className = 'estado-inscripciones cerradas';
-            formInscripcion.classList.remove('abierto');
-            btnAbrirInscripciones.style.display = 'inline-block';
-            btnCerrarInscripciones.style.display = 'none';
+        modalFicharConfirmar.addEventListener('click', async () => {
+            const equipoId = modalFicharEquipo.value;
+            if (!equipoId) {
+                mostrarConfirmacion('⚠️ Selecciona un equipo.', true);
+                return;
+            }
+            const jugador = jugadoresLibres.find(j => j.id === jugadorFicharId);
+            if (!jugador) {
+                mostrarConfirmacion('❌ El jugador ya no está disponible.', true);
+                modalFichar.classList.remove('visible');
+                return;
+            }
+            const equipo = equipos.find(eq => eq.id === equipoId);
+            if (!equipo) {
+                mostrarConfirmacion('❌ El equipo ya no existe.', true);
+                modalFichar.classList.remove('visible');
+                return;
+            }
+            if ((equipo.plazas || 0) <= 0) {
+                mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas.', true);
+                modalFichar.classList.remove('visible');
+                return;
+            }
+
+            try {
+                const equipoRef = db.ref('equipos/' + equipoId);
+                const snapshot = await equipoRef.once('value');
+                const data = snapshot.val();
+                if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
+                const participantesActuales = data.participantes || [];
+                const plazasActuales = data.plazas || 0;
+                if (plazasActuales <= 0) {
+                    mostrarConfirmacion('⚠️ El equipo ya no tiene plazas.', true);
+                    return;
+                }
+                participantesActuales.push({
+                    nombre: jugador.nombre,
+                    carnet: jugador.carnet,
+                    correo: jugador.correo
+                });
+                const nuevasPlazas = plazasActuales - 1;
+                await equipoRef.update({
+                    participantes: participantesActuales,
+                    plazas: nuevasPlazas
+                });
+                await db.ref('jugadores_libres/' + jugadorFicharId).remove();
+                mostrarConfirmacion(`✅ ${jugador.nombre} fichado por ${equipo.nombre}. Plazas restantes: ${nuevasPlazas}`);
+                modalFichar.classList.remove('visible');
+                jugadorFicharId = null;
+            } catch (err) {
+                mostrarConfirmacion('❌ Error al fichar: ' + err.message, true);
+            }
+        });
+
+        function actualizarListaFicharEquipos() {}
+
+        // ===== ELIMINAR =====
+        function eliminarJugadorLibre(id) {
+            if (confirm('¿Eliminar este jugador libre?')) {
+                db.ref('jugadores_libres/' + id).remove();
+            }
         }
-    }
-    btnCerrarInscripciones.addEventListener('click', async () => {
-        if (confirm('¿Cerrar inscripciones?')) await db.ref('config/estadoInscripciones').set('cerradas');
-    });
-    btnAbrirInscripciones.addEventListener('click', async () => {
-        await db.ref('config/estadoInscripciones').set('abiertas');
-    });
 
-    // ===== ADMIN TOGGLE =====
-    btnToggleAdmin.addEventListener('click', async () => {
-        if (adminPanel.classList.contains('visible')) {
-            adminPanel.classList.remove('visible');
-            btnToggleAdmin.textContent = '🔐 Panel de administración';
-        } else {
-            const pass = prompt('Contraseña de administrador:');
-            if (pass === null) return;
-            const hashIngresado = await hashTexto(pass);
-            if (hashIngresado === ADMIN_PASSWORD_HASH) {
-                adminPanel.classList.add('visible');
-                btnToggleAdmin.textContent = '🔒 Ocultar panel';
+        function eliminarEquipo(id) {
+            if (confirm('¿Eliminar este equipo?')) {
+                db.ref('equipos/' + id).remove();
+            }
+        }
+
+        // ===== ACTUALIZAR LISTA PÚBLICA DE JUGADORES LIBRES =====
+        function actualizarListaJugadoresLibres(lista) {
+            listaJugadoresLibres.innerHTML = '';
+            if (!lista || lista.length === 0) {
+                listaJugadoresLibres.innerHTML = '<p>No hay jugadores libres aún.</p>';
+                return;
+            }
+            lista.forEach(j => {
+                const div = document.createElement('div');
+                div.className = 'jugador-item';
+                div.innerHTML = `
+                        <span>${j.nombre} - 📱 ${j.telefono} - 🆔 ${j.carnet}</span>
+                        <button class="btn-fichar" data-id="${j.id}">⚡ Fichar</button>
+                    `;
+                listaJugadoresLibres.appendChild(div);
+            });
+            document.querySelectorAll('.btn-fichar').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const id = e.target.dataset.id;
+                    abrirModalFichar(id);
+                });
+            });
+        }
+
+        // ===== TABLA JUGADORES LIBRES EN ADMIN =====
+        function actualizarTablaJugadoresLibres(lista) {
+            tbodyJugadoresLibres.innerHTML = '';
+            if (!lista || lista.length === 0) {
+                tbodyJugadoresLibres.innerHTML = '<tr><td colspan="5">No hay jugadores libres.</td></tr>';
+                return;
+            }
+            lista.forEach(j => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                        <td>${j.nombre}</td>
+                        <td>${j.carnet}</td>
+                        <td>${j.telefono}</td>
+                        <td>${j.correo}</td>
+                        <td><button class="btn-eliminar-jugador-admin" data-id="${j.id}">Eliminar</button></td>
+                    `;
+                tbodyJugadoresLibres.appendChild(tr);
+            });
+            document.querySelectorAll('.btn-eliminar-jugador-admin').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const id = e.target.dataset.id;
+                    eliminarJugadorLibre(id);
+                });
+            });
+        }
+
+        // ===== ADMIN PANEL (EQUIPOS) =====
+        function actualizarAdminPanel(equipos) {
+            tbodyEquipos.innerHTML = '';
+            if (!equipos || equipos.length === 0) {
+                tbodyEquipos.innerHTML = '<tr><td colspan="8">No hay equipos inscritos.</td></tr>';
+                return;
+            }
+            equipos.forEach((eq, i) => {
+                const participantesCount = eq.participantes ? eq.participantes.length : 0;
+                const plazasInfo = `${participantesCount} / ${eq.plazas || 0}`;
+                const colorObj = PALETA.find(p => p.nombre === eq.color);
+                const colorHex = colorObj ? colorObj.color : '#aaa';
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                        <td>${i + 1}</td>
+                        <td>${eq.nombre}</td>
+                        <td>${eq.capitan}</td>
+                        <td>${eq.telefono}</td>
+                        <td><span style="background:${colorHex};color:#fff;padding:2px 10px;border-radius:12px;">${eq.color}</span></td>
+                        <td>${plazasInfo}</td>
+                        <td><button class="btn-editar-equipo" data-id="${eq.id}">Editar</button></td>
+                        <td><button class="btn-eliminar-equipo" data-id="${eq.id}">Eliminar</button></td>
+                    `;
+                tbodyEquipos.appendChild(tr);
+            });
+            document.querySelectorAll('.btn-editar-equipo').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const id = e.target.dataset.id;
+                    abrirModalEditarEquipo(id);
+                });
+            });
+            document.querySelectorAll('.btn-eliminar-equipo').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    const id = e.target.dataset.id;
+                    eliminarEquipo(id);
+                });
+            });
+        }
+
+        // ===== MODAL EDITAR EQUIPO (existente) =====
+        const modalEditarEquipo = document.createElement('div');
+        modalEditarEquipo.id = 'modalEditarEquipo';
+        modalEditarEquipo.className = 'modal-overlay';
+        modalEditarEquipo.innerHTML = `
+                <div class="modal">
+                    <h2>✏️ Editar equipo: <span id="modalEquipoNombre"></span></h2>
+                    <div id="modalEquipoId" style="display:none;"></div>
+                    <div class="form-group">
+                        <label>Participantes actuales:</label>
+                        <div class="lista-participantes-modal" id="modalListaParticipantes"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Agregar nuevo participante</label>
+                        <input type="text" id="modalNuevoNombre" placeholder="Nombre completo">
+                        <input type="text" id="modalNuevoCarnet" placeholder="Carnet" style="margin-top:6px;">
+                        <input type="email" id="modalNuevoCorreo" placeholder="Correo estudiantil" style="margin-top:6px;">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn btn-danger" id="modalCerrar">Cancelar</button>
+                        <button class="btn btn-success" id="modalGuardar">Agregar participante</button>
+                    </div>
+                </div>
+            `;
+        document.body.appendChild(modalEditarEquipo);
+
+        const modalEquipoNombre = $('modalEquipoNombre');
+        const modalEquipoId = $('modalEquipoId');
+        const modalListaParticipantes = $('modalListaParticipantes');
+        const modalNuevoNombre = $('modalNuevoNombre');
+        const modalNuevoCarnet = $('modalNuevoCarnet');
+        const modalNuevoCorreo = $('modalNuevoCorreo');
+        const modalCerrar = $('modalCerrar');
+        const modalGuardar = $('modalGuardar');
+
+        function abrirModalEditarEquipo(equipoId) {
+            const equipo = equipos.find(eq => eq.id === equipoId);
+            if (!equipo) return;
+            modalEquipoNombre.textContent = equipo.nombre;
+            modalEquipoId.textContent = equipoId;
+            modalListaParticipantes.innerHTML = '';
+            if (equipo.participantes && equipo.participantes.length > 0) {
+                equipo.participantes.forEach(p => {
+                    const div = document.createElement('p');
+                    div.textContent = `${p.nombre} (${p.carnet}) - ${p.correo}`;
+                    modalListaParticipantes.appendChild(div);
+                });
             } else {
-                mostrarConfirmacion('❌ Contraseña incorrecta.', true);
+                modalListaParticipantes.innerHTML = '<p>No hay participantes registrados.</p>';
             }
+            modalNuevoNombre.value = '';
+            modalNuevoCarnet.value = '';
+            modalNuevoCorreo.value = '';
+            modalEditarEquipo.classList.add('visible');
         }
-    });
 
-    // ===== REINICIAR TORNEO =====
-    btnReiniciarTorneo.addEventListener('click', async () => {
-        if (!confirm('⚠️ Esto borrará TODOS los datos. ¿Continuar?')) return;
-        if (!confirm('¿Confirmas?')) return;
-        try {
-            await db.ref('equipos').remove();
-            await db.ref('jugadores_libres').remove();
-            await db.ref('resultados').remove();
-            await db.ref('config/estadoInscripciones').set('abiertas');
-            mostrarConfirmacion('✅ Torneo reiniciado.');
-        } catch (err) {
-            mostrarConfirmacion('❌ Error: ' + err.message, true);
-        }
-    });
-
-    // ===== BRACKET =====
-    function calcularGanador(matchKey, team1, team2) {
-        if (team1.nombre === '---' && team2.nombre === '---') return null;
-        if (team1.nombre === '---') return team2;
-        if (team2.nombre === '---') return team1;
-        const res = resultados[matchKey];
-        if (!res || res.score1 === undefined || res.score1 === '' || res.score2 === undefined || res.score2 === '') return null;
-        const s1 = Number(res.score1), s2 = Number(res.score2);
-        if (isNaN(s1) || isNaN(s2)) return null;
-        if (s1 > s2) return team1;
-        if (s2 > s1) return team2;
-        if (res.penal1 !== undefined && res.penal1 !== '' && res.penal2 !== undefined && res.penal2 !== '') {
-            const p1 = Number(res.penal1), p2 = Number(res.penal2);
-            if (!isNaN(p1) && !isNaN(p2)) {
-                if (p1 > p2) return team1;
-                if (p2 > p1) return team2;
-            }
-        }
-        return null;
-    }
-
-    function actualizarBracket(equiposActuales) {
-        const teamCount = equiposActuales.length;
-        if (teamCount === 0) {
-            bracketContainer.innerHTML = '<p style="text-align:center;color:#302d7c;font-weight:600;padding:40px;">Esperando inscripciones...</p>';
-            lineSvg.innerHTML = '';
-            championBox.classList.remove('show');
-            return;
-        }
-        let bracketSize = 2;
-        while (bracketSize < teamCount) bracketSize *= 2;
-        const byes = bracketSize - teamCount;
-        let currentRoundTeams = [];
-        for (let i = 0; i < bracketSize; i++) {
-            if (i < byes) currentRoundTeams.push({ nombre: '---', color: null });
-            else {
-                const idx = i - byes;
-                const eq = equiposActuales[idx];
-                currentRoundTeams.push({ nombre: eq ? eq.nombre : '---', color: eq ? eq.color : null });
-            }
-        }
-        const roundNames = [];
-        let temp = bracketSize;
-        while (temp > 1) {
-            const name = temp === bracketSize ? 'Primera Ronda' :
-                         temp === bracketSize/2 ? 'Octavos' :
-                         temp === bracketSize/4 ? 'Cuartos' :
-                         temp === bracketSize/8 ? 'Semifinal' : 'Final';
-            roundNames.push(name);
-            temp /= 2;
-        }
-        const rounds = [];
-        for (let r = 0; r < roundNames.length; r++) {
-            const matches = [];
-            const nextRoundTeams = [];
-            for (let i = 0; i < currentRoundTeams.length; i += 2) {
-                const t1 = currentRoundTeams[i] || { nombre: '---', color: null };
-                const t2 = currentRoundTeams[i+1] || { nombre: '---', color: null };
-                const matchKey = `r${r}m${i/2}`;
-                const res = resultados[matchKey] || {};
-                const ganador = calcularGanador(matchKey, t1, t2);
-                const esPartidoReal = t1.nombre !== '---' && t2.nombre !== '---';
-                const necesitaPenales = esPartidoReal && res.score1 !== undefined && res.score1 !== '' &&
-                    res.score2 !== undefined && res.score2 !== '' && Number(res.score1) === Number(res.score2);
-                matches.push({
-                    matchKey,
-                    team1: t1.nombre,
-                    team1Color: t1.color,
-                    team2: t2.nombre,
-                    team2Color: t2.color,
-                    score1: res.score1 !== undefined ? res.score1 : '',
-                    score2: res.score2 !== undefined ? res.score2 : '',
-                    penal1: res.penal1 !== undefined ? res.penal1 : '',
-                    penal2: res.penal2 !== undefined ? res.penal2 : '',
-                    esPartidoReal,
-                    necesitaPenales,
-                    ganadorNombre: ganador ? ganador.nombre : null
-                });
-                nextRoundTeams.push(ganador || { nombre: '---', color: null });
-            }
-            rounds.push({ name: roundNames[r], matches });
-            currentRoundTeams = nextRoundTeams;
-        }
-        renderBracketStatic(rounds);
-
-        const finalRound = rounds[rounds.length - 1];
-        if (finalRound && finalRound.matches.length === 1 && finalRound.matches[0].ganadorNombre) {
-            championName.textContent = finalRound.matches[0].ganadorNombre;
-            championBox.classList.add('show');
-        } else {
-            championBox.classList.remove('show');
-        }
-    }
-
-    function crearFilaEquipo(matchKey, teamName, teamColor, slot, score, mostrarInput, esGanador, esPerdedor) {
-        const row = document.createElement('div');
-        row.className = 'team-row';
-        const nameWrapper = document.createElement('span');
-        nameWrapper.className = 'team-name-wrapper';
-        const dot = document.createElement('span');
-        dot.className = 'team-color-dot';
-        const colorHex = teamColor ? PALETA.find(p => p.nombre === teamColor)?.color : null;
-        dot.style.background = colorHex || '#ccc';
-        const name = document.createElement('span');
-        name.className = 'team-name team-name-readonly' + (esGanador ? ' team-winner' : '') + (esPerdedor ? ' team-loser' : '');
-        name.textContent = teamName;
-        nameWrapper.appendChild(dot);
-        nameWrapper.appendChild(name);
-        row.appendChild(nameWrapper);
-        if (mostrarInput) {
-            const scoreInput = document.createElement('input');
-            scoreInput.type = 'number';
-            scoreInput.min = '0';
-            scoreInput.className = 'score-input';
-            scoreInput.value = score;
-            scoreInput.placeholder = '0';
-            scoreInput.dataset.matchKey = matchKey;
-            scoreInput.dataset.slot = slot;
-            row.appendChild(scoreInput);
-        }
-        return row;
-    }
-
-    function renderBracketStatic(rounds) {
-        bracketContainer.innerHTML = '';
-        rounds.forEach((round) => {
-            const roundDiv = document.createElement('div');
-            roundDiv.className = 'round';
-            const title = document.createElement('div');
-            title.className = 'round-title';
-            title.textContent = round.name;
-            roundDiv.appendChild(title);
-            round.matches.forEach((match) => {
-                const matchDiv = document.createElement('div');
-                matchDiv.className = 'match' + (match.ganadorNombre ? ' has-winner' : '');
-                const esGanador1 = !!match.ganadorNombre && match.ganadorNombre === match.team1;
-                const esGanador2 = !!match.ganadorNombre && match.ganadorNombre === match.team2;
-                matchDiv.appendChild(crearFilaEquipo(match.matchKey, match.team1, match.team1Color, '1', match.score1, match.esPartidoReal, esGanador1, esGanador2));
-                matchDiv.appendChild(crearFilaEquipo(match.matchKey, match.team2, match.team2Color, '2', match.score2, match.esPartidoReal, esGanador2, esGanador1));
-                if (match.necesitaPenales) {
-                    const penalDiv = document.createElement('div');
-                    penalDiv.className = 'match-penales';
-                    const label = document.createElement('span');
-                    label.className = 'penales-label';
-                    label.textContent = '🎯 Penales';
-                    const inputsWrap = document.createElement('span');
-                    inputsWrap.className = 'penales-inputs';
-                    const p1 = document.createElement('input');
-                    p1.type = 'number'; p1.min = '0';
-                    p1.className = 'score-input penal-input';
-                    p1.value = match.penal1;
-                    p1.placeholder = '0';
-                    p1.dataset.matchKey = match.matchKey;
-                    p1.dataset.slot = '1';
-                    const p2 = document.createElement('input');
-                    p2.type = 'number'; p2.min = '0';
-                    p2.className = 'score-input penal-input';
-                    p2.value = match.penal2;
-                    p2.placeholder = '0';
-                    p2.dataset.matchKey = match.matchKey;
-                    p2.dataset.slot = '2';
-                    inputsWrap.appendChild(p1);
-                    inputsWrap.appendChild(p2);
-                    penalDiv.appendChild(label);
-                    penalDiv.appendChild(inputsWrap);
-                    matchDiv.appendChild(penalDiv);
-                } else if (!match.esPartidoReal && (match.team1 === '---') !== (match.team2 === '---')) {
-                    const note = document.createElement('div');
-                    note.className = 'match-bye-note';
-                    note.textContent = '➡️ Pase directo';
-                    matchDiv.appendChild(note);
-                }
-                roundDiv.appendChild(matchDiv);
-            });
-            bracketContainer.appendChild(roundDiv);
+        modalCerrar.addEventListener('click', () => {
+            modalEditarEquipo.classList.remove('visible');
         });
-        requestAnimationFrame(drawLines);
-    }
+        modalEditarEquipo.addEventListener('click', (e) => {
+            if (e.target === modalEditarEquipo) modalEditarEquipo.classList.remove('visible');
+        });
 
-    bracketContainer.addEventListener('change', (e) => {
-        const esScore = e.target.classList.contains('score-input');
-        const esPenal = e.target.classList.contains('penal-input');
-        if (!esScore && !esPenal) return;
-        const matchKey = e.target.dataset.matchKey;
-        const slot = e.target.dataset.slot;
-        const campo = (esPenal ? 'penal' : 'score') + slot;
-        const valor = e.target.value === '' ? '' : Number(e.target.value);
-        db.ref('resultados/' + matchKey).update({ [campo]: valor });
-    });
-
-    function drawLines() {
-        const wrapper = document.querySelector('.bracket-wrapper');
-        const svgRect = lineSvg.getBoundingClientRect();
-        lineSvg.innerHTML = '';
-        const rounds = document.querySelectorAll('.round');
-        if (rounds.length < 2) return;
-        for (let i = 0; i < rounds.length - 1; i++) {
-            const currentMatches = rounds[i].querySelectorAll('.match');
-            const nextMatches = rounds[i+1].querySelectorAll('.match');
-            currentMatches.forEach((match, idx) => {
-                const nextIdx = Math.floor(idx / 2);
-                if (nextIdx >= nextMatches.length) return;
-                const nextMatch = nextMatches[nextIdx];
-                const rect1 = match.getBoundingClientRect();
-                const rect2 = nextMatch.getBoundingClientRect();
-                const x1 = rect1.right - svgRect.left;
-                const y1 = rect1.top + rect1.height/2 - svgRect.top;
-                const x2 = rect2.left - svgRect.left;
-                const y2 = rect2.top + rect2.height/2 - svgRect.top;
-                const midX = (x1 + x2) / 2;
-                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                const d = `M ${x1} ${y1} L ${midX} ${y1} V ${y2} L ${x2} ${y2}`;
-                path.setAttribute('d', d);
-                path.setAttribute('stroke', '#302d7c');
-                path.setAttribute('stroke-width', '2');
-                path.setAttribute('fill', 'none');
-                path.setAttribute('stroke-linejoin', 'round');
-                path.setAttribute('opacity', '0.5');
-                lineSvg.appendChild(path);
-            });
-        }
-    }
-    window.addEventListener('resize', () => {
-        clearTimeout(window._resizeTimeout);
-        window._resizeTimeout = setTimeout(drawLines, 150);
-    });
-
-    function actualizarFormulario() {
-        if (equipos.length >= MAX_EQUIPOS) {
-            formInscripcion.classList.remove('abierto');
-        } else if (inscripcionesAbiertas) {
-            formInscripcion.classList.add('abierto');
-        }
-    }
-
-    // ===== GUARDAR EQUIPO =====
-    formEquipo.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (!inscripcionesAbiertas) { mostrarConfirmacion('⚠️ Inscripciones cerradas.', true); return; }
-        if (equipos.length >= MAX_EQUIPOS) { mostrarConfirmacion('⚠️ Sin cupos.', true); return; }
-        if (!aceptaTerminos.checked) { mostrarConfirmacion('⚠️ Acepta los términos.', true); return; }
-
-        const nombre = nombreEquipo.value.trim();
-        const capitanVal = capitan.value.trim();
-        const telefonoVal = telefono.value.trim();
-        const cantidad = parseInt(cantidadCompetidores.value);
-        const color = colorEquipo.value;
-        const plazasVal = parseInt(plazas.value) || 0;
-
-        if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
-            mostrarConfirmacion('⚠️ Completa todos los campos obligatorios.', true); return;
-        }
-        if (cantidad < 6 || cantidad > 7) {
-            mostrarConfirmacion('⚠️ Competidores entre 6 y 7.', true); return;
-        }
-        if (plazasVal < 0 || plazasVal > 6) {
-            mostrarConfirmacion('⚠️ Plazas por completar entre 0 y 6.', true); return;
-        }
-
-        const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
-        if (participantesValidos.length < 1) {
-            mostrarConfirmacion('⚠️ Registra al menos al capitán.', true); return;
-        }
-        if (participantesValidos.length > cantidad) {
-            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) exceden el total (${cantidad}).`, true); return;
-        }
-        if (participantesValidos.length + plazasVal !== cantidad) {
-            mostrarConfirmacion(`⚠️ Participantes (${participantesValidos.length}) + plazas (${plazasVal}) debe ser ${cantidad}.`, true); return;
-        }
-        const capitanParticipante = participantesValidos[0];
-        if (capitanParticipante.nombre !== capitanVal) {
-            mostrarConfirmacion('⚠️ El capitán debe ser el primer participante.', true); return;
-        }
-        const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
-        for (let p of participantesValidos) {
-            if (!emailRegex.test(p.correo)) {
-                mostrarConfirmacion(`⚠️ El correo "${p.correo}" no es válido. Debe ser @estudiantec.cr`, true);
+        modalGuardar.addEventListener('click', async () => {
+            const nombre = modalNuevoNombre.value.trim();
+            const carnet = modalNuevoCarnet.value.trim();
+            const correo = modalNuevoCorreo.value.trim();
+            if (!nombre || !carnet || !correo) {
+                mostrarConfirmacion('⚠️ Completa todos los campos.', true);
                 return;
             }
+            const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
+            if (!emailRegex.test(correo)) {
+                mostrarConfirmacion('⚠️ Correo debe ser @estudiantec.cr', true);
+                return;
+            }
+            const equipoId = modalEquipoId.textContent;
+            const equipoRef = db.ref('equipos/' + equipoId);
+            try {
+                const snapshot = await equipoRef.once('value');
+                const data = snapshot.val();
+                if (!data) { mostrarConfirmacion('❌ El equipo ya no existe.', true); return; }
+                const participantesActuales = data.participantes || [];
+                const plazasActuales = data.plazas || 0;
+                if (plazasActuales <= 0) {
+                    mostrarConfirmacion('⚠️ Este equipo ya no tiene plazas disponibles.', true);
+                    return;
+                }
+                participantesActuales.push({ nombre, carnet, correo });
+                const nuevasPlazas = plazasActuales - 1;
+                await equipoRef.update({ participantes: participantesActuales, plazas: nuevasPlazas });
+                mostrarConfirmacion('✅ Participante agregado. Plazas restantes: ' + nuevasPlazas);
+                modalEditarEquipo.classList.remove('visible');
+            } catch (err) {
+                mostrarConfirmacion('❌ Error: ' + err.message, true);
+            }
+        });
+
+        // ===== WHATSAPP =====
+        function actualizarWhatsAppList(equipos) {
+            const numeros = equipos.map(eq => eq.telefono).filter(t => t);
+            whatsappList.value = numeros.join('\n');
         }
-        const nombreLower = nombre.toLowerCase();
-        if (equipos.some(eq => (eq.nombre || '').trim().toLowerCase() === nombreLower)) {
-            mostrarConfirmacion('⚠️ Nombre de equipo duplicado.', true); return;
+        btnCopiarWhatsapp.addEventListener('click', () => {
+            whatsappList.select();
+            navigator.clipboard?.writeText(whatsappList.value)?.catch(() => document.execCommand('copy'));
+            mostrarConfirmacion('📋 Lista copiada.');
+        });
+
+        // ===== ESTADO INSCRIPCIONES =====
+        function actualizarEstadoInscripciones() {
+            if (inscripcionesAbiertas) {
+                estadoInscripciones.textContent = '📢 Inscripciones abiertas';
+                estadoInscripciones.className = 'estado-inscripciones';
+                formInscripcion.classList.add('abierto');
+                btnAbrirInscripciones.style.display = 'none';
+                btnCerrarInscripciones.style.display = 'inline-block';
+            } else {
+                estadoInscripciones.textContent = '🔒 Inscripciones cerradas';
+                estadoInscripciones.className = 'estado-inscripciones cerradas';
+                formInscripcion.classList.remove('abierto');
+                btnAbrirInscripciones.style.display = 'inline-block';
+                btnCerrarInscripciones.style.display = 'none';
+            }
         }
-        const telefonoNormalizado = telefonoVal.replace(/\s+/g, '');
-        if (equipos.some(eq => (eq.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
-            mostrarConfirmacion('⚠️ Teléfono ya registrado.', true); return;
-        }
-        const usados = {};
-        equipos.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
-        if ((usados[color] || 0) >= COLORES_CUPO[color]) {
-            mostrarConfirmacion(`⚠️ Color ${color} sin cupos.`, true); return;
+        btnCerrarInscripciones.addEventListener('click', async () => {
+            if (confirm('¿Cerrar inscripciones?')) await db.ref('config/estadoInscripciones').set('cerradas');
+        });
+        btnAbrirInscripciones.addEventListener('click', async () => {
+            await db.ref('config/estadoInscripciones').set('abiertas');
+        });
+
+        // ===== ADMIN TOGGLE =====
+        btnToggleAdmin.addEventListener('click', async () => {
+            if (adminPanel.classList.contains('visible')) {
+                adminPanel.classList.remove('visible');
+                btnToggleAdmin.textContent = '🔐 Panel de administración';
+            } else {
+                const pass = prompt('Contraseña de administrador:');
+                if (pass === null) return;
+                const hashIngresado = await hashTexto(pass);
+                if (hashIngresado === ADMIN_PASSWORD_HASH) {
+                    adminPanel.classList.add('visible');
+                    btnToggleAdmin.textContent = '🔒 Ocultar panel';
+                } else {
+                    mostrarConfirmacion('❌ Contraseña incorrecta.', true);
+                }
+            }
+        });
+
+        // ===== REINICIAR TORNEO =====
+        btnReiniciarTorneo.addEventListener('click', async () => {
+            if (!confirm('⚠️ Esto borrará TODOS los datos. ¿Continuar?')) return;
+            if (!confirm('¿Confirmas?')) return;
+            try {
+                await db.ref('equipos').remove();
+                await db.ref('jugadores_libres').remove();
+                await db.ref('resultados').remove();
+                await db.ref('config/estadoInscripciones').set('abiertas');
+                mostrarConfirmacion('✅ Torneo reiniciado.');
+            } catch (err) {
+                mostrarConfirmacion('❌ Error: ' + err.message, true);
+            }
+        });
+
+        // ===== BRACKET =====
+        function calcularGanador(matchKey, team1, team2) {
+            if (team1.nombre === '---' && team2.nombre === '---') return null;
+            if (team1.nombre === '---') return team2;
+            if (team2.nombre === '---') return team1;
+            const res = resultados[matchKey];
+            if (!res || res.score1 === undefined || res.score1 === '' || res.score2 === undefined || res.score2 === '') return null;
+            const s1 = Number(res.score1),
+                s2 = Number(res.score2);
+            if (isNaN(s1) || isNaN(s2)) return null;
+            if (s1 > s2) return team1;
+            if (s2 > s1) return team2;
+            if (res.penal1 !== undefined && res.penal1 !== '' && res.penal2 !== undefined && res.penal2 !== '') {
+                const p1 = Number(res.penal1),
+                    p2 = Number(res.penal2);
+                if (!isNaN(p1) && !isNaN(p2)) {
+                    if (p1 > p2) return team1;
+                    if (p2 > p1) return team2;
+                }
+            }
+            return null;
         }
 
-        const nuevoEquipo = {
-            nombre, capitan: capitanVal, telefono: telefonoVal, color,
-            cantidadCompetidores: cantidad, plazas: plazasVal,
-            participantes: participantesValidos,
-            fecha: firebase.database.ServerValue.TIMESTAMP
-        };
-        try {
-            await db.ref('equipos').push(nuevoEquipo);
-            mostrarConfirmacion('✅ Equipo inscrito.');
-            formEquipo.reset();
-            participantes = [{ nombre: '', carnet: '', correo: '' }];
-            renderParticipantes();
-            capitan.value = '';
-            plazas.value = '0';
-            aceptaTerminos.checked = false;
-            camposEquipo.disabled = true;
-        } catch (err) {
-            mostrarConfirmacion('❌ Error: ' + err.message, true);
-        }
-    });
+        function actualizarBracket(equiposActuales) {
+            const teamCount = equiposActuales.length;
+            if (teamCount === 0) {
+                bracketContainer.innerHTML = '<p style="text-align:center;color:#302d7c;font-weight:600;padding:40px;">Esperando inscripciones...</p>';
+                lineSvg.innerHTML = '';
+                championBox.classList.remove('show');
+                return;
+            }
+            let bracketSize = 2;
+            while (bracketSize < teamCount) bracketSize *= 2;
+            const byes = bracketSize - teamCount;
+            let currentRoundTeams = [];
+            for (let i = 0; i < bracketSize; i++) {
+                if (i < byes) currentRoundTeams.push({ nombre: '---', color: null });
+                else {
+                    const idx = i - byes;
+                    const eq = equiposActuales[idx];
+                    currentRoundTeams.push({ nombre: eq ? eq.nombre : '---', color: eq ? eq.color : null });
+                }
+            }
+            const roundNames = [];
+            let temp = bracketSize;
+            while (temp > 1) {
+                const name = temp === bracketSize ? 'Primera Ronda' :
+                    temp === bracketSize / 2 ? 'Octavos' :
+                    temp === bracketSize / 4 ? 'Cuartos' :
+                    temp === bracketSize / 8 ? 'Semifinal' : 'Final';
+                roundNames.push(name);
+                temp /= 2;
+            }
+            const rounds = [];
+            for (let r = 0; r < roundNames.length; r++) {
+                const matches = [];
+                const nextRoundTeams = [];
+                for (let i = 0; i < currentRoundTeams.length; i += 2) {
+                    const t1 = currentRoundTeams[i] || { nombre: '---', color: null };
+                    const t2 = currentRoundTeams[i + 1] || { nombre: '---', color: null };
+                    const matchKey = `r${r}m${i / 2}`;
+                    const res = resultados[matchKey] || {};
+                    const ganador = calcularGanador(matchKey, t1, t2);
+                    const esPartidoReal = t1.nombre !== '---' && t2.nombre !== '---';
+                    const necesitaPenales = esPartidoReal && res.score1 !== undefined && res.score1 !== '' &&
+                        res.score2 !== undefined && res.score2 !== '' && Number(res.score1) === Number(res.score2);
+                    matches.push({
+                        matchKey,
+                        team1: t1.nombre,
+                        team1Color: t1.color,
+                        team2: t2.nombre,
+                        team2Color: t2.color,
+                        score1: res.score1 !== undefined ? res.score1 : '',
+                        score2: res.score2 !== undefined ? res.score2 : '',
+                        penal1: res.penal1 !== undefined ? res.penal1 : '',
+                        penal2: res.penal2 !== undefined ? res.penal2 : '',
+                        esPartidoReal,
+                        necesitaPenales,
+                        ganadorNombre: ganador ? ganador.nombre : null
+                    });
+                    nextRoundTeams.push(ganador || { nombre: '---', color: null });
+                }
+                rounds.push({ name: roundNames[r], matches });
+                currentRoundTeams = nextRoundTeams;
+            }
+            renderBracketStatic(rounds);
 
-    // ===== INICIO =====
-    cargarDatos();
-    console.log('🏆 Torneo TMS con fichaje automático de jugadores libres');
-</script>
+            const finalRound = rounds[rounds.length - 1];
+            if (finalRound && finalRound.matches.length === 1 && finalRound.matches[0].ganadorNombre) {
+                championName.textContent = finalRound.matches[0].ganadorNombre;
+                championBox.classList.add('show');
+            } else {
+                championBox.classList.remove('show');
+            }
+        }
+
+        function crearFilaEquipo(matchKey, teamName, teamColor, slot, score, mostrarInput, esGanador, esPerdedor) {
+            const row = document.createElement('div');
+            row.className = 'team-row';
+            const nameWrapper = document.createElement('span');
+            nameWrapper.className = 'team-name-wrapper';
+            const dot = document.createElement('span');
+            dot.className = 'team-color-dot';
+            const colorHex = teamColor ? PALETA.find(p => p.nombre === teamColor)?.color : null;
+            dot.style.background = colorHex || '#ccc';
+            const name = document.createElement('span');
+            name.className = 'team-name team-name-readonly' + (esGanador ? ' team-winner' : '') + (esPerdedor ? ' team-loser' :
+            '');
+            name.textContent = teamName;
+            nameWrapper.appendChild(dot);
+            nameWrapper.appendChild(name);
+            row.appendChild(nameWrapper);
+            if (mostrarInput) {
+                const scoreInput = document.createElement('input');
+                scoreInput.type = 'number';
+                scoreInput.min = '0';
+                scoreInput.className = 'score-input';
+                scoreInput.value = score;
+                scoreInput.placeholder = '0';
+                scoreInput.dataset.matchKey = matchKey;
+                scoreInput.dataset.slot = slot;
+                row.appendChild(scoreInput);
+            }
+            return row;
+        }
+
+        function renderBracketStatic(rounds) {
+            bracketContainer.innerHTML = '';
+            rounds.forEach((round) => {
+                const roundDiv = document.createElement('div');
+                roundDiv.className = 'round';
+                const title = document.createElement('div');
+                title.className = 'round-title';
+                title.textContent = round.name;
+                roundDiv.appendChild(title);
+                round.matches.forEach((match) => {
+                    const matchDiv = document.createElement('div');
+                    matchDiv.className = 'match' + (match.ganadorNombre ? ' has-winner' : '');
+                    const esGanador1 = !!match.ganadorNombre && match.ganadorNombre === match.team1;
+                    const esGanador2 = !!match.ganadorNombre && match.ganadorNombre === match.team2;
+                    matchDiv.appendChild(crearFilaEquipo(match.matchKey, match.team1, match.team1Color, '1',
+                        match.score1, match.esPartidoReal, esGanador1, esGanador2));
+                    matchDiv.appendChild(crearFilaEquipo(match.matchKey, match.team2, match.team2Color, '2',
+                        match.score2, match.esPartidoReal, esGanador2, esGanador1));
+                    if (match.necesitaPenales) {
+                        const penalDiv = document.createElement('div');
+                        penalDiv.className = 'match-penales';
+                        const label = document.createElement('span');
+                        label.className = 'penales-label';
+                        label.textContent = '🎯 Penales';
+                        const inputsWrap = document.createElement('span');
+                        inputsWrap.className = 'penales-inputs';
+                        const p1 = document.createElement('input');
+                        p1.type = 'number';
+                        p1.min = '0';
+                        p1.className = 'score-input penal-input';
+                        p1.value = match.penal1;
+                        p1.placeholder = '0';
+                        p1.dataset.matchKey = match.matchKey;
+                        p1.dataset.slot = '1';
+                        const p2 = document.createElement('input');
+                        p2.type = 'number';
+                        p2.min = '0';
+                        p2.className = 'score-input penal-input';
+                        p2.value = match.penal2;
+                        p2.placeholder = '0';
+                        p2.dataset.matchKey = match.matchKey;
+                        p2.dataset.slot = '2';
+                        inputsWrap.appendChild(p1);
+                        inputsWrap.appendChild(p2);
+                        penalDiv.appendChild(label);
+                        penalDiv.appendChild(inputsWrap);
+                        matchDiv.appendChild(penalDiv);
+                    } else if (!match.esPartidoReal && (match.team1 === '---') !== (match.team2 === '---')) {
+                        const note = document.createElement('div');
+                        note.className = 'match-bye-note';
+                        note.textContent = '➡️ Pase directo';
+                        matchDiv.appendChild(note);
+                    }
+                    roundDiv.appendChild(matchDiv);
+                });
+                bracketContainer.appendChild(roundDiv);
+            });
+            requestAnimationFrame(drawLines);
+        }
+
+        bracketContainer.addEventListener('change', (e) => {
+            const esScore = e.target.classList.contains('score-input');
+            const esPenal = e.target.classList.contains('penal-input');
+            if (!esScore && !esPenal) return;
+            const matchKey = e.target.dataset.matchKey;
+            const slot = e.target.dataset.slot;
+            const campo = (esPenal ? 'penal' : 'score') + slot;
+            const valor = e.target.value === '' ? '' : Number(e.target.value);
+            db.ref('resultados/' + matchKey).update({ [campo]: valor });
+        });
+
+        function drawLines() {
+            const wrapper = document.querySelector('.bracket-wrapper');
+            const svgRect = lineSvg.getBoundingClientRect();
+            lineSvg.innerHTML = '';
+            const rounds = document.querySelectorAll('.round');
+            if (rounds.length < 2) return;
+            for (let i = 0; i < rounds.length - 1; i++) {
+                const currentMatches = rounds[i].querySelectorAll('.match');
+                const nextMatches = rounds[i + 1].querySelectorAll('.match');
+                currentMatches.forEach((match, idx) => {
+                    const nextIdx = Math.floor(idx / 2);
+                    if (nextIdx >= nextMatches.length) return;
+                    const nextMatch = nextMatches[nextIdx];
+                    const rect1 = match.getBoundingClientRect();
+                    const rect2 = nextMatch.getBoundingClientRect();
+                    const x1 = rect1.right - svgRect.left;
+                    const y1 = rect1.top + rect1.height / 2 - svgRect.top;
+                    const x2 = rect2.left - svgRect.left;
+                    const y2 = rect2.top + rect2.height / 2 - svgRect.top;
+                    const midX = (x1 + x2) / 2;
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const d = `M ${x1} ${y1} L ${midX} ${y1} V ${y2} L ${x2} ${y2}`;
+                    path.setAttribute('d', d);
+                    path.setAttribute('stroke', '#302d7c');
+                    path.setAttribute('stroke-width', '2');
+                    path.setAttribute('fill', 'none');
+                    path.setAttribute('stroke-linejoin', 'round');
+                    path.setAttribute('opacity', '0.5');
+                    lineSvg.appendChild(path);
+                });
+            }
+        }
+        window.addEventListener('resize', () => {
+            clearTimeout(window._resizeTimeout);
+            window._resizeTimeout = setTimeout(drawLines, 150);
+        });
+
+        function actualizarFormulario() {
+            if (equipos.length >= MAX_EQUIPOS) {
+                formInscripcion.classList.remove('abierto');
+            } else if (inscripcionesAbiertas) {
+                formInscripcion.classList.add('abierto');
+            }
+        }
+
+        // ===== GUARDAR EQUIPO (con nuevo mínimo) =====
+        formEquipo.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!inscripcionesAbiertas) { mostrarConfirmacion('⚠️ Inscripciones cerradas.', true); return; }
+            if (equipos.length >= MAX_EQUIPOS) { mostrarConfirmacion('⚠️ Sin cupos.', true); return; }
+            if (!aceptaTerminos.checked) { mostrarConfirmacion('⚠️ Acepta los términos.', true); return; }
+
+            const nombre = nombreEquipo.value.trim();
+            const capitanVal = capitan.value.trim();
+            const telefonoVal = telefono.value.trim();
+            const cantidad = parseInt(cantidadCompetidores.value);
+            const color = colorEquipo.value;
+            const plazasVal = parseInt(plazas.value) || 0;
+
+            if (!nombre || !capitanVal || !telefonoVal || !cantidad || !color) {
+                mostrarConfirmacion('⚠️ Completa todos los campos obligatorios.', true);
+                return;
+            }
+            if (cantidad < MIN_COMPETIDORES || cantidad > MAX_COMPETIDORES) {
+                mostrarConfirmacion(`⚠️ Número de competidores debe ser entre ${MIN_COMPETIDORES} y ${MAX_COMPETIDORES}.`,
+                    true);
+                return;
+            }
+            if (plazasVal < 0 || plazasVal > MAX_COMPETIDORES) {
+                mostrarConfirmacion(`⚠️ Plazas por completar deben ser entre 0 y ${MAX_COMPETIDORES}.`, true);
+                return;
+            }
+
+            const participantesValidos = participantes.filter(p => p.nombre.trim() && p.carnet.trim() && p.correo.trim());
+            if (participantesValidos.length < 1) {
+                mostrarConfirmacion('⚠️ Registra al menos al capitán.', true);
+                return;
+            }
+            if (participantesValidos.length > cantidad) {
+                mostrarConfirmacion(
+                    `⚠️ Participantes (${participantesValidos.length}) exceden el total (${cantidad}).`, true);
+                return;
+            }
+            if (participantesValidos.length + plazasVal !== cantidad) {
+                mostrarConfirmacion(
+                    `⚠️ Participantes (${participantesValidos.length}) + plazas (${plazasVal}) debe ser ${cantidad}.`,
+                    true);
+                return;
+            }
+            const capitanParticipante = participantesValidos[0];
+            if (capitanParticipante.nombre !== capitanVal) {
+                mostrarConfirmacion('⚠️ El capitán debe ser el primer participante.', true);
+                return;
+            }
+            const emailRegex = /^[^\s@]+@estudiantec\.cr$/;
+            for (let p of participantesValidos) {
+                if (!emailRegex.test(p.correo)) {
+                    mostrarConfirmacion(`⚠️ El correo "${p.correo}" no es válido. Debe ser @estudiantec.cr`, true);
+                    return;
+                }
+            }
+            const nombreLower = nombre.toLowerCase();
+            if (equipos.some(eq => (eq.nombre || '').trim().toLowerCase() === nombreLower)) {
+                mostrarConfirmacion('⚠️ Nombre de equipo duplicado.', true);
+                return;
+            }
+            const telefonoNormalizado = telefonoVal.replace(/\s+/g, '');
+            if (equipos.some(eq => (eq.telefono || '').replace(/\s+/g, '') === telefonoNormalizado)) {
+                mostrarConfirmacion('⚠️ Teléfono ya registrado.', true);
+                return;
+            }
+            const usados = {};
+            equipos.forEach(eq => { usados[eq.color] = (usados[eq.color] || 0) + 1; });
+            if ((usados[color] || 0) >= COLORES_CUPO[color]) {
+                mostrarConfirmacion(`⚠️ Color ${color} sin cupos.`, true);
+                return;
+            }
+
+            const nuevoEquipo = {
+                nombre, capitan: capitanVal, telefono: telefonoVal, color,
+                cantidadCompetidores: cantidad, plazas: plazasVal,
+                participantes: participantesValidos,
+                fecha: firebase.database.ServerValue.TIMESTAMP
+            };
+            try {
+                await db.ref('equipos').push(nuevoEquipo);
+                mostrarConfirmacion('✅ Equipo inscrito.');
+                formEquipo.reset();
+                participantes = [{ nombre: '', carnet: '', correo: '' }];
+                renderParticipantes();
+                capitan.value = '';
+                plazas.value = '0';
+                aceptaTerminos.checked = false;
+                camposEquipo.disabled = true;
+                actualizarContadorPlazas();
+            } catch (err) {
+                mostrarConfirmacion('❌ Error: ' + err.message, true);
+            }
+        });
+
+        // ===== INICIO =====
+        cargarDatos();
+        console.log('🏆 Torneo TMS con fichaje automático de jugadores libres y mínimo de 3 jugadores');
+    </script>
 </body>
+
 </html>
